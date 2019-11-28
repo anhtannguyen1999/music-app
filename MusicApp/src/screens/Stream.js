@@ -9,6 +9,7 @@
       TouchableOpacity,
       Dimensions
     } from "react-native";
+    import Player, { MyPlayerBar } from '../player/Player'
     import StopPause from "../components/StopPause";
     import play from "../../res/play_.png";
     import pause from "../../res/pause_.png";
@@ -17,7 +18,7 @@
       constructor(props) {
         super(props);
         this.state = {
-          pause: true,
+          pause: false,
           repeat: false,
           random: false
         };
@@ -26,8 +27,10 @@
       _setPause() {
         if (this.state.pause == true) {
           this.setState({ pause: false });
+          Player._setPlay();
         } else {
           this.setState({ pause: true });
+          Player._setPause();
         }
         console.log(this.state.pause);
       }
@@ -41,26 +44,21 @@
         return (
           <View style={styles.container}>
             <View style={styles.con2}>
-              <Button
-                title="Stream Screen!"
-                onPress={() => this.props.navigation.navigate("Song")}
-              />
             </View>
             <View style={styles.con1}>
               <View style={styles.container}>
-                <View style={styles.containerProc}>
-                  <Text> </Text>
-                  <ProgressBarAndroid
-                    margin={2}
-                    styleAttr="Horizontal"
-                    color="#000"
-                    progress={0.5}
-                    indeterminate={false}
-                    width={screenWidth - 80}
-                  />
+        
+                  
 
-                  <Text> 0:00/5:00</Text>
-                </View>
+
+
+                  <MyPlayerBar  >
+                    
+                      
+                    
+                  </MyPlayerBar>
+
+
 
                 <View style={styles.containerButton}>
                   <View flex={1}>
@@ -122,7 +120,7 @@
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#000"
+        backgroundColor: "#fff"
       },
       con1: {
         flex: 1.2
@@ -143,7 +141,7 @@
         flex: 1,
         justifyContent: "flex-start",
         alignItems: "flex-start",
-        backgroundColor: "#055",
+        backgroundColor: "#fff",
         flexDirection: "row",
         width: screenWidth
       }

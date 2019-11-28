@@ -29,7 +29,8 @@ export default class ItemInforBaiHat extends Component {
                 <TouchableOpacity style={styles.inforStyle}>
                     <Text style={{ fontStyle: 'normal', fontWeight: 'bold', fontSize: 15 }}>{this.props.ten + ''}</Text>
                     <Text style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: 15 }}>{this.props.casi + ''}</Text>
-                    <Text style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: 10 }}>{this.props.nentang + ''}</Text>
+                    <Text style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: 10 }}>{this.props.time + ''}</Text>
+                    
                 </TouchableOpacity>
                
                     <Image style={{ width: 30, height: 60, marginRight: 10, resizeMode: 'center' }} source={require('../../res/threeDot.png')}></Image>

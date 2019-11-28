@@ -142,19 +142,19 @@ export default class SearchScreen extends Component{
                                 extraData={this.state}
                                 renderItem={({ item }) =>
                                 // _url= 'http://api.mp3.zing.vn/api/streaming/audio/'+item.id+'/128';
-                                <TouchableOpacity flex={1} width={screenWidth} onPress={()=> {Player.PlayMusic(item.title,'http://api.mp3.zing.vn/api/streaming/audio/'+item.id+'/128',item.title,item.artists_names,item.thumbnail), console.log("play___http://api.mp3.zing.vn/api/streaming/audio/"+item.id+'/128')}}>
+                                <TouchableOpacity flex={1} width={screenWidth} onPress={()=> {Player.PlayMusic(item.title,'http://api.mp3.zing.vn/api/streaming/audio/'+item.id+'/128',item.title,item.artists_names,item.thumbnail,item.duration), console.log("play___http://api.mp3.zing.vn/api/streaming/audio/"+item.id+'/128'),this.props.navigation.navigate('Stream')}}>
                                     
                                     <ItemInforBaiHat
                                         
                                         ten={item.title} 
                                         casi={item.artists_names} 
-                                        image={item.thumbnail} 
+                                        image={item.thumbnail}                             
+                                        time={  (parseInt(item.duration%60))<10?  parseInt(item.duration/60) +":"+  "0"+parseInt(item.duration%60,10):parseInt(item.duration/60) +":"+parseInt(item.duration%60,10) }
                                         colorItem={1} 
-                                        
-
+                            
                                     />
                                 </TouchableOpacity>
-}
+                                }
                                 keyExtractor={item => item.title}  
                                 />
                         </View>

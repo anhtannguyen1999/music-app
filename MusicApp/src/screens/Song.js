@@ -15,7 +15,7 @@ export default class SongScreen extends Component {
                     onPress={() => {
                         //this.props.navigation.navigate('Home');
                         //console.log("a");
-                        Player.PlayMusic();
+                       Player.PlayMusic("haha",'http://api.mp3.zing.vn/api/streaming/audio/ZWAEIUUB/128','a','b','c',10);
                     }}
                 />
                 <MyPlayerBar></MyPlayerBar>

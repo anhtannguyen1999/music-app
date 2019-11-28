@@ -2,10 +2,10 @@ import TrackPlayer, { } from 'react-native-track-player';
 import { useTrackPlayerProgress  } from 'react-native-track-player';
 import React, { Component } from 'react'
 import {
-    Text, View, ProgressBar
+    Text, View, ProgressBarAndroid,StyleSheet,Dimensions
 } from 'react-native'
 
-
+const screenWidth = Math.round(Dimensions.get('window').width);
 export default class Player{
     static KhoiTaoPlayer(){
         TrackPlayer.addEventListener('remote-play', () => TrackPlayer.play());
@@ -64,10 +64,30 @@ export default class Player{
 
         });
     }
-    
-    static PlayMusic(id,url,title,artist,artwork) {
-        this.KhoiTaoPlayer();
+    static daKhoiTao=false;
+    static duration=10;
+    static _getDuration()
+    {
+        return this.duration;
+    }
 
+    static _setPause()
+    {
+        TrackPlayer.pause();
+    }
+    static _setPlay()
+    {
+        TrackPlayer.play();
+    }
+    static PlayMusic(id,url,title,artist,artwork,total_time) {
+        if(this.daKhoiTao==false)
+        {
+        this.KhoiTaoPlayer();
+        this.daKhoiTao=true;
+
+        }
+        
+        this.duration=parseInt(total_time);
         TrackPlayer.setupPlayer().then(async () => {
 
             // Adds a track to the queue
@@ -80,16 +100,17 @@ export default class Player{
                 artist: artist,
                 artwork: artwork,
             });
-
+            console.log("add "+title+"   TotalTime: "+this.duration+" OK! _dakhoitao"+this.daKhoiTao);
             // Starts playing it
-
-            TrackPlayer.seekTo(10.5);// tua den 10.5s
+            //TrackPlayer.seekTo(10.5);// tua den 10.5s
             TrackPlayer.play();
+            console.log(TrackPlayer.getBufferedPosition());
             //TrackPlayer.pause();
-            TrackPlayer.setRate(1);//tang toc do len 1.25
+            //TrackPlayer.setRate(2);//tang toc do len 1.25
            // TrackPlayer.seekTo(10.5);// tua den 10.5s
             
         });
+
 
     }
 }
@@ -124,11 +145,33 @@ export class MyPlayerBar extends TrackPlayer.ProgressComponent {
 
     render() {
         return (
-            <View>
-                <Text>{this.getProgress()}</Text>
-                <Text>{this.getBufferedProgress()}</Text>
+            <View style={styles.containerProc}>
+                <Text> </Text>
+                  <ProgressBarAndroid
+                    margin={2}
+                    styleAttr="Horizontal"
+                    color="#000"
+                    progress={this.getProgress()}
+                    indeterminate={false}
+                    width={screenWidth-80}
+                    
+                  />
+    <Text>  {(parseInt(this.getProgress()*Player._getDuration()%60))<10?  parseInt(this.getProgress()*Player._getDuration()/60) +":"+  "0"+parseInt(this.getProgress()*Player._getDuration()%60,10):parseInt(this.getProgress()*Player._getDuration()/60) +":"+parseInt(this.getProgress()*Player._getDuration()%60,10)}/ 
+        {(parseInt(Player._getDuration()%60))<10?  parseInt(Player._getDuration()/60) +":"+  "0"+parseInt(Player._getDuration()%60,10):parseInt(Player._getDuration()/60) +":"+parseInt(Player._getDuration()%60,10)}</Text>
+
             </View>
         );
     }
 
 }
+
+const styles = StyleSheet.create({
+    containerProc: {
+        flex: 1,
+        justifyContent: "flex-start",
+        alignItems: "flex-start",
+        backgroundColor: "#f55",
+        flexDirection: "row",
+        width: screenWidth
+      }
+    });
