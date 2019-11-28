@@ -65,35 +65,29 @@ export default class Player{
         });
     }
     
-    static PlayMusic() {
+    static PlayMusic(id,url,title,artist,artwork) {
         this.KhoiTaoPlayer();
 
         TrackPlayer.setupPlayer().then(async () => {
 
             // Adds a track to the queue
-            await TrackPlayer.add({
-                id: 'IDBaiHat',
-                url: 'https://api.soundcloud.com/tracks/682290737/stream?client_id=NTMpakZL0VZhMPAHJvVX5luouSrAuVZv',
-                title: 'Cô thắm không về',
-                artist: 'Phát Hồ x JokeS Bii x Sinike ft. DinhLong',
-                artwork: 'https://i1.sndcdn.com/avatars-000706769935-wxcye5-large.jpg',
-            });
+
 
             await TrackPlayer.add({
-                id: 'IDBaiHat',
-                url: 'http://api.mp3.zing.vn/api/streaming/audio/ZWAEFWIF/128',
-                title: 'Cô thắm không về',
-                artist: 'Phát Hồ x JokeS Bii x Sinike ft. DinhLong',
-                artwork: 'https://i1.sndcdn.com/avatars-000706769935-wxcye5-large.jpg',
+                id: id,
+                url: url,
+                title: title,
+                artist: artist,
+                artwork: artwork,
             });
 
             // Starts playing it
 
-           
+            TrackPlayer.seekTo(10.5);// tua den 10.5s
             TrackPlayer.play();
             //TrackPlayer.pause();
-            TrackPlayer.setRate(1.25);//tang toc do len 1.25
-            TrackPlayer.seekTo(10.5);// tua den 10.5s
+            TrackPlayer.setRate(1);//tang toc do len 1.25
+           // TrackPlayer.seekTo(10.5);// tua den 10.5s
             
         });
 

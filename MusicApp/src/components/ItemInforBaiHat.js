@@ -13,10 +13,13 @@ export default class ItemInforBaiHat extends Component {
             isError: false,
         }
     };
-
+    
     render() {
         return (
             <View style={this.props.colorItem == 0 ? styles.container : styles.container1}>
+                <Text>
+                    
+                </Text>
                 <TouchableOpacity onPress={() => { }}>
                     <Image loadingIndicatorSource={require('../../res/m_musicicon.png')}
                         style={styles.imageStyle} source={this.props.image === 'url' || this.state.isError ? require('../../res/m_musicicon.png') : { uri: this.props.image }}
@@ -28,9 +31,9 @@ export default class ItemInforBaiHat extends Component {
                     <Text style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: 15 }}>{this.props.casi + ''}</Text>
                     <Text style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: 10 }}>{this.props.nentang + ''}</Text>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => { }}>
+               
                     <Image style={{ width: 30, height: 60, marginRight: 10, resizeMode: 'center' }} source={require('../../res/threeDot.png')}></Image>
-                </TouchableOpacity>
+                
             </View>
         );
     };
@@ -44,7 +47,8 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         backgroundColor: '#F0FDFF',
         flexDirection: 'row',
-        width: screenWidth,
+        width: screenWidth*0.94,
+        borderRadius:3,
     },
     container1: {
         flex: 1,
@@ -52,7 +56,9 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
         backgroundColor: '#D9EDF0',
         flexDirection: 'row',
-        width: screenWidth,
+        borderRadius:3,
+        width:screenWidth*0.94
+
     },
     inforStyle: {
         flex: 5,
@@ -65,6 +71,7 @@ const styles = StyleSheet.create({
         width: 60,
         height: 60,
         margin: 3,
-        resizeMode: 'center'
+        resizeMode: 'center',
+        borderRadius:3,
     }
 });
