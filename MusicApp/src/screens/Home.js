@@ -277,6 +277,7 @@ const styles=StyleSheet.create({
         justifyContent:'center',
         alignItems:'flex-start',
         backgroundColor:'#ffb8b8',
+        height:"100%"
   
     
     },

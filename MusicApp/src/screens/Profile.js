@@ -4,13 +4,20 @@ import {
 } from 'react-native';
 
 export default class ProfileScreen extends Component{
-    componentWillMount() {
-        
-    }
 
-    componentDidMount() {
+
+    constructor(props) {
+        super(props);
+        this.state = {
         
-    }
+        };
+    
+      }
+      static navigationOptions = {
+        header: null,
+    };
+
+
     render(){
         return(
             <View style={styles.container}>
@@ -27,8 +34,10 @@ export default class ProfileScreen extends Component{
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        width: 500,
         justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#fff'
+        alignItems: 'flex-start',
+        backgroundColor: '#ffb8b8',
+        
     }
 })
