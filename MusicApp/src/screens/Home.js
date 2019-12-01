@@ -5,12 +5,14 @@ import {
     View,
     ScrollView, Text,
     FlatList,
-    TouchableOpacity, Image,
+    TouchableOpacity, Image, SafeAreaView,
 } from 'react-native'
 import { Dimensions } from "react-native";
 import { SearchBar } from 'react-native-elements';
 import ItemInforBaiHat from '../components/ItemInforBaiHat';
+import Player, {MyPlayerBar} from '../player/Player';
 const screenWidth = Math.round(Dimensions.get('window').width);
+import StreamScreen from '../screens/Stream';
 export default class HomeScreen extends Component{
 
     constructor(props) {
@@ -29,6 +31,13 @@ export default class HomeScreen extends Component{
       }
     static navigationOptions={
         header:null,
+        headerStyle: {
+            backgroundColor: '#f4511e',
+          },
+          headerTintColor: '#fff',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
        
     }
 
@@ -40,43 +49,33 @@ export default class HomeScreen extends Component{
 
     componentDidMount()
     {
-        fetch("http://m.nhaccuatui.com/ajax/get-top-key-word")
-        //fetch("https://facebook.github.io/react-native/movies.json")
-        .then(response=>response.json())
-        .then(response=>{
-            console.log(response.data);
-            
-            this.setState({data : response.data,})
-        });
-
-        
-       // {this._loadGoiYsearch('hong nhan')}
-        {this._coutLog()}
+        this._loadGoiYsearch();
 
     }
     _coutLog()
     {
-        console.log("log___data");
-        console.log(this.state.dataGoiY)
+        //console.log("log___data");
+        //console.log(this.state.dataGoiY)
     }
 
     _loadGoiYsearch(){
         //value='hong nhan'
-        var inPut= this.state.searchValue;
+        /*var inPut= this.state.searchValue;
         let valueSearch=inPut.replace(" ","%20");
-        console.log(valueSearch);
+        console.log(valueSearch);*/
 
-        fetch("https://zingmp3.vn/api/search/multi?q="+valueSearch+"&ctime=1571563884&sig=b4d8d117b0c44bb6327e8c641a2b863c843ab05be5953764695a13e787abbd969e6c0c180a5c2bd42d33cf6351c848bdcc8b8ea0789be7d2ea29fbada7544c65&api_key=38e8643fb0dc04e8d65b99994d3dafff")
-        .then(response=>response.json())
+       // fetch("https://zingmp3.vn/api/search/multi?q="+valueSearch+"&ctime=1571563884&sig=b4d8d117b0c44bb6327e8c641a2b863c843ab05be5953764695a13e787abbd969e6c0c180a5c2bd42d33cf6351c848bdcc8b8ea0789be7d2ea29fbada7544c65&api_key=38e8643fb0dc04e8d65b99994d3dafff")
+        fetch("https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZWZB969E&ctime=1575126606&sig=1ed0e13e940af18fa93bb91b4335bc35c24713571a1da9f53a78211b5710b26fb03aedbb96dffb4f187da49ab882c03db2948c046c62688fd832d1ad88050bb8&api_key=38e8643fb0dc04e8d65b99994d3dafff")
+       .then(response=>response.json())
         .then(response=>{
-            console.log(response.data.song);
+           // console.log(response.data.song);
             
             this.setState({dataGoiY : response.data.song.items})
         });
 
 
 
-        return(
+       /* return(
            
             <FlatList
             data={this.state.dataGoiY}
@@ -84,10 +83,10 @@ export default class HomeScreen extends Component{
             renderItem={({ item }) => (                                       
             <Text> {item.name} {item.singer}</Text>                                        
             )}
-            keyExtractor={item => item.name}  
+            keyExtractor={item => item.id}  
         
     />
-        )
+        )*/
         
     }
 
@@ -109,61 +108,14 @@ export default class HomeScreen extends Component{
             },
         ];
 
-        var DSTest = [
-            
-                "Co tham khong ve",
-
-               "test"
-           
-    
-  
-        ];
-
-        
-
-        var DSBaiHatTopGoiY = [
-            {
-                ten: 'Hết thương cạn nhớ',
-                casi: 'Đức Phúc',
-                image: 'http://avatar.nct.nixcdn.com/song/2019/10/02/3/1/4/d/1570008789331.jpg',
-                colorItem: 0,
-            },
-            {
-                ten: 'Em gi oi',
-                casi: 'Jack & KICM',
-                image: 'url',
-                colorItem: 1,
-            },
-            {
-                ten: 'Loi nho',
-                casi: 'Jack & KICM',
-                image: 'url',
-                colorItem: 0,
-            },
-            {
-                ten: 'Anh nha o dau the',
-                casi: 'Jack & KICM',
-                image: 'url',
-                colorItem: 1,
-            },
-            {
-                ten: 'Simple Love',
-                casi: 'Jack & KICM',
-                image: 'url',
-                colorItem: 0,
-            },
-            {
-                ten: 'Co tham khong ve remix',
-                casi: 'Jack & KICM',
-                image: 'http://avatar.nct.nixcdn.com/singer/avatar/2019/06/28/2/2/1/d/1561697475916.jpg',
-                colorItem: 1,
-            },
-        ];
-
         return(
             
-            <View style={styles.container1}>
+            <View style={styles.container1,{backgroundColor:'fff'}}>
                 {/* search bar */}
+                <ScrollView>
+                
+                </ScrollView>
+
                 <View style={{ paddingTop:0, marginBottom: 0, width: screenWidth}}>
                     <SearchBar
                         
@@ -200,29 +152,98 @@ export default class HomeScreen extends Component{
                     </TouchableOpacity>
                     
                     {/* 2 Bai hat da nghe gan day */}
+                    
+
+                    
                     <View style={styles.container}>
                         <Text style={styles.tieuDe}> Bài hát gần đây</Text>
                         <View style={styles.container}>
+
                         <FlatList
                             data={DSBaiHatVuaNghe}
-                            renderItem={({ item }) => <ItemInforBaiHat ten={item.ten} casi={item.casi} image={item.image} colorItem={item.colorItem} />}
+                            renderItem={({ item }) =>
+                               // <ScrollView horizontal={true} pagingEnabled={true}>
+                            
+
+                                   <ItemInforBaiHat  ten={item.ten} casi={item.casi} image={item.image} colorItem={item.colorItem} />
+                               
+                             }
+
+                            // </ScrollView>}
                             keyExtractor={item => item.ten}
                             
                         />
                         </View>
+                        
 
                     </View>
-
+                   
+                        <ScrollView horizontal={false} pagingEnabled={true}>
                     {/* Top song */}
                     <View style={styles.containerBHTop}>
                         <Text style={styles.tieuDe}> Bảng xếp hạng</Text>
                         <View style={styles.containerBHTop}>
                         <FlatList
-                            data={DSBaiHatTopGoiY}
-                            renderItem={({ item }) => <ItemInforBaiHat ten={item.ten} casi={item.casi} image={item.image} colorItem={item.colorItem}/>}
-                            keyExtractor={item => item.ten}
+              data={this.state.dataGoiY}
+              extraData={this.state}
+              renderItem={({item,index}) => (
+                // _url= 'http://api.mp3.zing.vn/api/streaming/audio/'+item.id+'/128';
+                <TouchableOpacity
+                  flex={1}
+                  width={screenWidth}
+                  onPress={() => {
+                    Player.PlayMusic(
+                      item.title,
+                      'http://api.mp3.zing.vn/api/streaming/audio/' +
+                        item.id +
+                        '/128',
+                      item.title,
+                      item.artists_names,
+                      item.thumbnail,
+                      item.duration,
+                    ),
+                      console.log(
+                        'play___http://api.mp3.zing.vn/api/streaming/audio/' +
+                          item.id +
+                          '/128',
+                      ),
+                      // StreamScreen._setNameSong(item.artists_names,item.title);
 
-                        /> 
+                    StreamScreen._setNameSong(item.title, item.artists_names);
+
+                    this.props.navigation.navigate('Stream');
+                  }}>
+
+
+
+            
+                    
+                    <ItemInforBaiHat    
+                    stt={++index}              
+                    ten={item.title}
+                    casi={item.artists_names}
+                    image={item.thumbnail}
+                    time={
+                      parseInt(item.duration % 60) < 10
+                        ? parseInt(item.duration / 60) +
+                          ':' +
+                          '0' +
+                          parseInt(item.duration % 60, 10)
+                        : parseInt(item.duration / 60) +
+                          ':' +
+                          parseInt(item.duration % 60, 10)
+                    }
+                    colorItem={1}
+                  />
+                  
+ 
+
+
+              
+                </TouchableOpacity>
+              )}
+              keyExtractor={item => item.title}
+            />
                         </View>
 
                     </View>
@@ -240,6 +261,7 @@ export default class HomeScreen extends Component{
                         </View>
                         
                     </View>
+                    </ScrollView>
 
                     {/* Local music */}
                 <View style={styles.container}>
@@ -247,7 +269,7 @@ export default class HomeScreen extends Component{
                         <View style={styles.container}>
                             
                         <FlatList
-                                    data={this.state.dataGoiY}
+                                    data={this.state.DSBaiHatTopGoiY}
                                     renderItem={({ item }) => (                                       
                                     <Text> {item.title} {item.artists.name}</Text>                                        
                                     )}

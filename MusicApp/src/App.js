@@ -12,6 +12,7 @@ import SongScreen from './screens/Song';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+
 //#region Stack
 const HomeStack = createStackNavigator({
     Home: HomeScreen,

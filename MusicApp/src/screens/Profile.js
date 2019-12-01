@@ -16,7 +16,15 @@ export default class ProfileScreen extends Component{
       static navigationOptions = {
         header: null,
     };
+componentDidMount()
+{
+    fetch("https://static-zmp3.zadn.vn/lyrics/3/1/f/c/31fc794ed9cf0914cd3babaa0dcf4c97.lrc")
+    .then(reponse=>{
+        console.log("loi bat hat: "+reponse.arrayBuffer());
+    }
 
+    )
+}
 
     render(){
         return(

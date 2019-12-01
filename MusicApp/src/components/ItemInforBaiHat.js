@@ -11,7 +11,7 @@ export default class ItemInforBaiHat extends Component {
 
         this.state = {
             isError: false,
-            fadeAni: new Animated.Value(0.2)
+            fadeAni: new Animated.Value(0)
         }
     };
 
@@ -20,7 +20,7 @@ export default class ItemInforBaiHat extends Component {
         Animated.timing(
             this.state.fadeAni,
             {
-                toValue:1,
+                toValue:100,
                 duration:5000
 
             }
@@ -30,24 +30,27 @@ export default class ItemInforBaiHat extends Component {
     render() {
         const valueOpa=this.state.fadeAni;
         return (
-            <Animated.View  style={ {opacity:valueOpa},this.props.colorItem == 0 ? styles.container : styles.container1 } >
-                <Text>
-
+            <Animated.View  style={ this.props.colorItem == 0 ? styles.container : styles.container1 } >
+                <View style={{flexDirection:'row', justifyContent:'center',alignItems:'center',marginTop:20,marginLeft:10}}>
+                <Text fontSize={20} fontWeight={15} >
+                <Text>{this.props.stt}</Text>
                 </Text>
-                <TouchableOpacity onPress={() => { }}>
-                    <Image loadingIndicatorSource={require('../../res/m_musicicon.png')}
+                </View>
+
+                <Animated.View  onPress={() => { }}>
+                    <Animated.Image  loadingIndicatorSource={require('../../res/m_musicicon.png')}
                         style={styles.imageStyle} source={this.props.image === 'url' || this.state.isError ? require('../../res/m_musicicon.png') : { uri: this.props.image }}
-                        onError={(e) => this.setState({ isError: true })}></Image>
+                        onError={(e) => this.setState({ isError: true })}></Animated.Image>
                     {/* <Image style={styles.imageStyle} source={{ uri: 'http://avatar.nct.nixcdn.com/song/2019/10/02/3/1/4/d/1570008789331.jpg' }}></Image> */}
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.inforStyle}>
+                </Animated.View>
+                <View style={styles.inforStyle}>
                     <Animated.Text style={{ opacity:valueOpa, fontStyle: 'normal', fontWeight: 'bold', fontSize: 15 }}>{this.props.ten + ''}</Animated.Text>
                     <Text style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: 15 }}>{this.props.casi + ''}</Text>
                     <Text style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: 10 }}>{this.props.time + ''}</Text>
 
-                </TouchableOpacity>
+                </View>
                 
-                    <Animated.Image style={{ opacity:valueOpa,width: 30, height: 60, marginRight: 10, resizeMode: 'center' }} source={require('../../res/threeDot.png')}></Animated.Image>
+                    <Animated.Image style={{width: 30, height: 60, marginRight: 10, resizeMode: 'center' }} source={require('../../res/threeDot.png')}></Animated.Image>
                 
                 
 

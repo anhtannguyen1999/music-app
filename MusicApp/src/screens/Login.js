@@ -2,13 +2,14 @@ import React, {Component} from 'react'
 import {
     StyleSheet,
     Button,
-    View
+    View,
+    SafeAreaView
 }from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 export default class LoginScreen extends Component{
     render(){
         return(
-            <View style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 <Icon name='soundcloud' size={50} color={'#FFF'}
                     onPress={() => this.props.navigation.navigate('Home')}
                 />
@@ -16,7 +17,7 @@ export default class LoginScreen extends Component{
                     color='fff'
                     onPress={() => this.props.navigation.navigate('Home')}
                 />
-            </View>
+            </SafeAreaView>
         );
     }
 }
