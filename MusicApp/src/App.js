@@ -17,7 +17,10 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 const HomeStack = createStackNavigator({
     Home: HomeScreen,
     //Song: SongScreen,
-});
+   // Search: SearchScreen,
+},{
+    headerMode:"non"
+},);
 const SearchStack = createStackNavigator({
     Search: SearchScreen,
    // Song: SongScreen,
@@ -82,6 +85,7 @@ const RootStack = createStackNavigator(
             screen: LoginScreen,
             navigationOptions: {
                 header: null,
+                
             },
         },
 
@@ -94,6 +98,7 @@ const RootStack = createStackNavigator(
     },
     {
         initialRouteName: 'Login',
+        headerMode:"non"
     },
 );
 

@@ -45,7 +45,7 @@ export default class ItemInforBaiHat extends Component {
                 </Animated.View>
                 <View style={styles.inforStyle}>
                     <Animated.Text style={{ opacity:valueOpa, fontStyle: 'normal', fontWeight: 'bold', fontSize: 15 }}>{this.props.ten + ''}</Animated.Text>
-                    <Text style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: 15 }}>{this.props.casi + ''}</Text>
+                    <Text style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: 13 }}>{this.props.casi + ''}</Text>
                     <Text style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: 10 }}>{this.props.time + ''}</Text>
 
                 </View>

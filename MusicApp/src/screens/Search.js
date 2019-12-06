@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {
   StyleSheet,
   View,
-  Button,
   FlatList,
   Text,
   TouchableOpacity,
@@ -26,6 +25,8 @@ export default class SearchScreen extends Component {
       error: null,
       refreshing: false,
       dataGoiY: [],
+      dataSearch: [],
+      hienThiGoiY: true,
       searchValue: '',
     };
 
@@ -39,7 +40,6 @@ export default class SearchScreen extends Component {
   static navigationOptions = {
     header: null,
   };
-
 
   static _name = '';
   static _song = '';
@@ -59,38 +59,35 @@ export default class SearchScreen extends Component {
     return StreamScreen._name;
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  /* UNSAFE_componentWillReceiveProps(nextProps) {
     console.log('mount');
-  }
+  }*/
 
   _loadImageFromURL(URL) {
     //console.log(valueSearch);
-
     get(URL).then(response => {
       console.log('reponse html:   ' + URL + response);
-
       //let doc = new DomParser().parseFromString(response,'text/html')
       //console.log(doc);
-
       //this.setState({dataGoiY : response.data.song,})
     });
   }
 
   _loadGoiYsearch() {
     //value='hong nhan'
-    var inPut = this.state.searchValue;
-    let valueSearch = inPut.replace(' ', '%20');
-    console.log(valueSearch);
+    var valueSearch = this.state.searchValue;
+    //console.log(valueSearch);
     //https://zingmp3.vn/api/search?type=song&q=bạc&start=0&count=20&ctime=1575083405&sig=4e2f8c458e8fe8516223757a0234ff84e6ea1381bfa7e242b69d3506b71b9d2becce29fec1ca25370fc6b3e1d2958f8c95bd8da5ac96951b73121105e0afbfea&api_key=38e8643fb0dc04e8d65b99994d3dafff
     fetch(
       'https://zingmp3.vn/api/search?type=song&q=' +
         valueSearch +
-        '&start=0&count=20&ctime=1575083405&sig=4e2f8c458e8fe8516223757a0234ff84e6ea1381bfa7e242b69d3506b71b9d2becce29fec1ca25370fc6b3e1d2958f8c95bd8da5ac96951b73121105e0afbfea&api_key=38e8643fb0dc04e8d65b99994d3dafff'    )
+        '&start=0&count=20&ctime=1575083405&sig=4e2f8c458e8fe8516223757a0234ff84e6ea1381bfa7e242b69d3506b71b9d2becce29fec1ca25370fc6b3e1d2958f8c95bd8da5ac96951b73121105e0afbfea&api_key=38e8643fb0dc04e8d65b99994d3dafff',
+    )
       .then(response => response.json())
       .then(response => {
-        console.log(response.data);
+        //console.log(response.data);
 
-        this.setState({dataGoiY: response.data.items});
+        this.setState({dataSearch: response.data.items});
       });
   }
 
@@ -115,13 +112,39 @@ export default class SearchScreen extends Component {
     this._loadGoiYsearch();
   }
 
-  render() {
-    console.log('Render');
+  _loadGoiYSearch2(value) {
+    //fetch('https://zingmp3.vn/api/search?type=song&q=em&start=0&count=5&ctime=1575083405&sig=4e2f8c458e8fe8516223757a0234ff84e6ea1381bfa7e242b69d3506b71b9d2becce29fec1ca25370fc6b3e1d2958f8c95bd8da5ac96951b73121105e0afbfea&api_key=38e8643fb0dc04e8d65b99994d3dafff')
+    if (value == '') {
+      console.log('null');
+      this.setState({dataGoiY: []});
+      return null;
+    } else {
+      fetch(
+        'https://ac.zingmp3.vn/suggestKeyword?num=5&query=+' +
+          value +
+          '&type=song',
+      )
+        .then(response => {
+          return response.json();
+        })
+        .then(res => {
+          this.setState({dataGoiY: res.data});
+        });
+    }
+  }
 
-    const {navigation} = this.props;
-    const valueForSearch = this.props.navigation.getParam('searchValue', '');
-    const isRequireForSearch = navigation.getParam('isRequireForSearch', false);
-    console.log(valueForSearch);
+  render() {
+    //console.log('Render');
+
+    //const {navigation} = this.props;
+    //const valueForSearch = JSON.stringify(
+      //navigation.getParam('textForSearch', ''),
+    
+    //console.log(valueForSearch);
+    //const isRequireForSearch = JSON.stringify(
+     // navigation.getParam('isRequireForSearch', false),
+   // );
+    //console.log(isRequireForSearch);
 
     const screenWidth = Math.round(Dimensions.get('window').width);
     return (
@@ -131,22 +154,59 @@ export default class SearchScreen extends Component {
             paddingTop: 0,
             marginBottom: 0,
             width: screenWidth,
-            backgroundColor: '#000',
+            backgroundColor: '#fff',
           }}>
-          <SearchBar
-            backgroundColor
-            round
-            lightTheme={true}
-            searchIcon={{size: 24}}
-            onChangeText={text => {
-              //this._loadGoiYsearch();
-              this.setState({searchValue: text});
-            }}
-            onClear={text => this.setState({searchValue: ''})}
-            placeholder="Type Here..."
-            value={this.state.searchValue}
-            onSubmitEditing={text => this.SearchFor(this.state.searchValue)}
-          />
+          <View>
+            <SearchBar
+              containerStyle={{backgroundColor: '#fff'}}
+              value={this.state.searchValue}
+              backgroundColor
+              round
+              lightTheme={true}
+              searchIcon={{size: 24}}
+              onChangeText={text => {
+                this.setState({searchValue: text});
+                this._loadGoiYSearch2(text);
+              }}
+              onClear={text => this.setState({searchValue: '', dataGoiY: []})}
+              placeholder="Bạn muốn nghe gì...?"
+              onSubmitEditing={text => {
+                this._loadGoiYsearch(text),
+                  this.setState({dataGoiY: [], searchValue: text});
+              }}
+            />
+            <View
+              style={{
+                backgroundColor: '#fff',
+                zIndex: 2,
+                padding: 0,
+                margin: 0,
+                marginTop: 0,
+                borderRadius: 0,
+                borderColor: '#f0f',
+              }}>
+              <FlatList
+                //backgroundColor={"#000"}
+                borderColor={'#000'}
+                data={this.state.dataGoiY}
+                zIndex={2}
+                extraData={this.state}
+                renderItem={({item}) => (
+                  <TouchableOpacity
+                    onPress={() => {
+                      this.setState(
+                        {searchValue: item},
+                        this.setState({dataGoiY: []}),
+                        this.SearchFor(item),
+                      );
+                    }}>
+                    <Text style={{fontSize: 15, color: '#000'}}> {item}</Text>
+                  </TouchableOpacity>
+                )}
+                //keyExtractor={item => item}
+              />
+            </View>
+          </View>
         </View>
 
         <View style={styles.container1}>
@@ -154,7 +214,7 @@ export default class SearchScreen extends Component {
 
           <View style={styles.danhsach}>
             <FlatList
-              data={this.state.dataGoiY}
+              data={this.state.dataSearch}
               extraData={this.state}
               renderItem={({item}) => (
                 // _url= 'http://api.mp3.zing.vn/api/streaming/audio/'+item.id+'/128';
@@ -179,7 +239,7 @@ export default class SearchScreen extends Component {
                       ),
                       // StreamScreen._setNameSong(item.artists_names,item.title);
 
-                    StreamScreen._setNameSong(item.title, item.artists_names);
+                      StreamScreen._setNameSong(item.title, item.artists_names);
 
                     this.props.navigation.navigate('Stream');
                   }}>
@@ -201,7 +261,7 @@ export default class SearchScreen extends Component {
                   />
                 </TouchableOpacity>
               )}
-              keyExtractor={item => item.title}
+              keyExtractor={item => item.id}
             />
           </View>
         </View>
@@ -215,7 +275,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#ffb8b8',
+    backgroundColor: '#fff',
     flexDirection: 'column',
   },
   container1: {

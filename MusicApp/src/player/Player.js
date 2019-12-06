@@ -4,9 +4,10 @@ import React, {Component} from 'react';
 import {
   Text,
   View,
-  ProgressBarAndroid,
   StyleSheet,
   Dimensions,
+  FlatList,
+  TouchableOpacity
 } from 'react-native';
 import Slider from 'react-native-slider';
 const screenWidth = Math.round(Dimensions.get('window').width);
@@ -84,6 +85,14 @@ export default class Player {
   static _setSeek(value) {
     TrackPlayer.seekTo(value);
   }
+  static _getProg()
+  {
+     return TrackPlayer.getProgress();
+  }
+  static _getCurentTime()
+  {
+    return parseInt(this._getProg()*this._getDuration());
+  }
   static PlayMusic(id, url, title, artist, artwork, total_time) {
     if (this.daKhoiTao == false) {
       this.KhoiTaoPlayer();
@@ -149,34 +158,17 @@ export class MyPlayerBar extends TrackPlayer.ProgressComponent {
       value: 0,
     };
   }
-
-  /*change(value) {
-        this.setState(() => {
-          return {
-            value: parseFloat(value),
-          };
-        });
-      }*/
-
   render() {
     return (
       <View style={styles.containerProc}>
         <Slider
+          
           width={screenWidth - 80}
           marginBottom={0}
           value={this.getProgress()}
           onSlidingComplete={time =>
             Player._setSeek(parseInt(Player._getDuration() * time))
           }></Slider>
-        {/*  <ProgressBarAndroid
-                    margin={2}
-                    styleAttr="Horizontal"
-                    color="#000"
-                    progress={this.getProgress()}
-                    indeterminate={false}
-                    width={screenWidth-80}
-                    
-                  />*/}
         <Text fontSize={15}>
           {' '}
           {parseInt((this.getProgress() * Player._getDuration()) % 60) < 10
@@ -202,6 +194,115 @@ export class MyPlayerBar extends TrackPlayer.ProgressComponent {
   }
 }
 
+export class MyLyric extends TrackPlayer.ProgressComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      data_temp: [],
+      tempString: '',
+      stringLyric: '',
+      index:'',
+      curentTime:0,
+      up:0,
+      link:''
+    };
+   
+  }
+  componentDidMount() {
+
+/*console.log("set linK liric "+this.props.linkLyric)
+   fetch(this.props.linkLyric)
+    .then(response => {
+      return response.text();
+    })
+    .then(res => {
+
+     this.setState({stringLyric: res});
+     this.xuLiLyric(this.state.stringLyric)
+
+    });  */
+  }
+
+  xuLiLyric(input)
+  {
+    //console.log(this.state.stringLyric+"uuu")
+    var value=new String();
+    value=input+"[";
+    var start=0;
+    var end=0;
+    var data = [];
+    //data['00:00']='haha'
+      for(let i=0;i<input.length;i++)
+      {
+
+        if(value[i]=="[")
+        {
+          end=i;
+          var line =value.substring(start,end);
+          var time =line.substring(1,6);
+          var obj={id: time,value:line.substring(10,line.length-2)}
+          //data[time]= line.substring(10,line.length-2);
+          data.push(obj);
+          start=end;
+        }
+      }
+     // console.log(data);
+      this.setState({data_temp:data})
+      console.log("LOAD data lyric OK!")
+  }
+
+  _stringToTime(value1)
+  {
+    var value =new String();
+    value=value1;
+    return parseInt(value.substring(0,2))*60 +parseInt(value.substring(3,6));
+  }
+
+
+  render() {
+
+
+    //this.xuLiLyric(this.state.stringLyric)
+    //console.log(this.state.data_temp)
+    if(this.props.linkLyric!=this.state.link)
+    {
+      this.setState({link:this.props.linkLyric})
+      this.setState
+    console.log("set linK liric "+this.props.linkLyric)
+    fetch(this.props.linkLyric)
+     .then(response => {
+       return response.text();
+     })
+     .then(res => {
+ 
+      this.setState({stringLyric: res});
+      this.xuLiLyric(this.state.stringLyric)
+ 
+     }); 
+    }
+    return (
+      <View style={styles.container}>
+        {/*<TouchableOpacity  onPress={()=>{this._showLyric(),this._renderText('hahaah')}}> 
+        <Text style={{fontSize:20}}> Render </Text>       
+        </TouchableOpacity>*/}
+        <FlatList
+        data={this.state.data_temp}
+        extraData={this.state.data_temp}
+        renderItem={({item})=>(
+     
+
+      <TouchableOpacity onPress={()=>{Player._setSeek(this._stringToTime(item.id))}}>   
+        <Text style={(parseInt(this.getProgress*Player._getDuration())-this._stringToTime(item.id))==0? styles.con1:styles.con2}>    [{item.id}]   {item.value}</Text>   
+        </TouchableOpacity>)
+        }
+        >
+        </FlatList>
+           
+      </View>
+    );
+  }
+}
+
 const styles = StyleSheet.create({
   containerProc: {
     flex: 1,
@@ -211,4 +312,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: screenWidth,
   },
+  con1:{
+    width:"100%",
+    fontSize:15, 
+    color:"#000",
+  },
+  con2:{
+    width:"100%",
+     fontSize:15, 
+    color:"#F45"
+  }
 });
