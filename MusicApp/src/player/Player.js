@@ -94,10 +94,10 @@ export default class Player {
     return parseInt(this._getProg()*this._getDuration());
   }
   static PlayMusic(id, url, title, artist, artwork, total_time) {
-    if (this.daKhoiTao == false) {
-      this.KhoiTaoPlayer();
+    /*if (this.daKhoiTao == false) {
       this.daKhoiTao = true;
-    }
+    }*/
+    this.KhoiTaoPlayer();
 
     this.duration = parseInt(total_time);
     TrackPlayer.setupPlayer().then(async () => {

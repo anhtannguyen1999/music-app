@@ -8,15 +8,19 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  SafeAreaView,
-} from 'react-native';
+} 
+from 'react-native';
 import {Dimensions} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import ItemInforBaiHat from '../components/ItemInforBaiHat';
 import Player, {MyPlayerBar} from '../player/Player';
 const screenWidth = Math.round(Dimensions.get('window').width);
 import StreamScreen from '../screens/Stream';
-export default class HomeScreen extends Component {
+
+import { connect } from 'react-redux';
+import { setSongPlay  } from '../redux/action';
+
+class HomeScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -33,16 +37,18 @@ export default class HomeScreen extends Component {
   }
   static navigationOptions = {
     header: null,
-    headerStyle: {
-      backgroundColor: '#f4511e',
-    },
-    headerTintColor: '#fff',
-    headerTitleStyle: {
-      fontWeight: 'bold',
-    },
+    /*tabBarIcon:({tintColor})=>(
+      <Image
+
+      source={require('../../res/home.png')}
+      style={{width:20,height:15,tintColor:"black"}}
+      >
+      </Image>
+    )*/
+
   };
 
-  componentDidMount() {
+  componentWillMount() {
     this._loadGoiYsearch();
 
     //console.log((this.state.dataGoiY.length)))
@@ -110,14 +116,16 @@ export default class HomeScreen extends Component {
 
         <View style={{paddingTop: 0, marginBottom: 0, width: screenWidth}}>
           <SearchBar
+            containerStyle={{backgroundColor: '#fff'}}
             round
+            backgroundColor
             lightTheme={true}
             searchIcon={{size: 24}}
             placeholder="Type Here..."
             showLoading={false}
             containerStyle={(style = styles.containerSerchBar)}
             // onFocus={() => this.props.navigation.navigate('Search')}
-
+            onFocus={()=>this.searchFor(this.state.searchValue)}
             onChangeText={text => {
               this.setState({searchValue: text});
               var stringSearch = text;
@@ -146,9 +154,12 @@ export default class HomeScreen extends Component {
 
           {/* 2 Bai hat da nghe gan day */}
 
-          <View style={styles.container}>
+          <View style={styles.containerBHTop}>
+            <View style={styles.containerTieuDe}>
             <Text style={styles.tieuDe}> Bài hát gần đây</Text>
-            <View style={styles.container}>
+            </View>
+  
+            <View style={styles.containerBHTop}>
               <FlatList
                 data={DSBaiHatVuaNghe}
                 renderItem={({item}) => (
@@ -170,10 +181,14 @@ export default class HomeScreen extends Component {
           <ScrollView horizontal={false} pagingEnabled={true}>
             {/* Top song */}
             <View style={styles.containerBHTop}>
+              <View style={styles.containerTieuDe}>
               <Text style={styles.tieuDe}> Bảng xếp hạng</Text>
-              {console.log('uuuu' + this.state.dataGoiY.length)}
+              </View>
+              
+              
               <View style={styles.containerBHTop}>
                 <FlatList
+                  initialNumToRender={10}
                   data={this.state.dataGoiY}
                   extraData={this.state}
                   renderItem={({item, index}) => (
@@ -199,30 +214,27 @@ export default class HomeScreen extends Component {
                           ),
                           // StreamScreen._setNameSong(item.artists_names,item.title);
 
-                          StreamScreen._setNameSong(
+                         /* StreamScreen._setNameSong(
                             item.title,
                             item.artists_names,
                           );
-                          StreamScreen._setLinkLyric(item.lyric);
+                          StreamScreen._setLinkLyric(item.lyric);*/
 
+
+                        this.props.setSongPlay(item.id,item.title,item.artists_names,item.lyric,item.duration);
                         this.props.navigation.navigate('Stream');
                       }}>
                       <ItemInforBaiHat
                         
                         stt ={++index}
-                        ten={item.title}
-                        casi={item.artists_names}
+                        id={item.id}
+                        title={item.title}
+                        artists_names={item.artists_names}
                         image={item.thumbnail}
-                        time={
-                          parseInt(item.duration % 60) < 10
-                            ? parseInt(item.duration / 60) +
-                              ':' +
-                              '0' +
-                              parseInt(item.duration % 60, 10)
-                            : parseInt(item.duration / 60) +
-                              ':' +
-                              parseInt(item.duration % 60, 10)
-                        }
+                        duration={item.duration}
+                        lyric={item.lyric}
+
+                        
                         colorItem={1}
                       />
                     </TouchableOpacity>
@@ -233,9 +245,12 @@ export default class HomeScreen extends Component {
             </View>
 
             {/* Play list goi y */}
-            <View style={styles.container}>
+            <View style={styles.containerBHTop}>
+              <View style={styles.containerTieuDe}>
               <Text style={styles.tieuDe}> Goi y</Text>
-              <View style={styles.container}>
+              </View>
+
+              <View style={styles.containerBHTop}>
                 <FlatList
                   data={DSBaiHatVuaNghe}
                   renderItem={({item}) => (
@@ -285,6 +300,12 @@ export default class HomeScreen extends Component {
   }
 }
 
+function mapStateToProps(state) {
+  return { myCurrentSong: state.currentSong };
+}
+
+export default connect(null, {setSongPlay})(HomeScreen);
+
 const styles = StyleSheet.create({
   container1: {
     flex: 1,
@@ -298,17 +319,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-start',
-    backgroundColor: '#7efff5',
-    margin: 10,
+    backgroundColor: '#fff',
+    margin: 5,
     borderRadius: 10,
   },
   containerBHTop: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-start',
-    backgroundColor: '#32ff7e',
+    backgroundColor: '#fff',
     margin: 10,
     borderRadius: 10,
+    
+    //borderWidth:2,
+    //borderColor:'#000'
   },
   tieuDe: {
     justifyContent: 'flex-start',
@@ -319,8 +343,28 @@ const styles = StyleSheet.create({
     marginTop: 5,
     marginLeft: 3,
     marginBottom: 3,
+    borderStartWidth:2,
+    borderRightColor:'red',
   },
   containerSerchBar: {
-    backgroundColor: '#ffb8b8',
+    backgroundColor: '#fff',
+  },
+  containerTieuDe:{
+    borderWidth:2,
+    borderColor:'#888',
+    width:'93%',
+    marginLeft:13,
+    paddingBottom:5,
+
+  },
+  containerScrollList:{
+    //flex: 1,
+    //justifyContent: 'center',
+    //alignItems: 'flex-start',
+    backgroundColor: '#fff',
+    margin: 10,
+    borderRadius: 10,
+    height:500
+
   },
 });

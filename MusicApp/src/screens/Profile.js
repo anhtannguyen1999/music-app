@@ -1,79 +1,56 @@
 import React, {Component, cloneElement} from 'react';
-import {StyleSheet, View, FlatList, Text, TouchableOpacity} from 'react-native';
-import Player, {MyPlayerBar} from '../player/Player';
+import {StyleSheet, View, FlatList, Text, TouchableOpacity,SafeAreaView} from 'react-native';
+
 import TrackPlayer from 'react-native-track-player';
-export default class ProfileScreen extends TrackPlayer.ProgressComponent {
+import {Autocomplete, withKeyboardAwareScrollView} from "react-native-dropdown-autocomplete";
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+import { connect } from 'react-redux';
+import { setSongPlay  } from '../redux/action';
+ class ProfileScreen extends TrackPlayer.ProgressComponent {
   constructor(props) {
     super(props);
     this.state = {
-      data_temp: [],
-      tempString: '',
-      stringLyric: '',
-      index:'',
-      curentTime:0,
-      up:false
+      data:[],
     };
-   
+
   }
   static navigationOptions = {
     header: null,
   };
 
-  
-  componentDidMount() {
-   // this._loadGoiYSearch2();
+  _loadGoiYSearch2() {
 
-   fetch(
-    'https://static-zmp3.zadn.vn/lyrics/e/4/5/9/e4592d70b838fd8c5b06f7968b7b3088.lrc'
-  )
-    .then(response => {
-      return response.text();
-    })
-    .then(res => {
-      //console.log(res);
-     this.setState({stringLyric: res});
-     this.xuLiLyric(this.state.stringLyric)
-     //console.log(this.state.stringLyric+"hh");
-      //if (value == '') this.setState({dataGoiY: []});
-    });
-
-
+      fetch(
+        'https://ac.zingmp3.vn/suggestKeyword?num=5&query=Hong'
+      )
+        .then(response => {
+          return response.json();
+        })
+        .then(res => {
+          this.setState({data: res.data});
+        });
     
   }
 
-  xuLiLyric(input)
-  {
-    //console.log(this.state.stringLyric+"uuu")
-    var value=new String();
-    value=input+"[";
-    var start=0;
-    var end=0;
-    var data = [];
-    //data['00:00']='haha'
-      for(let i=0;i<input.length;i++)
-      {
 
-        if(value[i]=="[")
-        {
-          end=i;
-          var line =value.substring(start,end);
-          var time =line.substring(1,6);
-          var obj={id: time,value:line.substring(10,line.length-2)}
-          //data[time]= line.substring(10,line.length-2);
-          data.push(obj);
-          start=end;
-        }
-      }
-      //console.log(data);
-      this.setState({data_temp:data})
-      console.log("LOAD OK!")
+  
+  componentDidMount() {
+    fetch(
+      'https://ac.zingmp3.vn/suggestKeyword?num=5&query=Hong'
+    )
+      .then(response => {
+        return response.json();
+      })
+      .then(res => {
+        this.setState({data: res.data});
+      });
   }
-
-  _stringToTime(input)
-  {
-    var value = new String();
-    value =input;
-    return (parseInt(value.substring(0,2))*60+parseInt(value.substring(3,6)));
+ 
+  handleSelectItem(item, index) {
+    //const {onDropdownClose} = this.props;
+    //this.props.onDropdownClose();
+    console.log(item);
   }
 
 
@@ -81,47 +58,77 @@ export default class ProfileScreen extends TrackPlayer.ProgressComponent {
     var tt=[
       {
         id:1,
-        value:"1"
+        value:"111"
       },
       {
         id:2,
-        value:"2"
+        value:"222"
       },
       {
         id:3,
-        value:"3"
+        value:"333"
       }
     ]
+    const data = [
+      "Apples",
+      "Broccoli",
+      "Chicken",
+      "Duck",
+      "Eggs",
+      "Fish",
+      "Granola",
+      "Hash Browns",
+    ];
+    var data2=["Hong Nhan", "Hong Nhan Jack", "Hong Nhan Bac Phan Single", "Hong Nhan K-ICM Mix", "Hong Nhan K-ICM Mix Jack  K-ICM"]
+    //console.log(data)
+    //this._loadGoiYSearch2();
+    //console.log(this.state.dataGoiY);
+    var datagoiy2=this.state.data.slice();
+    console.log(this.state.data);
+    const apiUrl = "https://ac.zingmp3.vn/suggestKeyword?num=5&query=Hong";
 
-    //this.xuLiLyric(this.state.stringLyric)
-    //console.log(this.state.data_temp)
+    const {scrollToInput, onDropdownClose, onDropdownShow} = this.props;
+
     return (
-      <View style={styles.container}>
-        {/*<TouchableOpacity  onPress={()=>{this._showLyric(),this._renderText('hahaah')}}> 
-        <Text style={{fontSize:20}}> Render </Text>       
-        </TouchableOpacity>*/}
-        <FlatList
-        data={this.state.data_temp}
-        extraData={this.state.up}
-      renderItem={({item,index})=>(
-
-
-      <TouchableOpacity onPress={()=>{Player._setSeek(this._stringToTime(item.id)),this.setState({up:++index})}}>
-        <Text style={(parseInt(this.getProgress*Player._getDuration())-this._stringToTime(item.id))<=3? styles.con1:styles.con2 }> 
-        {item.value} 
-        </Text> 
-
-      </TouchableOpacity>) }
-        
-        >
-
-        
-        </FlatList>
-           
+      <View style={styles.autocompletesContainer}>
+        <Icon name='flash' size ={30}></Icon>
+        <SafeAreaView>
+          
+            <Autocomplete
+            width={1000}
+              //onChangeText={()=>this._loadGoiYSearch2()}
+              //console.log(this.state.dataGoiY)
+              data={this.state.data}
+             // waitInterval={400}
+              //key={shortid.generate()}
+              style={styles.input}
+              //scrollToInput={e => scrollToInput(e)}
+              handleSelectItem={(item, id) => this.handleSelectItem(item, id)}
+              //onDropdownClose={() => onDropdownClose()}
+              //onDropdownShow={() => onDropdownShow()}
+             // renderIcon={() => (
+               // <Ionicons name="ios-add-circle-outline" size={20} color="#c7c6c1" style={styles.plus} />
+             // )}
+              //fetchDataUrl={apiUrl}
+              //fetchData={(search)=> this._loadGoiYSearch2()}
+              minimumCharactersCount={0}
+              highlightText
+              valueExtractor={item => item}
+              rightContent
+              rightTextExtractor={item => item}
+            />
+          
+        </SafeAreaView>
       </View>
     );
   }
 }
+
+function mapStateToProps(state) {
+  return { myCurrentSong: state.currentSong };
+}
+
+export default connect(mapStateToProps, {setSongPlay})(ProfileScreen);
 
 const styles = StyleSheet.create({
   container: {
@@ -137,6 +144,7 @@ const styles = StyleSheet.create({
     zIndex: 1,
     width: '100%',
     paddingHorizontal: 8,
+    alignSelf:'stretch'
   },
   input: {maxHeight: 40},
   con1:{
@@ -149,6 +157,32 @@ const styles = StyleSheet.create({
      fontSize:20, 
      color:"#f0f",
     color:"#F45"
-  }
+  },
+
+  input: {maxHeight: 40},
+  inputContainer: {
+    display: "flex",
+    flexShrink: 0,
+    flexGrow: 0,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
+    borderBottomWidth: 1,
+    borderColor: "#c7c6c1",
+    paddingVertical: 13,
+    paddingLeft: 12,
+    paddingRight: "5%",
+    width: "100%",
+    justifyContent: "flex-start",
+  },
+  container: {
+    flex: 1,
+    backgroundColor: "#ffffff",
+  },
+  plus: {
+    position: "absolute",
+    left: 15,
+    top: 10,
+  },
 
 });

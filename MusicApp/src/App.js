@@ -1,105 +1,118 @@
-import React, { Component } from 'react';
-import { StyleSheet, Button, View } from 'react-native';
-import { createStackNavigator } from 'react-navigation-stack';
-import { createSwitchNavigator, createAppContainer } from 'react-navigation';
-import { createBottomTabNavigator } from 'react-navigation-tabs';
+import React, {Component} from 'react';
+import {StyleSheet, Button, View} from 'react-native';
+import {createStackNavigator} from 'react-navigation-stack';
+import {createSwitchNavigator, createAppContainer} from 'react-navigation';
+import {createBottomTabNavigator} from 'react-navigation-tabs';
 import HomeScreen from './screens/Home';
 import LoginScreen from './screens/Login';
 import StreamScreen from './screens/Stream';
 import SearchScreen from './screens/Search';
 import ProfileScreen from './screens/Profile';
 import SongScreen from './screens/Song';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+import store from './redux/store';
+import {Provider} from 'react-redux';
 
 //#region Stack
-const HomeStack = createStackNavigator({
+const HomeStack = createStackNavigator(
+  {
     Home: HomeScreen,
-    //Song: SongScreen,
-   // Search: SearchScreen,
-},{
-    headerMode:"non"
-},);
+  },
+  {
+    headerMode: 'non',
+  },
+);
 const SearchStack = createStackNavigator({
-    Search: SearchScreen,
-   // Song: SongScreen,
+  Search: SearchScreen,
+
+  // Song: SongScreen,
 });
 const StreamStack = createStackNavigator({
-    Stream: StreamScreen,
-   // Song: SongScreen,
+  Stream: StreamScreen,
+  // Song: SongScreen,
 });
 const ProfileStack = createStackNavigator({
-    Profile: ProfileScreen,
-   // Song: SongScreen,
+  Profile: ProfileScreen,
+  // Song: SongScreen,
 });
 //#endregion
 
 //createBottomTabNavigator(RouteConfigs, TabNavigatorConfig);
 const Tabs = createBottomTabNavigator(
-    {
-        Home: HomeStack,
-        Search: SearchStack,
-        Stream: StreamStack,
-        Profile: ProfileStack,
-    },
-    {
-        navigationOptions: ({ navigation }) => ({
-            tabBarIcon: ({ tintColor }) => {
-                const { routeName } = navigations.state;
-                let iconName = 'home';
-                if (routeName === 'Home') {
-                    iconName = 'home';
-                } else if (routeName === 'Stream') {
-                    iconName = 'flash';
-                } else if (routeName === 'Search') {
-                    iconName = 'search';
-                } else if (routeName === 'Profile') {
-                    iconName = 'account';
-                }
+  {
+    Home: HomeStack,
+    Search: SearchStack,
+    Stream: StreamStack,
+    Profile: ProfileStack,
+  },
+  {
+    defaultNavigationOptions: ({navigation}) => {
+      return {
+        tabBarIcon: ({tintColor}) => {
+          const {routeName} = navigation.state;
+          let iconName = 'home';
+          if (routeName === 'Home') {
+            iconName = 'home';
+          } else if (routeName === 'Stream') {
+            iconName = 'headphones';
+          } else if (routeName === 'Search') {
+            iconName = 'search';
+          } else if (routeName === 'Profile') {
+            iconName = 'id-card';
+          }
 
-                // return <Icon name='soundcloud' size={25} color={'#F02'} />;
+          return (
+            <Icon
+              name={iconName}
+              size={25}
+              
+              color={tintColor}
+              style={{marginTop: 5, marginRight: 3}}
+            />
+          );
 
-                return iconName === 'search' ? (
+          /*return iconName === 'search' ? (
                     <MaterialIcons name={iconName} size={25} color={tintColor} />
                 ) : (
                         <MaterialCommunityIcons name={iconName} size={25} color={tintColor} />
-                    );
-            },
-        }),
-        tabBarOption: {
-            activeTintColor: '#000',
-            inactiveTintColor: '#000',
-            activeBackgroundColor: '#000',
-            showLabel: true,
-            style: {
-                backgroundColor: '#000',
-            },
+                    );*/
         },
+
+        tabBarOptions: {
+
+          activeTintColor: 'red',
+          inactiveTintColor: '#555',
+          activeBackgroundColor: '#fff',
+          inactiveBackgroundColor: '#fff',
+          borderColor:'#000',
+        },
+      };
     },
+  },
 );
 
 const RootStack = createStackNavigator(
-    {
-        Login: {
-            screen: LoginScreen,
-            navigationOptions: {
-                header: null,
-                
-            },
-        },
+  {
+    Login: {
+      screen: LoginScreen,
+      navigationOptions: {
+        header: null,
+      },
+    },
 
-        Home: {
-            screen: Tabs,
-            navigationOptions: {
-                header: null,
-            },
-        },
+    Home: {
+      screen: Tabs,
+      navigationOptions: {
+        header: null,
+      },
     },
-    {
-        initialRouteName: 'Login',
-        headerMode:"non"
-    },
+  },
+  {
+    initialRouteName: 'Login',
+    headerMode: 'non',
+  },
 );
 
 /*const Switch = createSwitchNavigator(
@@ -113,11 +126,14 @@ const RootStack = createStackNavigator(
 );*/
 
 const AppContainer = createAppContainer(RootStack);
-
-//const AppContainer = createAppContainer(Switch);
-
 export default class App extends Component {
-    render() {
-        return <AppContainer />;
-    }
+  componentDidMount() {}
+
+  render() {
+    return (
+      <Provider store={store}>
+        <AppContainer />
+      </Provider>
+    );
+  }
 }

@@ -11,8 +11,14 @@ import {
 import Player, {MyPlayerBar,MyLyric} from '../player/Player';
 import play from '../../res/play_.png';
 import pause from '../../res/pause_.png';
+import Icon from 'react-native-vector-icons/FontAwesome';
+
+
+import { connect } from 'react-redux';
+import { setSongPlay  } from '../redux/action';
+
 const screenWidth = Math.round(Dimensions.get('window').width);
-export default class StreamScreen extends Component {
+class StreamScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -22,6 +28,8 @@ export default class StreamScreen extends Component {
       rerender: true,
       margindelay_: screenWidth / 2,
       toLeft: true,
+      nameSong:'',
+      rerender:0,
     };
    /* setInterval(() => {
       if (this.state.margindelay_ <= -screenWidth)
@@ -42,28 +50,6 @@ export default class StreamScreen extends Component {
     header: null,
   };
 
-  static _name = '';
-  static _song = '';
-  static _linkLyric='';
-
-  static _setNameSong(valueName, valueSong) {
-    (StreamScreen._name = valueName), (StreamScreen._song = valueSong);
-
-    console.log('setname: ' + StreamScreen._name + ' song ok!');
-  }
-  static _setLinkLyric(valueLink)
-  {
-    StreamScreen._linkLyric=valueLink;
-  }
-
-  static _getSong() {
-    console.log('return name ok!');
-    return StreamScreen._song;
-  }
-
-  static _getname() {
-    return StreamScreen._name;
-  }
 
   _setPause() {
     if (this.state.pause == true) {
@@ -77,48 +63,27 @@ export default class StreamScreen extends Component {
   }
 
   _renderButtonPause() {
-    var scPause = this.state.pause ? play : pause;
-    return <Image width={20} resizeMode="cover" source={scPause}></Image>;
+    if(this.state.pause==false)
+     return <Icon name={'pause-circle-o'} size={70} color={'#fff'} ></Icon>
+     else
+     return <Icon name={'play-circle-o'} size={70} color={'#fff'} ></Icon>
+
   }
   componentDidMount() {
-    /*const _name= this.props.navigation.getParam('name',"................");
-  const _song = this.props.navigation.getParam('song',"``````````````");
-  this.setState(
-    {_name:_name,
-    _song:_song}
-  )*/
   }
 
   render() {
-    //const { navigation } = this.props;
-    //const moveL = this.state.margindelay_;
+
     return (
       <View style={styles.container}>
-                {/* <View
-            style={{
-              flex:0.5,
-              justifyContent: 'flex-start',
-              alignItems: 'flex-start',
-              width: screenWidth,
-              height: 10,
-              marginLeft: moveL,
-              backgroundColor: '#123',
-              width:screenWidth
-            }}>
-            <Text style={{fontSize: 15, color: 'white'}}>
-              {StreamScreen._name}
-            </Text>
-            <Text style={{fontSize: 15, color: 'white'}}>
-              {StreamScreen._song}{' '}
-            </Text>
-          </View>*/}
+
+
          
         <View style={styles.con2}>
           
-        <ScrollView horizontal={true} pagingEnabled={true} showsHorizontalScrollIndicator={true} onMomentumScrollEnd={()=>{}}>
+        <ScrollView horizontal={true} pagingEnabled={true} showsHorizontalScrollIndicator={true}  >
 
-          
-          <View style={{flex:1,width:screenWidth}}   backgroundColor="#456">
+          <View style={{flex:1,width:screenWidth}}   backgroundColor="#000">
           
           <View
             style={{
@@ -133,11 +98,11 @@ export default class StreamScreen extends Component {
             }}>
             <Text style={{fontSize: 15, color: '#fff'}}>
               Song:
-              {StreamScreen._name}
+              {this.props.myCurrentSong.title}
             </Text>
             <Text style={{fontSize: 15, color: '#fff'}}>
               Singer:
-              {StreamScreen._song}{' '}
+              {this.props.myCurrentSong.artists_names}{' '}
             </Text>
           </View>
 
@@ -145,7 +110,7 @@ export default class StreamScreen extends Component {
           </View>
 
           <View style={{flex:1,width:screenWidth}}  backgroundColor="#321">
-          <MyLyric linkLyric = {StreamScreen._linkLyric}>  </MyLyric>
+             <MyLyric linkLyric = {this.props.myCurrentSong.lyric}>  </MyLyric>
           </View>
           </ScrollView>
         </View>
@@ -157,6 +122,7 @@ export default class StreamScreen extends Component {
           <MyPlayerBar></MyPlayerBar>
 
           <View style={styles.containerButton}>
+
             <View flex={1}>
               <TouchableOpacity flex={1}>
                 <Image                
@@ -167,7 +133,8 @@ export default class StreamScreen extends Component {
                       : require('../../res/shuffle.png')
                   }></Image>
               </TouchableOpacity>
-              <View flex={1}></View>
+              
+              
             </View>
 
             <View style={{flex: 2.5, flexDirection: 'row'}}>
@@ -205,15 +172,11 @@ export default class StreamScreen extends Component {
   }
 }
 
-export class NameSong extends Component {
-  render() {
-    return (
-      <Text style={{fontSize: 25, color: 'white', paddingTop: 0}}>
-        {this.props.Name_}--{this.props.Song_}{' '}
-      </Text>
-    );
-  }
+
+function mapStateToProps(state) {
+  return { myCurrentSong: state.currentSong };
 }
+export default connect(mapStateToProps, {setSongPlay})(StreamScreen);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
