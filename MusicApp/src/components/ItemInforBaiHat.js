@@ -42,11 +42,14 @@ class ItemInforBaiHat extends Component {
           alignItems: 'center',
           marginTop: 5,
           marginLeft: 5,
-          backgroundColor:"#999"
+          backgroundColor:"#ccc"
         }}>
-        <Text fontSize={20} fontWeight={15}>
-          <Text>    {this.props.stt}</Text>
-        </Text>
+        
+          <View>
+          <Text style={this.props.Stt<10? styles.styleStt0:styles.styleStt1}>{this.props.stt} </Text>
+          </View>
+
+      
 
         <View onPress={() => {}}>
           <Image
@@ -111,7 +114,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     backgroundColor: '#6c5ce7',
     flexDirection: 'row',
-    width: screenWidth * 0.94,
+    width: "100%",
     borderRadius: 3,
   },
   container1: {
@@ -121,7 +124,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#74b9ff',
     flexDirection: 'row',
     borderRadius: 3,
-    width: screenWidth * 0.94,
+    width: "100%",
   },
   inforStyle: {
     
@@ -130,6 +133,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     marginTop: 5,
+    marginLeft:8
   },
   imageStyle: {
     width: 60,
@@ -138,4 +142,15 @@ const styles = StyleSheet.create({
     resizeMode: 'center',
     borderRadius: 3,
   },
+  styleStt0:{
+    paddingLeft:10,
+    marginRight:5,
+   
+    width:25
+  },
+  styleStt1:{
+    paddingLeft:10,
+    marginRight:4,
+    width:35
+  }
 });

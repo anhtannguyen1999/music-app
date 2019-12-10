@@ -138,6 +138,7 @@ class StreamScreen extends Component {
             </View>
 
             <View style={{flex: 2.5, flexDirection: 'row'}}>
+              <Text style={{fontSize:20}}> </Text>
               <TouchableOpacity>
                 <Image
                   resizeMode="center"

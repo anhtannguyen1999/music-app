@@ -8,6 +8,7 @@ import LoginScreen from './screens/Login';
 import StreamScreen from './screens/Stream';
 import SearchScreen from './screens/Search';
 import ProfileScreen from './screens/Profile';
+import LibraryScreen from './screens/Library';
 import SongScreen from './screens/Song';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -33,6 +34,10 @@ const StreamStack = createStackNavigator({
   Stream: StreamScreen,
   // Song: SongScreen,
 });
+const LibraryStack = createStackNavigator({
+  Library: LibraryScreen,
+  // Song: SongScreen,
+});
 const ProfileStack = createStackNavigator({
   Profile: ProfileScreen,
   // Song: SongScreen,
@@ -45,6 +50,7 @@ const Tabs = createBottomTabNavigator(
     Home: HomeStack,
     Search: SearchStack,
     Stream: StreamStack,
+    Library:LibraryStack,
     Profile: ProfileStack,
   },
   {
@@ -61,6 +67,9 @@ const Tabs = createBottomTabNavigator(
             iconName = 'search';
           } else if (routeName === 'Profile') {
             iconName = 'id-card';
+          }
+          else if (routeName === 'Library') {
+            iconName = 'list-alt';
           }
 
           return (
