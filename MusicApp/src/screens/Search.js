@@ -200,7 +200,7 @@ class SearchScreen extends Component {
             <FlatList
               data={this.state.dataSearch}
               extraData={this.state}
-              renderItem={({item}) => (
+              renderItem={({item,index}) => (
                 // _url= 'http://api.mp3.zing.vn/api/streaming/audio/'+item.id+'/128';
                 <TouchableOpacity
                   flex={1}
@@ -231,10 +231,11 @@ class SearchScreen extends Component {
                     this.props.navigation.navigate('Stream');
                   }}>
                   <ItemInforBaiHat
+                    stt={++index}
                     id={item.id}
                     title={item.title}
                     artists_names={item.artists_names}
-                    image={item.thumbnail}
+                    image={item.thumbnail_medium}
                     lyric={item.lyric}
                     duration={item.duration}
                     colorItem={1}
@@ -245,6 +246,7 @@ class SearchScreen extends Component {
             />
           </View>
         </View>
+        <Text> haah</Text>
       </View>
     );
   }
@@ -297,3 +299,5 @@ const styles = StyleSheet.create({
     color: '#000',
   },
 });
+
+

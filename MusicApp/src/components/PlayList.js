@@ -4,13 +4,13 @@ export default class PlayList extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <TouchableOpacity>
+       
           <Image
             loadingIndicatorSource={require('../../res/m_musicicon.png')}
             style={styles.imageStyle}
             source={{uri: this.props.linkImagePlayList}}
             onError={e => {}}></Image>
-         </TouchableOpacity>
+        
     <Text style={{fontSize:8}}> {this.props.title}</Text>
     <Text style={{fontSize:8}}> {this.props.numberSong} bài</Text>
       </View>
@@ -20,6 +20,7 @@ export default class PlayList extends Component {
 
 const styles = StyleSheet.create({
   container: {
+
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -27,7 +28,9 @@ const styles = StyleSheet.create({
     padding:5,
     borderColor:"#000",
     borderWidth:2,
-    borderRadius:5
+    borderRadius:5,
+    width:186,
+    
   },
   containerButton: {
     flex: 1,

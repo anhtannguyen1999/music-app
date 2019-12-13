@@ -1,5 +1,5 @@
 import React, {Component, cloneElement} from 'react';
-import {StyleSheet, View, FlatList, Text, TouchableOpacity,SafeAreaView} from 'react-native';
+import {StyleSheet, View, FlatList, Text,Button, TouchableOpacity,SafeAreaView,AsyncStorage} from 'react-native';
 
 import TrackPlayer from 'react-native-track-player';
 import {Autocomplete, withKeyboardAwareScrollView} from "react-native-dropdown-autocomplete";
@@ -12,6 +12,7 @@ import { setSongPlay  } from '../redux/action';
     super(props);
     this.state = {
       data:[],
+      temp:''
     };
 
   }
@@ -19,39 +20,52 @@ import { setSongPlay  } from '../redux/action';
     header: null,
   };
 
-  _loadGoiYSearch2() {
-
-      fetch(
-        'https://ac.zingmp3.vn/suggestKeyword?num=5&query=Hong'
-      )
-        .then(response => {
-          return response.json();
-        })
-        .then(res => {
-          this.setState({data: res.data});
-        });
-    
+   userId = '8ba790f3-5acd-4a08-bc6a-97a36c124f29';
+ saveUserId = async userId => {
+  try {
+    await AsyncStorage.setItem('userId', 'haha');
+  } catch (error) {
+    // Error retrieving data
+    console.log(error.message);
   }
+};
+
+ getUserId = async () => {
+  let userId = '';
+  try {
+    userId = await AsyncStorage.getItem('userId') || 'none';
+  } catch (error) {
+    // Error retrieving data
+    console.log(error.message);
+  }
+  return userId;
+}
+
+getId()
+{
+ AsyncStorage.getItem('Id').then((value)=>{
+   this.setState({temp:value})
+ });
+
+}
+saveId()
+{
+  AsyncStorage.setItem('Id',"9999999999999")
+}
+
+
+
 
 
   
   componentDidMount() {
-    fetch(
-      'https://ac.zingmp3.vn/suggestKeyword?num=5&query=Hong'
-    )
-      .then(response => {
-        return response.json();
-      })
-      .then(res => {
-        this.setState({data: res.data});
-      });
+    //this.saveUserId('123456')
+    this.saveId();
+
+
   }
  
-  handleSelectItem(item, index) {
-    //const {onDropdownClose} = this.props;
-    //this.props.onDropdownClose();
-    console.log(item);
-  }
+
 
 
   render() {
@@ -79,46 +93,14 @@ import { setSongPlay  } from '../redux/action';
       "Granola",
       "Hash Browns",
     ];
-    var data2=["Hong Nhan", "Hong Nhan Jack", "Hong Nhan Bac Phan Single", "Hong Nhan K-ICM Mix", "Hong Nhan K-ICM Mix Jack  K-ICM"]
-    //console.log(data)
-    //this._loadGoiYSearch2();
-    //console.log(this.state.dataGoiY);
-    var datagoiy2=this.state.data.slice();
-    console.log(this.state.data);
-    const apiUrl = "https://ac.zingmp3.vn/suggestKeyword?num=5&query=Hong";
-
-    const {scrollToInput, onDropdownClose, onDropdownShow} = this.props;
+   console.log(this.state.temp)
 
     return (
       <View style={styles.autocompletesContainer}>
-        <Icon name='flash' size ={30}></Icon>
-        <SafeAreaView>
+        <Button title='Save data' onPress={()=>{}}>
           
-            <Autocomplete
-            width={1000}
-              //onChangeText={()=>this._loadGoiYSearch2()}
-              //console.log(this.state.dataGoiY)
-              data={this.state.data}
-             // waitInterval={400}
-              //key={shortid.generate()}
-              style={styles.input}
-              //scrollToInput={e => scrollToInput(e)}
-              handleSelectItem={(item, id) => this.handleSelectItem(item, id)}
-              //onDropdownClose={() => onDropdownClose()}
-              //onDropdownShow={() => onDropdownShow()}
-             // renderIcon={() => (
-               // <Ionicons name="ios-add-circle-outline" size={20} color="#c7c6c1" style={styles.plus} />
-             // )}
-              //fetchDataUrl={apiUrl}
-              //fetchData={(search)=> this._loadGoiYSearch2()}
-              minimumCharactersCount={0}
-              highlightText
-              valueExtractor={item => item}
-              rightContent
-              rightTextExtractor={item => item}
-            />
-          
-        </SafeAreaView>
+        </Button>
+        
       </View>
     );
   }

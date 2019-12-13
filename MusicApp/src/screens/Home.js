@@ -19,7 +19,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import StreamScreen from '../screens/Stream';
 
 import {connect} from 'react-redux';
-import {setSongPlay} from '../redux/action';
+import {setSongPlay, setPlayListOnline} from '../redux/action';
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -41,6 +41,7 @@ class HomeScreen extends Component {
       data_t: 'lolo',
       indexPageTop100: 0,
       loaiNhacTop100: 'nhacTre',
+      enableScrollViewScroll: true,
     };
   }
   static navigationOptions = {
@@ -82,16 +83,22 @@ class HomeScreen extends Component {
       </TouchableOpacity>
     );
   }
-  _renderPlayList(thumbnail_medium,title,total_song)
-  {
-    return(
-      <PlayList
-      linkImagePlayList={thumbnail_medium}
-      title={title}
-      numberSong={total_song}>
-      {' '}
-    </PlayList>
-    )
+  _renderPlayList(id, thumbnail_medium, title, total_song) {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+            this._loadDataSongInPlayListGoiY(id),
+
+            this.props.navigation.navigate('PlayList',{id:id,thumbnail_medium:thumbnail_medium,title:title, numberSong:total_song});
+        }}>
+        <PlayList
+          linkImagePlayList={thumbnail_medium}
+          title={title}
+          numberSong={total_song}>
+          {' '}
+        </PlayList>
+      </TouchableOpacity>
+    );
   }
 
   componentWillMount() {
@@ -100,12 +107,9 @@ class HomeScreen extends Component {
     this._loadDataTop100_truTinh();
     this._loadDataTop100_cachMang();
     this._loadDataPlayListGoiY();
+
     //this.setState({dataTop100:this.state.dataTop100nhacTre})
     //console.log((this.state.dataTop100.length)))
-  }
-  _coutLog() {
-    //console.log("log___data");
-    //console.log(this.state.dataTop100)
   }
 
   _loadDataTop100_nhacTre() {
@@ -177,6 +181,59 @@ class HomeScreen extends Component {
         });
       });
   }
+  _loadDataSongInPlayListGoiY(id) {
+    var uri =
+      'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU9EUF68&ctime=1576047881&sig=5a96d12bda7da85723b7b894214fff4371d1ea8cac27ffd5cfa5dd4e10964338b9d4b0fd1057bf20b212a7c5388b4f597bb2b4f76c5f89ac5dc059b2b681aa5c&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+
+    switch (id) {
+      case 'ZU9EUF68'://Nhac viet noi bat
+        uri =
+          'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU9EUF68&ctime=1576114288&sig=e40aeec45bf9d262efc23153a4f290db09967fc263dcded9395bb67bcc73fec5e6b88a03fda8a9dd5e9500f6d03dca34365d7d2956c4a5b913df9c8cfd96e07b&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+        break;
+      case 'ZU9EUF76'://K-Pop
+        uri =
+          'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU9EUF76&ctime=1576114380&sig=7b239520eb48c113b2b21aa8708c5f9bbd029303f194fe1ec31ae535d6090258b6fb12a79419b93da4c9d7072b8c7419f875604a19eb7b519c342c02ce43838e&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+        break;
+      case 'ZUA67EDW'://US-UK
+        uri =
+          'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZUA67EDW&ctime=1576114456&sig=c6ee7ef1bd2ca003803f09d13344e5acabe148711b53efc6101c7b62f4d0fb517db85aea55f83497c467427babd1ca0f2290ed550700dd7b4967da005b523c0f&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+        break;
+      case 'ZU9DCU07'://C-Pop noi bat
+        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU9DCU07&ctime=1576114595&sig=bfc888e876c810fbc238df2091063bd1cbde54a56afe6ebf706cc5691340e2ede19bdfa504f60f71a812b179c787c7fd0a0280a7989c4c9661b61b59d6356c4c&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+        break;
+      case 'ZU8IICE0'://Rap Viet
+        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU8IICE0&ctime=1576114639&sig=809b51bcadcccdb167a08966056b68f4eea05fcaea4011aad70243eba42fea476a473f5bcc19c31f86240048e33b42e433cf22772742a7b846ae0a2fd6230e8f&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+        break;
+      case 'ZU8ZUWC9'://Pop balad
+        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU8ZUWC9&ctime=1576114740&sig=28af191e8e651aa6c122b6aec7aaf86aacb1a41b948141c9faea318091a6f4c479bf9962d9b0ead2c12257c76df64680b3c30fcde217960ae6b5b6c227c98b9e&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+        break;
+      case 'ZU6ZEAZD'://Dance Viet
+        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU6ZEAZD&ctime=1576114795&sig=7ce9f0824834903f86b6d21ad0edb8d04459cf361f1f0f73f3551787ca22e308e771839877cd122bbf1a59ee32bf4c079f1950953d173a8c608333b5083803dd&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+        break;
+      case 'ZUAF0ZWO'://Bolero
+        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZUAF0ZWO&ctime=1576114849&sig=2ac69d5a56399799f6fb3854129af1518093226a47ae0e52a1af962dbdfc9136cf878f9d4524c0c927173d658f986f739ea5a958d894b6edb94f90b6a3ff70f9&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+        break;
+      case 'ZU6BW90D'://Nhac viet duoc nghe nhieu nhat
+        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU6BW90D&ctime=1576114897&sig=0c8fef1d9b1a62ea7664e166af6f09977bfc9eda024c52c018b3289896b85d57e8eb4d869661fead5ae07aa2627b6ddf74d293741dad7ffe693d999ad5b6e012&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+        break;
+      case 'ZOUWWOOO'://Giong hat moi noi bat
+        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZOUWWOOO&ctime=1576114944&sig=50f5f9c9fc91b46e0b92fb0e32518f38f96155b74ad11aa331d739d381f8a9b58e44c4d5576d5a2f17179a9c0cc91f39ecbd19e7c33bf5defaa624fc640d1ace&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+        break;
+      case 'ZWZCOBEF'://Nhac viet day hua hen
+        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZWZCOBEF&ctime=1576115001&sig=87a85341a47e787a2afd9613bc27026d315e09688925395f65bedab6329e4a4b2f6116ac11e5ea175cb8158fd3850882210087afc421f1c709c2d94e33d67826&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+        break;
+      case 'ZOUWIWDU'://V-Pop band
+        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZOUWIWDU&ctime=1576115049&sig=bb95e683e36840bbc45310bdc01b136a67fd98ea217bedb362f8969bce8e381cebd63446f68a0b4e2d4e988421a9a10c841ef544ca477fa7d58ac53a9fa981ff&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+        break;
+    }
+    fetch(uri)
+      .then(response => {
+        return response.json();
+      })
+      .then(response => {
+        this.props.setPlayListOnline(id, response.data);
+      });
+  }
 
   render() {
     var DSBaiHatVuaNghe = [
@@ -192,37 +249,42 @@ class HomeScreen extends Component {
         image: 'url',
         colorItem: 1,
       },
+      {
+        ten: 'Co tham khong ve1',
+        casi: 'First Item',
+        image: 'url',
+        colorItem: 0,
+      },
+      {
+        ten: 'Em gi oi1',
+        casi: 'Jack & KICM',
+        image: 'url',
+        colorItem: 1,
+      },
+      {
+        ten: 'Co tham khong ve2',
+        casi: 'First Item',
+        image: 'url',
+        colorItem: 0,
+      },
+      {
+        ten: 'Em gi oi2',
+        casi: 'Jack & KICM',
+        image: 'url',
+        colorItem: 1,
+      },
     ];
 
     return (
-      <View style={(styles.container1, {backgroundColor: '#eee'})}>
-        {/* search bar */}
-
-        {/* <View style={{ paddingTop: 0, marginBottom: 0, width: screenWidth }}>
-          <SearchBar
-            containerStyle={{ backgroundColor: '#fff' }}
-            round
-            backgroundColor
-            lightTheme={true}
-            searchIcon={{ size: 24 }}
-            placeholder="Type Here..."
-            showLoading={false}
-            containerStyle={(style = styles.containerSerchBar)}
-            // onFocus={() => this.props.navigation.navigate('Search')}
-            onFocus={() => this.searchFor(this.state.searchValue)}
-            onChangeText={text => {
-              this.setState({ searchValue: text });
-              var stringSearch = text;
-              //this._loadDataTop100_nhacTre();
-            }}
-            onClear={text => this.setState({ searchValue: '' })}
-            value={this.state.searchValue}
-            onSubmitEditing={text => this.searchFor(this.state.searchValue)}
-          />
-        </View>*/}
-
-        {/* Hien thi cac scroll view chua cac danh sach cac bai hat...*/}
-        <ScrollView horizontal={false} pagingEnabled={false}>
+      <View
+        onStartShouldSetResponderCapture={() => {
+          this.setState({enableScrollViewScroll: true});
+        }}
+        style={{flex: 1}}>
+        <ScrollView
+          scrollEnabled={this.state.enableScrollViewScroll}
+          ref={myScroll => (this._myScroll = myScroll)}
+          style={{flex: 1}}>
           {/* Anh bia */}
           <TouchableOpacity>
             <Image
@@ -243,7 +305,17 @@ class HomeScreen extends Component {
               <Text style={styles.tieuDe}> Bài hát gần đây</Text>
             </View>
 
-            <View style={styles.containerBHTop}>
+            <View
+              style={(styles.containerBHTop, {height: 200})}
+              onStartShouldSetResponderCapture={() => {
+                this.setState({enableScrollViewScroll: false});
+                /*if (
+                  this._myScroll.contentOffset === 0 &&
+                  this.state.enableScrollViewScroll === false
+                ) {
+                  this.setState({enableScrollViewScroll: true});
+                }*/
+              }}>
               <FlatList
                 data={DSBaiHatVuaNghe}
                 renderItem={({item}) => (
@@ -262,7 +334,8 @@ class HomeScreen extends Component {
             </View>
           </View>
 
-          <ScrollView horizontal={false} pagingEnabled={true} on>
+          {/*Top song + playlist   */}
+          <View style={{flex: 1}}>
             {/* Top song */}
             <View style={styles.containerBHTop100}>
               <View style={styles.containerTieuDe}>
@@ -348,19 +421,29 @@ class HomeScreen extends Component {
                 </TouchableOpacity>
               </View>
 
-              <View style={styles.containerBHTop}>
+              <View
+                style={styles.containerBHTop}
+                style={styles.containerBHTop}
+                onStartShouldSetResponderCapture={() => {
+                  this.setState({enableScrollViewScroll: false});
+                  /*if (
+                    this._myScroll.contentOffset === 0 &&
+                    this.state.enableScrollViewScroll === false
+                  ) {
+                    this.setState({enableScrollViewScroll: true});
+                  }*/
+                }}>
                 <FlatList
                   initialNumToRender={10}
                   data={this.state.dataTop100}
                   extraData={this.state}
                   getItemLayout={this.getItemLayout}
                   initialNumToRender={5}
-                  maxToRenderPerBatch={10}
-                  windowSize={10}
+                  maxToRenderPerBatch={6}
+                  windowSize={6}
                   renderItem={({item, index}) =>
                     // _url= 'http://api.mp3.zing.vn/api/streaming/audio/'+item.id+'/128';
-                    this.state.indexPageTop100 + 5 > index &&
-                    index >= this.state.indexPageTop100
+                    this.state.indexPageTop100 + 105 > index && index >= 0 //this.state.indexPageTop100
                       ? this._renderBHTOP(
                           ++index,
                           item.id,
@@ -370,7 +453,7 @@ class HomeScreen extends Component {
                           item.lyric,
                           item.duration,
                         )
-                      : this._coutLog()
+                      : null
                   }
                   keyExtractor={item => item.id}
                 />
@@ -381,44 +464,8 @@ class HomeScreen extends Component {
                   backgroundColor: '#fff',
                   width: '100%',
                   flexDirection: 'row',
-                  marginBottom: 10,
-                }}>
-                <View
-                  style={{
-                    width: '100%',
-                    flexDirection: 'row',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    alignContent: 'center',
-                  }}>
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.state.indexPageTop100 == 0
-                        ? this.setState({indexPageTop100: 95})
-                        : this.setState({
-                            indexPageTop100: this.state.indexPageTop100 - 5,
-                          });
-                    }}>
-                    <Icon name={'arrow-left'} size={30} color={'#012'}></Icon>
-                  </TouchableOpacity>
-
-                  <Text style={{width: 60}}>
-                    {' '}
-                    Page {parseInt(this.state.indexPageTop100 / 5)}
-                  </Text>
-
-                  <TouchableOpacity
-                    onPress={() => {
-                      this.state.indexPageTop100 == 95
-                        ? this.setState({indexPageTop100: 0})
-                        : this.setState({
-                            indexPageTop100: this.state.indexPageTop100 + 5,
-                          });
-                    }}>
-                    <Icon name={'arrow-right'} size={30} color={'#012'}></Icon>
-                  </TouchableOpacity>
-                </View>
-              </View>
+                  marginBottom: 40,
+                }}></View>
             </View>
 
             {/* Play list goi y */}
@@ -427,52 +474,85 @@ class HomeScreen extends Component {
                 <Text style={styles.tieuDe}> PlayList gợi ý: </Text>
               </View>
 
-              <View style={(styles.containerBHTop, {flexDirection: 'row'})}>
-                <FlatList
-                  data={this.state.dataPlayListGoiY}
-                  renderItem={({item,index}) => (
-                      (index%2==0&&index<6)? this._renderPlayList(item.thumbnail_medium,item.title,item.total_song):null
-                  )}
-                  //keyExtractor={item => item.ten}
-                />
+              <ScrollView
+                horizontal={true}
+                pagingEnabled={true}
+                showsHorizontalScrollIndicator={true}
+                colo>
+                <View style={(styles.containerBHTop, {flexDirection: 'row'})}>
+                  <FlatList
+                    data={this.state.dataPlayListGoiY}
+                    renderItem={({item, index}) =>
+                      index % 2 == 0 && index < 6
+                        ? this._renderPlayList(
+                            item.id,
+                            item.thumbnail_medium,
+                            item.title,
+                            item.total_song,
+                          )
+                        : null
+                    }
+                    //keyExtractor={item => item.ten}
+                  />
 
-                <FlatList
-                  data={this.state.dataPlayListGoiY}
-                  renderItem={({item,index}) => (
-                    (index%2==1&&index<6)? this._renderPlayList(item.thumbnail_medium,item.title,item.total_song):null
-                  )}
-                  //keyExtractor={item => item.ten}
-                />
-              </View>
+                  <FlatList
+                    data={this.state.dataPlayListGoiY}
+                    renderItem={({item, index}) =>
+                      index % 2 == 1 && index < 6
+                        ? this._renderPlayList(
+                            item.id,
+                            item.thumbnail_medium,
+                            item.title,
+                            item.total_song,
+                          )
+                        : null
+                    }
+                    //keyExtractor={item => item.ten}
+                  />
+                </View>
+
+                <View style={(styles.container, {flexDirection: 'row'})}>
+                  <FlatList
+                    data={this.state.dataPlayListGoiY}
+                    renderItem={({item, index}) =>
+                      index % 2 == 0 && index >= 6 && index < 12
+                        ? this._renderPlayList(
+                            item.id,
+                            item.thumbnail_medium,
+                            item.title,
+                            item.total_song,
+                          )
+                        : null
+                    }
+                    //keyExtractor={item => item.ten}
+                  />
+
+                  <FlatList
+                    data={this.state.dataPlayListGoiY}
+                    renderItem={({item, index}) =>
+                      index % 2 == 1 && index >= 6 && index < 12
+                        ? this._renderPlayList(
+                            item.id,
+                            item.thumbnail_medium,
+                            item.title,
+                            item.total_song,
+                          )
+                        : null
+                    }
+                    //keyExtractor={item => item.ten}
+                  />
+                </View>
+              </ScrollView>
+              <Text> {'<< '}Slide to load more >></Text>
             </View>
-          </ScrollView>
+          </View>
 
           {/* Local music */}
-          <View style={styles.container}>
-            <Text style={styles.tieuDe}> Local</Text>
-            <View style={{flexDirection: 'row', width: '100%'}}>
-              <FlatList
-                data={this.state.DSBaiHatTopGoiY}
-                renderItem={({item}) => (
-                  <Text>
-                    {' '}
-                    {item.title} {item.artists.name}
-                  </Text>
-                )}
-                keyExtractor={item => item.title}
-              />
-
-              <FlatList
-                data={this.state.DSBaiHatTopGoiY}
-                renderItem={({item}) => (
-                  <Text>
-                    {' '}
-                    {item.title} {item.artists.name}
-                  </Text>
-                )}
-                keyExtractor={item => item.title}
-              />
-            </View>
+          <View style={styles.container,{backgroundColor:'#eee'}}>
+            <TouchableOpacity onPress={()=>this.props.navigation.navigate('Library')}>
+            <Text style={styles.tieuDe}> {'Tới PlayList & Thư viện của bạn'}</Text>
+            </TouchableOpacity>
+                 
           </View>
         </ScrollView>
       </View>
@@ -492,10 +572,12 @@ class HomeScreen extends Component {
 }
 
 function mapStateToProps(state) {
-  return {myCurrentSong: state.currentSong};
+  return {myCurrentPlayListOnline: state.currentPlayListOnline};
 }
 
-export default connect(null, {setSongPlay})(HomeScreen);
+export default connect(mapStateToProps, {setSongPlay, setPlayListOnline})(
+  HomeScreen
+);
 
 const styles = StyleSheet.create({
   container1: {

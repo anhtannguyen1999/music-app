@@ -8,6 +8,7 @@ import LoginScreen from './screens/Login';
 import StreamScreen from './screens/Stream';
 import SearchScreen from './screens/Search';
 import ProfileScreen from './screens/Profile';
+import SongPlaylistScreen from './screens/SongPlayList'
 import LibraryScreen from './screens/Library';
 import SongScreen from './screens/Song';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -20,9 +21,10 @@ import {Provider} from 'react-redux';
 const HomeStack = createStackNavigator(
   {
     Home: HomeScreen,
+    PlayList:SongPlaylistScreen
   },
   {
-    headerMode: 'non',
+    //headerMode: 'non',
   },
 );
 const SearchStack = createStackNavigator({
