@@ -12,14 +12,20 @@ import {
 import {Dimensions} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import ItemInforBaiHat from '../components/ItemInforBaiHat';
+import DanhSachBaiHat from '../components/DanhSachBaiHat';
 import PlayList from '../components/PlayList';
 import Player, {MyPlayerBar} from '../player/Player';
 const screenWidth = Math.round(Dimensions.get('window').width);
 import Icon from 'react-native-vector-icons/FontAwesome';
 import StreamScreen from '../screens/Stream';
+import RNFetchBlob from 'rn-fetch-blob';
 
 import {connect} from 'react-redux';
-import {setSongPlay, setPlayListOnline} from '../redux/action';
+import {
+  setSongPlay,
+  setPlayListOnline,
+  setDataAllPlayList,
+} from '../redux/action';
 
 class HomeScreen extends Component {
   constructor(props) {
@@ -87,9 +93,13 @@ class HomeScreen extends Component {
     return (
       <TouchableOpacity
         onPress={() => {
-            this._loadDataSongInPlayListGoiY(id),
-
-            this.props.navigation.navigate('PlayList',{id:id,thumbnail_medium:thumbnail_medium,title:title, numberSong:total_song});
+          this._loadDataSongInPlayListGoiY(id);
+          this.props.navigation.navigate('ChiTiet_PlayListOnline', {
+            id: id,
+            thumbnail_medium: thumbnail_medium,
+            title: title,
+            numberSong: total_song,
+          });
         }}>
         <PlayList
           linkImagePlayList={thumbnail_medium}
@@ -107,6 +117,8 @@ class HomeScreen extends Component {
     this._loadDataTop100_truTinh();
     this._loadDataTop100_cachMang();
     this._loadDataPlayListGoiY();
+    this._loadDataSongInPlayListGoiY('');
+    this._loadLocalAllPlayList();
 
     //this.setState({dataTop100:this.state.dataTop100nhacTre})
     //console.log((this.state.dataTop100.length)))
@@ -186,44 +198,53 @@ class HomeScreen extends Component {
       'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU9EUF68&ctime=1576047881&sig=5a96d12bda7da85723b7b894214fff4371d1ea8cac27ffd5cfa5dd4e10964338b9d4b0fd1057bf20b212a7c5388b4f597bb2b4f76c5f89ac5dc059b2b681aa5c&api_key=38e8643fb0dc04e8d65b99994d3dafff';
 
     switch (id) {
-      case 'ZU9EUF68'://Nhac viet noi bat
+      case 'ZU9EUF68': //Nhac viet noi bat
         uri =
           'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU9EUF68&ctime=1576114288&sig=e40aeec45bf9d262efc23153a4f290db09967fc263dcded9395bb67bcc73fec5e6b88a03fda8a9dd5e9500f6d03dca34365d7d2956c4a5b913df9c8cfd96e07b&api_key=38e8643fb0dc04e8d65b99994d3dafff';
         break;
-      case 'ZU9EUF76'://K-Pop
+      case 'ZU9EUF76': //K-Pop
         uri =
           'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU9EUF76&ctime=1576114380&sig=7b239520eb48c113b2b21aa8708c5f9bbd029303f194fe1ec31ae535d6090258b6fb12a79419b93da4c9d7072b8c7419f875604a19eb7b519c342c02ce43838e&api_key=38e8643fb0dc04e8d65b99994d3dafff';
         break;
-      case 'ZUA67EDW'://US-UK
+      case 'ZUA67EDW': //US-UK
         uri =
           'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZUA67EDW&ctime=1576114456&sig=c6ee7ef1bd2ca003803f09d13344e5acabe148711b53efc6101c7b62f4d0fb517db85aea55f83497c467427babd1ca0f2290ed550700dd7b4967da005b523c0f&api_key=38e8643fb0dc04e8d65b99994d3dafff';
         break;
-      case 'ZU9DCU07'://C-Pop noi bat
-        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU9DCU07&ctime=1576114595&sig=bfc888e876c810fbc238df2091063bd1cbde54a56afe6ebf706cc5691340e2ede19bdfa504f60f71a812b179c787c7fd0a0280a7989c4c9661b61b59d6356c4c&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+      case 'ZU9DCU07': //C-Pop noi bat
+        uri =
+          'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU9DCU07&ctime=1576114595&sig=bfc888e876c810fbc238df2091063bd1cbde54a56afe6ebf706cc5691340e2ede19bdfa504f60f71a812b179c787c7fd0a0280a7989c4c9661b61b59d6356c4c&api_key=38e8643fb0dc04e8d65b99994d3dafff';
         break;
-      case 'ZU8IICE0'://Rap Viet
-        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU8IICE0&ctime=1576114639&sig=809b51bcadcccdb167a08966056b68f4eea05fcaea4011aad70243eba42fea476a473f5bcc19c31f86240048e33b42e433cf22772742a7b846ae0a2fd6230e8f&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+      case 'ZU8IICE0': //Rap Viet
+        uri =
+          'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU8IICE0&ctime=1576114639&sig=809b51bcadcccdb167a08966056b68f4eea05fcaea4011aad70243eba42fea476a473f5bcc19c31f86240048e33b42e433cf22772742a7b846ae0a2fd6230e8f&api_key=38e8643fb0dc04e8d65b99994d3dafff';
         break;
-      case 'ZU8ZUWC9'://Pop balad
-        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU8ZUWC9&ctime=1576114740&sig=28af191e8e651aa6c122b6aec7aaf86aacb1a41b948141c9faea318091a6f4c479bf9962d9b0ead2c12257c76df64680b3c30fcde217960ae6b5b6c227c98b9e&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+      case 'ZU8ZUWC9': //Pop balad
+        uri =
+          'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU8ZUWC9&ctime=1576114740&sig=28af191e8e651aa6c122b6aec7aaf86aacb1a41b948141c9faea318091a6f4c479bf9962d9b0ead2c12257c76df64680b3c30fcde217960ae6b5b6c227c98b9e&api_key=38e8643fb0dc04e8d65b99994d3dafff';
         break;
-      case 'ZU6ZEAZD'://Dance Viet
-        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU6ZEAZD&ctime=1576114795&sig=7ce9f0824834903f86b6d21ad0edb8d04459cf361f1f0f73f3551787ca22e308e771839877cd122bbf1a59ee32bf4c079f1950953d173a8c608333b5083803dd&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+      case 'ZU6ZEAZD': //Dance Viet
+        uri =
+          'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU6ZEAZD&ctime=1576114795&sig=7ce9f0824834903f86b6d21ad0edb8d04459cf361f1f0f73f3551787ca22e308e771839877cd122bbf1a59ee32bf4c079f1950953d173a8c608333b5083803dd&api_key=38e8643fb0dc04e8d65b99994d3dafff';
         break;
-      case 'ZUAF0ZWO'://Bolero
-        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZUAF0ZWO&ctime=1576114849&sig=2ac69d5a56399799f6fb3854129af1518093226a47ae0e52a1af962dbdfc9136cf878f9d4524c0c927173d658f986f739ea5a958d894b6edb94f90b6a3ff70f9&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+      case 'ZUAF0ZWO': //Bolero
+        uri =
+          'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZUAF0ZWO&ctime=1576114849&sig=2ac69d5a56399799f6fb3854129af1518093226a47ae0e52a1af962dbdfc9136cf878f9d4524c0c927173d658f986f739ea5a958d894b6edb94f90b6a3ff70f9&api_key=38e8643fb0dc04e8d65b99994d3dafff';
         break;
-      case 'ZU6BW90D'://Nhac viet duoc nghe nhieu nhat
-        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU6BW90D&ctime=1576114897&sig=0c8fef1d9b1a62ea7664e166af6f09977bfc9eda024c52c018b3289896b85d57e8eb4d869661fead5ae07aa2627b6ddf74d293741dad7ffe693d999ad5b6e012&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+      case 'ZU6BW90D': //Nhac viet duoc nghe nhieu nhat
+        uri =
+          'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZU6BW90D&ctime=1576114897&sig=0c8fef1d9b1a62ea7664e166af6f09977bfc9eda024c52c018b3289896b85d57e8eb4d869661fead5ae07aa2627b6ddf74d293741dad7ffe693d999ad5b6e012&api_key=38e8643fb0dc04e8d65b99994d3dafff';
         break;
-      case 'ZOUWWOOO'://Giong hat moi noi bat
-        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZOUWWOOO&ctime=1576114944&sig=50f5f9c9fc91b46e0b92fb0e32518f38f96155b74ad11aa331d739d381f8a9b58e44c4d5576d5a2f17179a9c0cc91f39ecbd19e7c33bf5defaa624fc640d1ace&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+      case 'ZOUWWOOO': //Giong hat moi noi bat
+        uri =
+          'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZOUWWOOO&ctime=1576114944&sig=50f5f9c9fc91b46e0b92fb0e32518f38f96155b74ad11aa331d739d381f8a9b58e44c4d5576d5a2f17179a9c0cc91f39ecbd19e7c33bf5defaa624fc640d1ace&api_key=38e8643fb0dc04e8d65b99994d3dafff';
         break;
-      case 'ZWZCOBEF'://Nhac viet day hua hen
-        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZWZCOBEF&ctime=1576115001&sig=87a85341a47e787a2afd9613bc27026d315e09688925395f65bedab6329e4a4b2f6116ac11e5ea175cb8158fd3850882210087afc421f1c709c2d94e33d67826&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+      case 'ZWZCOBEF': //Nhac viet day hua hen
+        uri =
+          'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZWZCOBEF&ctime=1576115001&sig=87a85341a47e787a2afd9613bc27026d315e09688925395f65bedab6329e4a4b2f6116ac11e5ea175cb8158fd3850882210087afc421f1c709c2d94e33d67826&api_key=38e8643fb0dc04e8d65b99994d3dafff';
         break;
-      case 'ZOUWIWDU'://V-Pop band
-        uri = 'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZOUWIWDU&ctime=1576115049&sig=bb95e683e36840bbc45310bdc01b136a67fd98ea217bedb362f8969bce8e381cebd63446f68a0b4e2d4e988421a9a10c841ef544ca477fa7d58ac53a9fa981ff&api_key=38e8643fb0dc04e8d65b99994d3dafff';
+      case 'ZOUWIWDU': //V-Pop band
+        uri =
+          'https://zingmp3.vn/api/playlist/get-playlist-detail?id=ZOUWIWDU&ctime=1576115049&sig=bb95e683e36840bbc45310bdc01b136a67fd98ea217bedb362f8969bce8e381cebd63446f68a0b4e2d4e988421a9a10c841ef544ca477fa7d58ac53a9fa981ff&api_key=38e8643fb0dc04e8d65b99994d3dafff';
         break;
     }
     fetch(uri)
@@ -233,6 +254,18 @@ class HomeScreen extends Component {
       .then(response => {
         this.props.setPlayListOnline(id, response.data);
       });
+  }
+
+  _loadLocalAllPlayList() {
+    const dirs = RNFetchBlob.fs.dirs;
+    const fs = RNFetchBlob.fs;
+    var PATH = dirs.SDCardDir + '/DataLocal/PlayList_Local/PlayListManager.js';
+    //var PATH=dirs.SDCardDir+'/DataLocal/PlayList_Local/qq.js'
+    RNFetchBlob.fs.readFile(PATH, 'utf8').then(data => {
+      this.props.setDataAllPlayList(JSON.parse(data));
+      
+      console.log(this.props.dataAllPlaylist.list[0].title)
+    });
   }
 
   render() {
@@ -282,6 +315,7 @@ class HomeScreen extends Component {
         }}
         style={{flex: 1}}>
         <ScrollView
+          pagingEnabled={false}
           scrollEnabled={this.state.enableScrollViewScroll}
           ref={myScroll => (this._myScroll = myScroll)}
           style={{flex: 1}}>
@@ -316,21 +350,8 @@ class HomeScreen extends Component {
                   this.setState({enableScrollViewScroll: true});
                 }*/
               }}>
-              <FlatList
-                data={DSBaiHatVuaNghe}
-                renderItem={({item}) => (
-                  // <ScrollView horizontal={true} pagingEnabled={true}>
-
-                  <ItemInforBaiHat
-                    ten={item.ten}
-                    casi={item.casi}
-                    image={item.image}
-                    colorItem={item.colorItem}
-                  />
-                )}
-                // </ScrollView>}
-                keyExtractor={item => item.ten}
-              />
+              <DanhSachBaiHat
+                dataDanhSachBaiHat={DSBaiHatVuaNghe}></DanhSachBaiHat>
             </View>
           </View>
 
@@ -424,39 +445,11 @@ class HomeScreen extends Component {
               <View
                 style={styles.containerBHTop}
                 style={styles.containerBHTop}
-                onStartShouldSetResponderCapture={() => {
+                onMoveShouldSetResponderCapture={() => {
                   this.setState({enableScrollViewScroll: false});
-                  /*if (
-                    this._myScroll.contentOffset === 0 &&
-                    this.state.enableScrollViewScroll === false
-                  ) {
-                    this.setState({enableScrollViewScroll: true});
-                  }*/
                 }}>
-                <FlatList
-                  initialNumToRender={10}
-                  data={this.state.dataTop100}
-                  extraData={this.state}
-                  getItemLayout={this.getItemLayout}
-                  initialNumToRender={5}
-                  maxToRenderPerBatch={6}
-                  windowSize={6}
-                  renderItem={({item, index}) =>
-                    // _url= 'http://api.mp3.zing.vn/api/streaming/audio/'+item.id+'/128';
-                    this.state.indexPageTop100 + 105 > index && index >= 0 //this.state.indexPageTop100
-                      ? this._renderBHTOP(
-                          ++index,
-                          item.id,
-                          item.title,
-                          item.artists_names,
-                          item.thumbnail_medium,
-                          item.lyric,
-                          item.duration,
-                        )
-                      : null
-                  }
-                  keyExtractor={item => item.id}
-                />
+                <DanhSachBaiHat
+                  dataDanhSachBaiHat={this.state.dataTop100}></DanhSachBaiHat>
               </View>
               {/*button next page*/}
               <View
@@ -548,11 +541,14 @@ class HomeScreen extends Component {
           </View>
 
           {/* Local music */}
-          <View style={styles.container,{backgroundColor:'#eee'}}>
-            <TouchableOpacity onPress={()=>this.props.navigation.navigate('Library')}>
-            <Text style={styles.tieuDe}> {'Tới PlayList & Thư viện của bạn'}</Text>
+          <View style={(styles.container, {backgroundColor: '#eee'})}>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('Library')}>
+              <Text style={styles.tieuDe}>
+                {' '}
+                {'Tới PlayList & Thư viện của bạn'}
+              </Text>
             </TouchableOpacity>
-                 
           </View>
         </ScrollView>
       </View>
@@ -572,12 +568,14 @@ class HomeScreen extends Component {
 }
 
 function mapStateToProps(state) {
-  return {myCurrentPlayListOnline: state.currentPlayListOnline};
+  return {myCurrentPlayListOnline: state.currentPlayListOnline,dataAllPlaylist:state.dataAllPlaylist};
 }
 
-export default connect(mapStateToProps, {setSongPlay, setPlayListOnline})(
-  HomeScreen
-);
+export default connect(mapStateToProps, {
+  setSongPlay,
+  setPlayListOnline,
+  setDataAllPlayList,
+})(HomeScreen);
 
 const styles = StyleSheet.create({
   container1: {
@@ -599,7 +597,7 @@ const styles = StyleSheet.create({
   containerBHTop: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     backgroundColor: '#fff',
     margin: 10,
     borderRadius: 10,

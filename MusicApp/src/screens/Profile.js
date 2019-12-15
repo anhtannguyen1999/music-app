@@ -3,8 +3,10 @@ import {StyleSheet, View, FlatList, Text,Button, TouchableOpacity,SafeAreaView,A
 
 import TrackPlayer from 'react-native-track-player';
 import {Autocomplete, withKeyboardAwareScrollView} from "react-native-dropdown-autocomplete";
-import Icon from 'react-native-vector-icons/FontAwesome';
 
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import RNFetchBlob from 'rn-fetch-blob'
+import Modal from "react-native-modal";
 import { connect } from 'react-redux';
 import { setSongPlay  } from '../redux/action';
  class ProfileScreen extends TrackPlayer.ProgressComponent {
@@ -12,57 +14,17 @@ import { setSongPlay  } from '../redux/action';
     super(props);
     this.state = {
       data:[],
-      temp:''
+      temp:'',
+      up:false
     };
 
   }
   static navigationOptions = {
     header: null,
   };
-
-   userId = '8ba790f3-5acd-4a08-bc6a-97a36c124f29';
- saveUserId = async userId => {
-  try {
-    await AsyncStorage.setItem('userId', 'haha');
-  } catch (error) {
-    // Error retrieving data
-    console.log(error.message);
-  }
-};
-
- getUserId = async () => {
-  let userId = '';
-  try {
-    userId = await AsyncStorage.getItem('userId') || 'none';
-  } catch (error) {
-    // Error retrieving data
-    console.log(error.message);
-  }
-  return userId;
-}
-
-getId()
-{
- AsyncStorage.getItem('Id').then((value)=>{
-   this.setState({temp:value})
- });
-
-}
-saveId()
-{
-  AsyncStorage.setItem('Id',"9999999999999")
-}
-
-
-
-
-
   
   componentDidMount() {
-    //this.saveUserId('123456')
-    this.saveId();
-
-
+  
   }
  
 
@@ -97,9 +59,13 @@ saveId()
 
     return (
       <View style={styles.autocompletesContainer}>
-        <Button title='Save data' onPress={()=>{}}>
-          
+        <Button title='Up' onPress={()=>{this.setState({up:true})}}>        
         </Button>
+        <Modal isVisible={this.state.up} >
+          <View style={{ backgroundColor:'#aaa' ,height:300}}>
+            <Button title={'down'}  onPress={()=>{this.setState({up:false})}}></Button>
+          </View>
+        </Modal>
         
       </View>
     );

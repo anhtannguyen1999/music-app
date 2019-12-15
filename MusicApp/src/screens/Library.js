@@ -1,188 +1,379 @@
 import React, {Component, cloneElement} from 'react';
-import {StyleSheet, View, FlatList, Text, TouchableOpacity,SafeAreaView} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  TextInput,
+  Button,
+} from 'react-native';
+import {test} from './test';
 
 import TrackPlayer from 'react-native-track-player';
-import {Autocomplete, withKeyboardAwareScrollView} from "react-native-dropdown-autocomplete";
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import PlayList from '../components/PlayList';
+import ItemInforBaiHat from '../components/ItemInforBaiHat';
+import RNFetchBlob from 'rn-fetch-blob';
 
-import { connect } from 'react-redux';
-import { setSongPlay  } from '../redux/action';
- class LibraryScreen extends Component {
+import {connect} from 'react-redux';
+import {
+  setSongPlay,
+  setPlayListOnline,
+  setPlayListOffline,
+  setDataAllPlayList
+} from '../redux/action';
+import DanhSachBaiHat from '../components/DanhSachBaiHat';
+import { ScrollView } from 'react-native-gesture-handler';
+class LibraryScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      data:[],
+      data: [],
+      dataPlayList: [],
+      isRenderAdd: false,
+      namePlayListAdd:''
     };
-
   }
   static navigationOptions = {
     header: null,
   };
 
-  _loadGoiYSearch2() {
+  _renderPlayList(id, thumbnail_medium, title, total_song) {
+    return (
+      <TouchableOpacity
+        onPress={() => {
+          this._loadDataSongInPlayListOffline(id);
 
-      fetch(
-        'https://ac.zingmp3.vn/suggestKeyword?num=5&query=Hong'
-      )
-        .then(response => {
-          return response.json();
-        })
-        .then(res => {
-          this.setState({data: res.data});
-        });
-    
+          this.props.navigation.navigate('ChiTiet_PlayListOffline', {
+            id: id,
+            thumbnail_medium: thumbnail_medium,
+            title: title,
+            numberSong: total_song,
+          });
+        }}>
+        <PlayList
+          linkImagePlayList={thumbnail_medium}
+          title={title}
+          numberSong={total_song}>
+          {' '}
+        </PlayList>
+      </TouchableOpacity>
+    );
+  }
+  componentDidMount() {
+    this._loadLocalPlayList();
+    //this._addPlayList();
+    //this._loadDataSongInPlayListOffline(0);
+  }
+  _renderAddPlayList() {
+    return (
+      <View
+        style={{
+          width: '100%',
+          margin: 0,
+          justifyContent: 'center',
+          borderWidth: 2,
+          borderColor: '#000',
+        }}>
+        <View style={{padding: 20}}>
+          <Text> Tên Playlist bạn muốn tạo:</Text>
+          <TextInput
+            style={{
+              backgroundColor: '#eee',
+              margin: 10,
+              width: '90%',
+              borderRadius: 10,
+            }} onChangeText={(text)=>this.setState({namePlayListAdd:text})}></TextInput>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'flex-end',
+              justifyContent: 'flex-end',
+              marginRight: 25,
+            }}>
+            <Button title={'Tạo'} onPress={()=>{this._addPlayList(),this.setState({isRenderAdd:false})}}></Button>
+            <Text> </Text>
+            <Button
+              title={'Hủy'}
+              onPress={() => {
+                this.setState({isRenderAdd: false});
+              }}></Button>
+          </View>
+        </View>
+      </View>
+    );
   }
 
+  _loadLocalPlayList() {
+    const dirs = RNFetchBlob.fs.dirs;
+    const fs = RNFetchBlob.fs;
+    var PATH = dirs.SDCardDir + '/DataLocal/PlayList_Local/PlayListManager.js';
+    //var PATH=dirs.SDCardDir+'/DataLocal/PlayList_Local/qq.js'
+    RNFetchBlob.fs
+      .readFile(PATH, 'utf8')
 
-  
-  componentDidMount() {
-    fetch(
-      'https://ac.zingmp3.vn/suggestKeyword?num=5&query=Hong'
-    )
-      .then(response => {
-        return response.json();
-      })
-      .then(res => {
-        this.setState({data: res.data});
+      .then(data => {
+        this.setState({dataPlayList: JSON.parse(data)});
+        this.props.setDataAllPlayList(JSON.parse(data));
+        
+        //console.log(this.state.dataPlayList.list[0].song.items)
       });
   }
- 
-  handleSelectItem(item, index) {
-    //const {onDropdownClose} = this.props;
-    //this.props.onDropdownClose();
-    console.log(item);
+
+  _loadDataSongInPlayListOffline(id) {
+    this.props.setPlayListOffline(
+      id,
+      this.state.dataPlayList.list[parseInt(id)].song.items,
+    );
+    //console.log(LibraryScreen.dataTest[0].song.items)
+    //console.log(this.props.myPlayList.dataSong)
   }
 
+  _addPlayList()
+  {
+    if(this.state.namePlayListAdd=='')
+      return;
+    var PATH =RNFetchBlob.fs.dirs.SDCardDir +'/DataLocal/PlayList_Local/PlayListManager.js';
+    var temp=this.state.dataPlayList;
+    var lastIndex =temp.total_list;
+
+    
+    var obj ={"id":lastIndex.toString(),"title":this.state.namePlayListAdd,"thumbnail_medium":"http://icons.iconarchive.com/icons/elegantthemes/beautiful-flat-one-color/128/music-icon.png","total_song":0,"song":{"items":[]}}
+    temp.list.push(obj);
+    temp.total_list++;
+    RNFetchBlob.fs.writeFile(PATH,JSON.stringify(temp)).then(()=>this._loadLocalPlayList())
+    
+    //console.log(temp)
+
+    this.setState({dataPlayList:temp})
+  }
+  static dataTest = {
+    total_list: 2,
+    list: [
+      {
+        id: '0',
+        title: 'PlayList Test 0',
+        thumbnail_medium:
+          'http://icons.iconarchive.com/icons/elegantthemes/beautiful-flat-one-color/128/music-icon.png',
+        total_song: 2,
+        song: {
+          items: [
+            {
+              id: 'ZWAFE897',
+              title: 'Bánh Mì Không',
+              artists_names: 'Đạt G, DuUyen',
+              thumbnail_medium:
+                'https://photo-resize-zmp3.zadn.vn/w240_r1x1_jpeg/cover/2/9/0/6/2906681d4b764cd4677342b66813f25d.jpg',
+              lyric:
+                'https://static-zmp3.zadn.vn/lyrics/6/f/9/7/6f97fc3d7c394df24915e878b913d7bb.lrc',
+              duration: 245,
+            },
+            {
+              id: 'ZWAFE89B',
+              title: 'Em Một Mình Quen Rồi',
+              artists_names: 'Dương Hoàng Yến',
+              thumbnail_medium:
+                'https://photo-resize-zmp3.zadn.vn/w240_r1x1_jpeg/cover/7/b/e/9/7be9788129f81d9c3d685969db8ab70a.jpg',
+              lyric:
+                'https://static-zmp3.zadn.vn/lyrics/1/d/9/5/1d959ad872a0842198836792214b3bd5.lrc',
+              duration: 358,
+            },
+          ],
+        },
+      },
+
+      {
+        id: '1',
+        title: 'PlayList Test 1',
+        thumbnail_medium:
+          'http://icons.iconarchive.com/icons/elegantthemes/beautiful-flat-one-color/128/music-icon.png',
+        total_song: 2,
+        song: {
+          items: [
+            {
+              id: 'ZWAFEWOU',
+              title: 'Sao Chẳng Phải Là Anh',
+              artists_names: 'Chi Dân',
+              thumbnail_medium:
+                'https://photo-resize-zmp3.zadn.vn/w240_r1x1_jpeg/cover/9/9/9/e/999e7aa9d6d42e60d3b2f28072a0c968.jpg',
+              lyric:
+                'https://static-zmp3.zadn.vn/lyrics/6/f/9/7/6f97fc3d7c394df24915e878b913d7bb.lrc',
+              duration: 245,
+            },
+            {
+              id: 'ZWAFE89B',
+              title: 'Em Một Mình Quen Rồi',
+              artists_names: 'Dương Hoàng Yến',
+              thumbnail_medium:
+                'https://photo-resize-zmp3.zadn.vn/w240_r1x1_jpeg/cover/7/b/e/9/7be9788129f81d9c3d685969db8ab70a.jpg',
+              lyric:
+                'https://static-zmp3.zadn.vn/lyrics/d/5/0/1/d50129746dcdf86ef326a7070cbd55b8.lrc',
+              duration: 310,
+            },
+          ],
+        },
+      },
+    ],
+  };
 
   render() {
-    var tt=[
-      {
-        id:1,
-        value:"111"
-      },
-      {
-        id:2,
-        value:"222"
-      },
-      {
-        id:3,
-        value:"333"
-      }
-    ]
-    const data = [
-      "Apples",
-      "Broccoli",
-      "Chicken",
-      "Duck",
-      "Eggs",
-      "Fish",
-      "Granola",
-      "Hash Browns",
-    ];
-    var data2=["Hong Nhan", "Hong Nhan Jack", "Hong Nhan Bac Phan Single", "Hong Nhan K-ICM Mix", "Hong Nhan K-ICM Mix Jack  K-ICM"]
-    //console.log(data)
-    //this._loadGoiYSearch2();
-    //console.log(this.state.dataGoiY);
-    var datagoiy2=this.state.data.slice();
-    console.log(this.state.data);
-    const apiUrl = "https://ac.zingmp3.vn/suggestKeyword?num=5&query=Hong";
-
-    const {scrollToInput, onDropdownClose, onDropdownShow} = this.props;
 
     return (
-      <View style={styles.autocompletesContainer}>
-        <Icon name='flash' size ={30}></Icon>
-        <SafeAreaView>
-          
-            <Autocomplete
-            width={1000}
-              //onChangeText={()=>this._loadGoiYSearch2()}
-              //console.log(this.state.dataGoiY)
-              data={this.state.data}
-             // waitInterval={400}
-              //key={shortid.generate()}
-              style={styles.input}
-              //scrollToInput={e => scrollToInput(e)}
-              handleSelectItem={(item, id) => this.handleSelectItem(item, id)}
-              //onDropdownClose={() => onDropdownClose()}
-              //onDropdownShow={() => onDropdownShow()}
-             // renderIcon={() => (
-               // <Ionicons name="ios-add-circle-outline" size={20} color="#c7c6c1" style={styles.plus} />
-             // )}
-              //fetchDataUrl={apiUrl}
-              //fetchData={(search)=> this._loadGoiYSearch2()}
-              minimumCharactersCount={0}
-              highlightText
-              valueExtractor={item => item}
-              rightContent
-              rightTextExtractor={item => item}
-            />
-          
-        </SafeAreaView>
-      </View>
+      <ScrollView>
+           <View style={styles.container}>
+        <View style={styles.containerTieuDe}>
+          <Text style={styles.tieuDe}> PlayList của bạn : </Text>
+          <TouchableOpacity
+            onPress={() => {
+              this.setState({isRenderAdd: !this.state.isRenderAdd});
+            }}>
+            <View style={this.state.isRenderAdd ? styles.con1 : styles.con2}>
+              <Text style={{fontSize: 18}}> Add Playlist</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
+        {this.state.isRenderAdd ? this._renderAddPlayList() : null}
+        <View style={(styles.container, {flexDirection: 'row'})}>
+          <FlatList
+            data={this.props.dataAllPlaylist.list}
+            renderItem={({item, index}) =>
+              index % 2 == 0 
+                ? this._renderPlayList(
+                    item.id,
+                    item.thumbnail_medium,
+                    item.title,
+                    item.total_song,
+                  )
+                : null
+            }
+            //keyExtractor={item => item.ten}
+          />
+
+          <FlatList
+            data={this.props.dataAllPlaylist.list}
+            renderItem={({item, index}) =>
+              index % 2 == 1 
+                ? this._renderPlayList(
+                    item.id,
+                    item.thumbnail_medium,
+                    item.title,
+                    item.total_song,
+                  )
+                : null
+            }
+            //keyExtractor={item => item.ten}
+          />
+        </View>
+
+       {/* <View style={(styles.container, {flexDirection: 'row'})}>
+          <FlatList
+            data={this.state.dataPlayList.list}
+            renderItem={({item, index}) =>
+              index % 2 == 0 && index >= 6 && index < 12
+                ? this._renderPlayList(
+                    item.id,
+                    item.thumbnail_medium,
+                    item.title,
+                    item.total_song,
+                  )
+                : null
+            }
+            //keyExtractor={item => item.ten}
+          />
+
+          <FlatList
+            data={this.state.dataPlayList.list}
+            renderItem={({item, index}) =>
+              index % 2 == 1 && index >= 6 && index < 12
+                ? this._renderPlayList(
+                    item.id,
+                    item.thumbnail_medium,
+                    item.title,
+                    item.total_song,
+                  )
+                : null
+            }
+            //keyExtractor={item => item.ten}
+          />
+        </View>
+  */}
+  </View>
+      </ScrollView>
+     
     );
   }
 }
 
 function mapStateToProps(state) {
-  return { myCurrentSong: state.currentSong };
+  return {myPlayList: state.currentPlayListOffline,dataAllPlaylist:state.dataAllPlaylist};
 }
-
-export default connect(mapStateToProps, {setSongPlay})(LibraryScreen);
+export default connect(mapStateToProps, {
+  setSongPlay,
+  setPlayListOnline,
+  setPlayListOffline,
+  setDataAllPlayList
+})(LibraryScreen);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: 1000,
-    justifyContent: 'center',
+    width: '100%',
+    justifyContent: 'flex-start',
     alignItems: 'flex-start',
     backgroundColor: '#fff',
     flexDirection: 'column',
-  },
-  autocompletesContainer: {
-    paddingTop: 0,
-    zIndex: 1,
-    width: '100%',
-    paddingHorizontal: 8,
-    alignSelf:'stretch'
+    padding: 10,
   },
   input: {maxHeight: 40},
-  con1:{
-    width:"100%",
-    fontSize:20, 
-    color:"#000",
+  con2: {
+    fontSize: 20,
+    backgroundColor: '#ccc',
+    marginLeft: 2,
+    borderRadius: 5,
+    margin: 5,
   },
-  con2:{
-    width:"100%",
-     fontSize:20, 
-     color:"#f0f",
-    color:"#F45"
+  con1: {
+    fontSize: 20,
+    backgroundColor: '#00cec9',
+    marginLeft: 2,
+    borderRadius: 5,
+    borderWidth: 1,
+    borderColor: 'red',
+    margin: 5,
   },
 
   input: {maxHeight: 40},
   inputContainer: {
-    display: "flex",
+    display: 'flex',
     flexShrink: 0,
     flexGrow: 0,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
     borderBottomWidth: 1,
-    borderColor: "#c7c6c1",
+    borderColor: '#c7c6c1',
     paddingVertical: 13,
     paddingLeft: 12,
-    paddingRight: "5%",
-    width: "100%",
-    justifyContent: "flex-start",
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
+    paddingRight: '5%',
+    width: '100%',
+    justifyContent: 'flex-start',
   },
   plus: {
-    position: "absolute",
+    position: 'absolute',
     left: 15,
     top: 10,
   },
-
+  tieuDe: {
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    fontSize: 20,
+    fontFamily: 'vincHand',
+    fontWeight: 'bold',
+    marginTop: 5,
+    marginLeft: 3,
+    marginBottom: 3,
+    borderStartWidth: 2,
+    borderRightColor: 'red',
+  },
 });

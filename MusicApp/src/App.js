@@ -8,7 +8,8 @@ import LoginScreen from './screens/Login';
 import StreamScreen from './screens/Stream';
 import SearchScreen from './screens/Search';
 import ProfileScreen from './screens/Profile';
-import SongPlaylistScreen from './screens/SongPlayList'
+import ChiTiet_PlayListOnlineScreen from './screens/ChiTiet_PlayListOnlineScreen'
+import ChiTiet_PlayListOfflineScreen from './screens/ChiTiet_PlayListOffline'
 import LibraryScreen from './screens/Library';
 import SongScreen from './screens/Song';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -21,7 +22,7 @@ import {Provider} from 'react-redux';
 const HomeStack = createStackNavigator(
   {
     Home: HomeScreen,
-    PlayList:SongPlaylistScreen
+    ChiTiet_PlayListOnline :ChiTiet_PlayListOnlineScreen
   },
   {
     //headerMode: 'non',
@@ -38,6 +39,7 @@ const StreamStack = createStackNavigator({
 });
 const LibraryStack = createStackNavigator({
   Library: LibraryScreen,
+  ChiTiet_PlayListOffline :ChiTiet_PlayListOfflineScreen
   // Song: SongScreen,
 });
 const ProfileStack = createStackNavigator({

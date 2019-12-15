@@ -5,65 +5,39 @@ import {
   FlatList,
   Text,
   TouchableOpacity,
-  Image,
 } from 'react-native';
-import {SearchBar} from 'react-native-elements';
 import {Dimensions} from 'react-native';
 import ItemInforBaiHat from '../components/ItemInforBaiHat';
 const screenWidth = Math.round(Dimensions.get('window').width);
-import Player, {MyPlayerBar} from '../player/Player';
-import PlayList from '../components/PlayList';
+import Player from '../player/Player';
 
 import {connect} from 'react-redux';
-import {setSongPlay, setPlayListOnline} from '../redux/action';
-//var DomParser = require('react-native-html-parser').DOMParser;
-class SongPlayListScreen extends Component {
+import {setSongPlay} from '../redux/action';
+
+class DanhSachBaiHat extends Component {
   constructor(props) {
     super(props);
     console.log('Constructor');
     this.state = {};
   }
-  static navigationOptions = {
-    title: 'Chi tiết PlayList',
-  };
+
 
   render() {
     const screenWidth = Math.round(Dimensions.get('window').width);
     return (
       <View style={styles.container}>
-        <View style={styles.container,{margin:0,marginLeft:0,borderWidh:2,borderColor:'#000'}}>
-          <View style={{flexDirection: 'row'}}>
-            <Image
-              loadingIndicatorSource={require('../../res/m_musicicon.png')}
-              style={styles.imageStyle}
-              source={{
-                uri: this.props.navigation.getParam('thumbnail_medium', 0),
-              }}
-              onError={e => {}}></Image>
-            <View>
-              <Text style={{fontSize: 17}}>   
-                {this.props.myPlayListOnline.dataSong.title}
-              </Text>
-              <Text style={{fontSize: 15}}>
-                {parseInt(this.props.navigation.getParam('numberSong', 0))} bài
-              </Text>
-
-              <Text style={{fontSize: 15}}>
-                {'Lượt nghe: '}
-                {this.props.myPlayListOnline.dataSong.listen}
-              </Text>
-            </View>
-          </View>
-        </View>
-        <View style={styles.container1}>
-          {/*<Text style={styles.tieuDe}> Kết quả tìm kiếm:</Text>*/}
+     
+    
+          {/*<Text style={styles.tieuDe}> Danh sach bai hat:</Text>*/}
 
           <View style={styles.danhsach}>
             <FlatList
-              data={this.props.myPlayListOnline.dataSong.song.items}
+              data={this.props.dataDanhSachBaiHat}
               extraData={this.state}
+              initialNumToRender={5}
+              maxToRenderPerBatch={6}
+              windowSize={6}
               renderItem={({item, index}) => (
-                // _url= 'http://api.mp3.zing.vn/api/streaming/audio/'+item.id+'/128';
                 <TouchableOpacity
                   flex={1}
                   width={screenWidth}
@@ -90,7 +64,7 @@ class SongPlayListScreen extends Component {
                         item.lyric,
                         item.duration,
                       );
-                    this.props.navigation.navigate('Stream');
+                    //this.props.navigation.navigate('Stream');
                   }}>
                   <ItemInforBaiHat
                     stt={++index}
@@ -107,17 +81,12 @@ class SongPlayListScreen extends Component {
               keyExtractor={item => item.id}
             />
           </View>
-        </View>
       </View>
     );
   }
 }
 
-function mapStateToProps(state) {
-  return {myPlayListOnline: state.currentPlayListOnline};
-}
-
-export default connect(mapStateToProps, {setSongPlay})(SongPlayListScreen);
+export default connect(null, {setSongPlay})(DanhSachBaiHat);
 
 const styles = StyleSheet.create({
   container: {

@@ -3,6 +3,7 @@ import {StyleSheet, View, FlatList, Text, TouchableOpacity} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {Dimensions} from 'react-native';
 import ItemInforBaiHat from '../components/ItemInforBaiHat';
+import DanhSachBaiHat from '../components/DanhSachBaiHat'
 const screenWidth = Math.round(Dimensions.get('window').width);
 import Player, {MyPlayerBar} from '../player/Player';
 import StreamScreen from '../screens/Stream';
@@ -193,58 +194,10 @@ class SearchScreen extends Component {
           </View>
         </View>
 
-        <View style={styles.container1}>
+        <View style={styles.container1,{alignItems:"center"}}>
           {/*<Text style={styles.tieuDe}> Kết quả tìm kiếm:</Text>*/}
-
-          <View style={styles.danhsach}>
-            <FlatList
-              data={this.state.dataSearch}
-              extraData={this.state}
-              renderItem={({item,index}) => (
-                // _url= 'http://api.mp3.zing.vn/api/streaming/audio/'+item.id+'/128';
-                <TouchableOpacity
-                  flex={1}
-                  width={screenWidth}
-                  onPress={() => {
-                    Player.PlayMusic(
-                      item.title,
-                      'http://api.mp3.zing.vn/api/streaming/audio/' +
-                        item.id +
-                        '/128',
-                      item.title,
-                      item.artists_names,
-                      item.thumbnail,
-                      item.duration,
-                    ),
-                      console.log(
-                        'play___http://api.mp3.zing.vn/api/streaming/audio/' +
-                          item.id +
-                          '/128',
-                      ),
-                      this.props.setSongPlay(
-                        item.id,
-                        item.title,
-                        item.artists_names,
-                        item.lyric,
-                        item.duration,
-                      );
-                    this.props.navigation.navigate('Stream');
-                  }}>
-                  <ItemInforBaiHat
-                    stt={++index}
-                    id={item.id}
-                    title={item.title}
-                    artists_names={item.artists_names}
-                    image={item.thumbnail_medium}
-                    lyric={item.lyric}
-                    duration={item.duration}
-                    colorItem={1}
-                  />
-                </TouchableOpacity>
-              )}
-              keyExtractor={item => item.id}
-            />
-          </View>
+            <DanhSachBaiHat dataDanhSachBaiHat={this.state.dataSearch}></DanhSachBaiHat>
+         
         </View>
         <Text> haah</Text>
       </View>
