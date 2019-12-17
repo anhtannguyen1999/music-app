@@ -9,7 +9,7 @@ import {
 import {Dimensions} from 'react-native';
 import ItemInforBaiHat from '../components/ItemInforBaiHat';
 const screenWidth = Math.round(Dimensions.get('window').width);
-import Player from '../player/Player';
+
 
 import {connect} from 'react-redux';
 import {setSongPlay} from '../redux/action';
@@ -33,39 +33,12 @@ class DanhSachBaiHat extends Component {
           <View style={styles.danhsach}>
             <FlatList
               data={this.props.dataDanhSachBaiHat}
-              extraData={this.state}
+              extraData={this.props.dataDanhSachBaiHat}
               initialNumToRender={5}
               maxToRenderPerBatch={6}
               windowSize={6}
               renderItem={({item, index}) => (
-                <TouchableOpacity
-                  flex={1}
-                  width={screenWidth}
-                  onPress={() => {
-                    Player.PlayMusic(
-                      item.title,
-                      'http://api.mp3.zing.vn/api/streaming/audio/' +
-                        item.id +
-                        '/128',
-                      item.title,
-                      item.artists_names,
-                      item.thumbnail,
-                      item.duration,
-                    ),
-                      console.log(
-                        'play___http://api.mp3.zing.vn/api/streaming/audio/' +
-                          item.id +
-                          '/128',
-                      ),
-                      this.props.setSongPlay(
-                        item.id,
-                        item.title,
-                        item.artists_names,
-                        item.lyric,
-                        item.duration,
-                      );
-                    //this.props.navigation.navigate('Stream');
-                  }}>
+         
                   <ItemInforBaiHat
                     stt={++index}
                     id={item.id}
@@ -75,8 +48,9 @@ class DanhSachBaiHat extends Component {
                     lyric={item.lyric}
                     duration={item.duration}
                     colorItem={1}
+                    linkMp3={item.linkMp3}
                   />
-                </TouchableOpacity>
+             
               )}
               keyExtractor={item => item.id}
             />

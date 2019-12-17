@@ -25,6 +25,7 @@ import {
   setSongPlay,
   setPlayListOnline,
   setDataAllPlayList,
+  setDataBHVuaNghe
 } from '../redux/action';
 
 class HomeScreen extends Component {
@@ -119,6 +120,7 @@ class HomeScreen extends Component {
     this._loadDataPlayListGoiY();
     this._loadDataSongInPlayListGoiY('');
     this._loadLocalAllPlayList();
+    this._loadDataBHVuaNghe()
 
     //this.setState({dataTop100:this.state.dataTop100nhacTre})
     //console.log((this.state.dataTop100.length)))
@@ -264,10 +266,18 @@ class HomeScreen extends Component {
     RNFetchBlob.fs.readFile(PATH, 'utf8').then(data => {
       this.props.setDataAllPlayList(JSON.parse(data));
       
-      console.log(this.props.dataAllPlaylist.list[0].title)
+      //console.log(this.props.dataAllPlaylist.list[0].title)
     });
   }
-
+_loadDataBHVuaNghe()
+{
+  var path= RNFetchBlob.fs.dirs.SDCardDir+"/DataLocal/BaiHatVuaNghe/BaiHatVuaNghe.js"
+  RNFetchBlob.fs.readFile(path,'utf8').then((data)=>{
+    var temp=[],
+    temp=JSON.parse(data)
+    this.props.setDataBHVuaNghe(temp)
+  })
+}
   render() {
     var DSBaiHatVuaNghe = [
       {
@@ -351,7 +361,7 @@ class HomeScreen extends Component {
                 }*/
               }}>
               <DanhSachBaiHat
-                dataDanhSachBaiHat={DSBaiHatVuaNghe}></DanhSachBaiHat>
+                dataDanhSachBaiHat={this.props.dataBHVuaNghe.items}></DanhSachBaiHat>
             </View>
           </View>
 
@@ -568,13 +578,14 @@ class HomeScreen extends Component {
 }
 
 function mapStateToProps(state) {
-  return {myCurrentPlayListOnline: state.currentPlayListOnline,dataAllPlaylist:state.dataAllPlaylist};
+  return {myCurrentPlayListOnline: state.currentPlayListOnline,dataAllPlaylist:state.dataAllPlaylist,dataBHVuaNghe: state.dataBHVuaNghe,};
 }
 
 export default connect(mapStateToProps, {
   setSongPlay,
   setPlayListOnline,
   setDataAllPlayList,
+  setDataBHVuaNghe
 })(HomeScreen);
 
 const styles = StyleSheet.create({

@@ -1,1 +1,14 @@
-export var test ={"total_list":2,"list":[{"id":"0","title":"PlayList Test 0","thumbnail_medium":"http://icons.iconarchive.com/icons/elegantthemes/beautiful-flat-one-color/128/music-icon.png","total_song":2,"song":{"items":[{"id":"ZWAFE897","title":"Bánh Mì Không","artists_names":"Đạt G, DuUyen","thumbnail_medium":"https://photo-resize-zmp3.zadn.vn/w240_r1x1_jpeg/cover/2/9/0/6/2906681d4b764cd4677342b66813f25d.jpg","lyric":"https://static-zmp3.zadn.vn/lyrics/6/f/9/7/6f97fc3d7c394df24915e878b913d7bb.lrc","duration":245},{"id":"ZWAFE89B","title":"Em Một Mình Quen Rồi","artists_names":"Dương Hoàng Yến","thumbnail_medium":"https://photo-resize-zmp3.zadn.vn/w240_r1x1_jpeg/cover/7/b/e/9/7be9788129f81d9c3d685969db8ab70a.jpg","lyric":"https://static-zmp3.zadn.vn/lyrics/1/d/9/5/1d959ad872a0842198836792214b3bd5.lrc","duration":358}]}},{"id":"1","title":"PlayList Test 1","thumbnail_medium":"http://icons.iconarchive.com/icons/elegantthemes/beautiful-flat-one-color/128/music-icon.png","total_song":2,"song":{"items":[{"id":"ZWAFEWOU","title":"Sao Chẳng Phải Là Anh","artists_names":"Chi Dân","thumbnail_medium":"https://photo-resize-zmp3.zadn.vn/w240_r1x1_jpeg/cover/9/9/9/e/999e7aa9d6d42e60d3b2f28072a0c968.jpg","lyric":"https://static-zmp3.zadn.vn/lyrics/6/f/9/7/6f97fc3d7c394df24915e878b913d7bb.lrc","duration":245},{"id":"ZWAFE89B","title":"Em Một Mình Quen Rồi","artists_names":"Dương Hoàng Yến","thumbnail_medium":"https://photo-resize-zmp3.zadn.vn/w240_r1x1_jpeg/cover/7/b/e/9/7be9788129f81d9c3d685969db8ab70a.jpg","lyric":"https://static-zmp3.zadn.vn/lyrics/d/5/0/1/d50129746dcdf86ef326a7070cbd55b8.lrc","duration":310}]}}]}
+var t ={
+    "tottal_song":1,
+    "items":[
+        {
+            "id":"ZWAD0OB6",
+            "title":"Bạc Phận",
+            "artists_names":"Jack, K-ICM",
+            "thumbnail_medium":"/ZWAD0OB6/thumbnail_medium.jpg",
+            "lyric":"/ZWAD0OB6/lyric.txt",
+            "duration":249,
+            "linkMp3":"/ZWAD0OB6/ZWAD0OB6.mp3"
+        }
+    ]
+}

@@ -10,6 +10,7 @@ import {
   TouchableOpacity
 } from 'react-native';
 import Slider from 'react-native-slider';
+import RNFetchBlob from 'rn-fetch-blob'
 const screenWidth = Math.round(Dimensions.get('window').width);
 export default class Player {
   static KhoiTaoPlayer() {
@@ -268,17 +269,28 @@ export class MyLyric extends TrackPlayer.ProgressComponent {
     {
       this.setState({link:this.props.linkLyric})
       this.setState
-    console.log("set linK liric "+this.props.linkLyric)
-    fetch(this.props.linkLyric)
-     .then(response => {
-       return response.text();
-     })
-     .then(res => {
- 
-      this.setState({stringLyric: res});
-      this.xuLiLyric(this.state.stringLyric)
- 
-     }); 
+    console.log("set linK liric "+this.props.linkLyric.substring(0,4))
+    if(this.props.linkLyric.substring(0,4)=='http')
+    {
+      fetch(this.props.linkLyric)
+      .then(response => {
+        return response.text();
+      })
+      .then(res => {
+  
+       this.setState({stringLyric: res});
+       this.xuLiLyric(this.state.stringLyric)
+  
+      }); 
+    }
+    else
+    {
+      RNFetchBlob.fs.readFile(this.props.linkLyric,'utf8').then((data)=>{
+        this.setState({stringLyric: data});
+        this.xuLiLyric(this.state.stringLyric)
+      })
+    }
+
     }
     return (
       <View style={styles.container}>

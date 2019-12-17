@@ -1,4 +1,4 @@
-import React, {Component, cloneElement} from 'react';
+import React, { Component, cloneElement } from 'react';
 import {
   StyleSheet,
   View,
@@ -8,20 +8,21 @@ import {
   TextInput,
   Button,
 } from 'react-native';
-import {test} from './test';
+import { test } from './test';
 
 import TrackPlayer from 'react-native-track-player';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from 'react-native-vector-icons/Entypo';
 import PlayList from '../components/PlayList';
 import ItemInforBaiHat from '../components/ItemInforBaiHat';
 import RNFetchBlob from 'rn-fetch-blob';
 
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import {
   setSongPlay,
   setPlayListOnline,
   setPlayListOffline,
-  setDataAllPlayList
+  setDataAllPlayList,
+  setDataMusicLocal
 } from '../redux/action';
 import DanhSachBaiHat from '../components/DanhSachBaiHat';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -32,25 +33,27 @@ class LibraryScreen extends Component {
       data: [],
       dataPlayList: [],
       isRenderAdd: false,
-      namePlayListAdd:''
+      namePlayListAdd: '',
+      rerender: 0
     };
   }
   static navigationOptions = {
     header: null,
   };
 
-  _renderPlayList(id, thumbnail_medium, title, total_song) {
+  _renderAvatarPlayList(id, thumbnail_medium, title, total_song) {
     return (
       <TouchableOpacity
         onPress={() => {
-          this._loadDataSongInPlayListOffline(id);
+          this._loadDataSongInPlayListOffline(id),
 
-          this.props.navigation.navigate('ChiTiet_PlayListOffline', {
-            id: id,
-            thumbnail_medium: thumbnail_medium,
-            title: title,
-            numberSong: total_song,
-          });
+            this.props.navigation.navigate('ChiTiet_PlayListOffline', {
+              id: id,
+              thumbnail_medium: thumbnail_medium,
+              title: title,
+              numberSong: total_song,
+            });
+            //this._loadDataSongInPlayListOffline(id)
         }}>
         <PlayList
           linkImagePlayList={thumbnail_medium}
@@ -63,6 +66,7 @@ class LibraryScreen extends Component {
   }
   componentDidMount() {
     this._loadLocalPlayList();
+    this._loadDataMusicLocal()
     //this._addPlayList();
     //this._loadDataSongInPlayListOffline(0);
   }
@@ -76,7 +80,7 @@ class LibraryScreen extends Component {
           borderWidth: 2,
           borderColor: '#000',
         }}>
-        <View style={{padding: 20}}>
+        <View style={{ padding: 20 }}>
           <Text> Tên Playlist bạn muốn tạo:</Text>
           <TextInput
             style={{
@@ -84,7 +88,7 @@ class LibraryScreen extends Component {
               margin: 10,
               width: '90%',
               borderRadius: 10,
-            }} onChangeText={(text)=>this.setState({namePlayListAdd:text})}></TextInput>
+            }} onChangeText={(text) => this.setState({ namePlayListAdd: text })}></TextInput>
           <View
             style={{
               flexDirection: 'row',
@@ -92,12 +96,12 @@ class LibraryScreen extends Component {
               justifyContent: 'flex-end',
               marginRight: 25,
             }}>
-            <Button title={'Tạo'} onPress={()=>{this._addPlayList(),this.setState({isRenderAdd:false})}}></Button>
+            <Button title={'Tạo'} onPress={() => { this._addPlayList(), this.setState({ isRenderAdd: false }) }}></Button>
             <Text> </Text>
             <Button
               title={'Hủy'}
               onPress={() => {
-                this.setState({isRenderAdd: false});
+                this.setState({ isRenderAdd: false });
               }}></Button>
           </View>
         </View>
@@ -114,9 +118,9 @@ class LibraryScreen extends Component {
       .readFile(PATH, 'utf8')
 
       .then(data => {
-        this.setState({dataPlayList: JSON.parse(data)});
+        //this.setState({dataPlayList: JSON.parse(data)});
         this.props.setDataAllPlayList(JSON.parse(data));
-        
+
         //console.log(this.state.dataPlayList.list[0].song.items)
       });
   }
@@ -124,29 +128,36 @@ class LibraryScreen extends Component {
   _loadDataSongInPlayListOffline(id) {
     this.props.setPlayListOffline(
       id,
-      this.state.dataPlayList.list[parseInt(id)].song.items,
+      this.props.dataAllPlaylist.list[parseInt(id)].song.items,
     );
     //console.log(LibraryScreen.dataTest[0].song.items)
     //console.log(this.props.myPlayList.dataSong)
   }
 
-  _addPlayList()
-  {
-    if(this.state.namePlayListAdd=='')
+  _addPlayList() {
+    if (this.state.namePlayListAdd == '')
       return;
-    var PATH =RNFetchBlob.fs.dirs.SDCardDir +'/DataLocal/PlayList_Local/PlayListManager.js';
-    var temp=this.state.dataPlayList;
-    var lastIndex =temp.total_list;
-
-    
-    var obj ={"id":lastIndex.toString(),"title":this.state.namePlayListAdd,"thumbnail_medium":"http://icons.iconarchive.com/icons/elegantthemes/beautiful-flat-one-color/128/music-icon.png","total_song":0,"song":{"items":[]}}
+    var PATH = RNFetchBlob.fs.dirs.SDCardDir + '/DataLocal/PlayList_Local/PlayListManager.js';
+    var temp = this.props.dataAllPlaylist;
+    var lastIndex = temp.total_list;
+    var obj = { "id": lastIndex.toString(), "title": this.state.namePlayListAdd, "thumbnail_medium": "http://icons.iconarchive.com/icons/elegantthemes/beautiful-flat-one-color/128/music-icon.png", "total_song": 0, "song": { "items": [] } }
     temp.list.push(obj);
     temp.total_list++;
-    RNFetchBlob.fs.writeFile(PATH,JSON.stringify(temp)).then(()=>this._loadLocalPlayList())
-    
+    this.props.setDataAllPlayList(temp);
+    RNFetchBlob.fs.writeFile(PATH, JSON.stringify(temp))
+
     //console.log(temp)
 
-    this.setState({dataPlayList:temp})
+    // this.setState({dataPlayList:temp})
+  }
+  _loadDataMusicLocal()
+  {
+    var path=RNFetchBlob.fs.dirs.SDCardDir+ "/DataLocal/Music_Local/MusicLocalManager.js"
+    var temp=[];
+    RNFetchBlob.fs.readFile(path,'utf8').then((data)=>{
+      temp=JSON.parse(data)
+      this.props.setDataMusicLocal(temp);
+    })
   }
   static dataTest = {
     total_list: 2,
@@ -221,98 +232,83 @@ class LibraryScreen extends Component {
 
     return (
       <ScrollView>
-           <View style={styles.container}>
-        <View style={styles.containerTieuDe}>
-          <Text style={styles.tieuDe}> PlayList của bạn : </Text>
-          <TouchableOpacity
-            onPress={() => {
-              this.setState({isRenderAdd: !this.state.isRenderAdd});
-            }}>
-            <View style={this.state.isRenderAdd ? styles.con1 : styles.con2}>
-              <Text style={{fontSize: 18}}> Add Playlist</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
-        {this.state.isRenderAdd ? this._renderAddPlayList() : null}
-        <View style={(styles.container, {flexDirection: 'row'})}>
-          <FlatList
-            data={this.props.dataAllPlaylist.list}
-            renderItem={({item, index}) =>
-              index % 2 == 0 
-                ? this._renderPlayList(
+        <View style={styles.container}>
+          <View style={styles.containerTieuDe}>
+          <View style={styles.containerTieuDe,{flexDirection:'row'}}>
+          <Icon name='music' size={30}></Icon>
+            <Text style={styles.tieuDe}> Playlist của ban: </Text>
+             
+          </View>
+            <TouchableOpacity
+              onPress={() => {
+                this.setState({ isRenderAdd: !this.state.isRenderAdd });
+              }}>
+              <View style={this.state.isRenderAdd ? styles.con1 : styles.con2}>
+                <Text style={{ fontSize: 18 }}> Add Playlist</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+          {this.state.isRenderAdd ? this._renderAddPlayList() : null}
+          <View style={(styles.container, { flexDirection: 'row' })}>
+            <FlatList
+              data={this.props.dataAllPlaylist.list}
+              extraData={this.props.dataAllPlaylist.list}
+              renderItem={({ item, index }) =>
+                index % 2 == 0
+                  ? this._renderAvatarPlayList(
                     item.id,
                     item.thumbnail_medium,
                     item.title,
                     item.total_song,
                   )
-                : null
-            }
+                  : null
+              }
             //keyExtractor={item => item.ten}
-          />
+            />
+            <FlatList
+              data={this.props.dataAllPlaylist.list}
+              extraData={this.props.dataAllPlaylist.list}
+              renderItem={({ item, index }) =>
+                index % 2 == 1
+                  ? this._renderAvatarPlayList(
+                    item.id,
+                    item.thumbnail_medium,
+                    item.title,
+                    item.total_song,
+                  )
+                  : null
+              }
+            //keyExtractor={item => item.ten}
+            />
+          </View>
 
-          <FlatList
-            data={this.props.dataAllPlaylist.list}
-            renderItem={({item, index}) =>
-              index % 2 == 1 
-                ? this._renderPlayList(
-                    item.id,
-                    item.thumbnail_medium,
-                    item.title,
-                    item.total_song,
-                  )
-                : null
-            }
-            //keyExtractor={item => item.ten}
-          />
-        </View>
+          <View style={{width:'100%',marginTop:10}}>
 
-       {/* <View style={(styles.container, {flexDirection: 'row'})}>
-          <FlatList
-            data={this.state.dataPlayList.list}
-            renderItem={({item, index}) =>
-              index % 2 == 0 && index >= 6 && index < 12
-                ? this._renderPlayList(
-                    item.id,
-                    item.thumbnail_medium,
-                    item.title,
-                    item.total_song,
-                  )
-                : null
-            }
-            //keyExtractor={item => item.ten}
-          />
-
-          <FlatList
-            data={this.state.dataPlayList.list}
-            renderItem={({item, index}) =>
-              index % 2 == 1 && index >= 6 && index < 12
-                ? this._renderPlayList(
-                    item.id,
-                    item.thumbnail_medium,
-                    item.title,
-                    item.total_song,
-                  )
-                : null
-            }
-            //keyExtractor={item => item.ten}
-          />
+          <View style={styles.containerTieuDe,{flexDirection:'row'}}>
+          <Icon name='download' size={30}></Icon>
+            <Text style={styles.tieuDe}> Bài hát đã tải : </Text>   
+          </View>
+              <View style={{alignItems:'center'}}>
+              <DanhSachBaiHat dataDanhSachBaiHat={this.props.dataMusicLocal.items}></DanhSachBaiHat>
+              </View>
+        
+          </View>
         </View>
-  */}
-  </View>
       </ScrollView>
-     
+
     );
   }
 }
 
-function mapStateToProps(state) {
-  return {myPlayList: state.currentPlayListOffline,dataAllPlaylist:state.dataAllPlaylist};
-}
+const mapStateToProps=state=>( {
+    myPlayList: state.currentPlayListOffline, dataAllPlaylist: state.dataAllPlaylist ,dataMusicLocal:state.dataMusicLocal,
+})
 export default connect(mapStateToProps, {
   setSongPlay,
   setPlayListOnline,
   setPlayListOffline,
-  setDataAllPlayList
+  setDataAllPlayList,
+  setDataMusicLocal
 })(LibraryScreen);
 
 const styles = StyleSheet.create({
@@ -325,7 +321,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     padding: 10,
   },
-  input: {maxHeight: 40},
+  input: { maxHeight: 40 },
   con2: {
     fontSize: 20,
     backgroundColor: '#ccc',
@@ -343,7 +339,7 @@ const styles = StyleSheet.create({
     margin: 5,
   },
 
-  input: {maxHeight: 40},
+  input: { maxHeight: 40 },
   inputContainer: {
     display: 'flex',
     flexShrink: 0,
