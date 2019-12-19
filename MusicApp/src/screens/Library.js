@@ -289,7 +289,7 @@ class LibraryScreen extends Component {
             <Text style={styles.tieuDe}> Bài hát đã tải : </Text>   
           </View>
               <View style={{alignItems:'center'}}>
-              <DanhSachBaiHat dataDanhSachBaiHat={this.props.dataMusicLocal.items}></DanhSachBaiHat>
+              <DanhSachBaiHat kind="downLoad" canRemove={true} dataDanhSachBaiHat={this.props.dataMusicLocal.items}></DanhSachBaiHat>
               </View>
         
           </View>

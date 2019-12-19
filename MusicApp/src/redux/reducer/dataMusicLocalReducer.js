@@ -1,4 +1,4 @@
-const defaultPlayList=[]
+const defaultPlayList={"items":[]}
 
 const dataMusicLocal = (state = defaultPlayList, action) => {
     if (action.type === 'SET_DATA_MUSIC_LOCAL') {

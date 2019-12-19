@@ -95,10 +95,11 @@ export default class Player {
     return parseInt(this._getProg()*this._getDuration());
   }
   static PlayMusic(id, url, title, artist, artwork, total_time) {
-    /*if (this.daKhoiTao == false) {
+    if (this.daKhoiTao == false) {
       this.daKhoiTao = true;
-    }*/
-    this.KhoiTaoPlayer();
+      this.KhoiTaoPlayer();
+    }
+
 
     this.duration = parseInt(total_time);
     TrackPlayer.setupPlayer().then(async () => {
@@ -159,9 +160,13 @@ export class MyPlayerBar extends TrackPlayer.ProgressComponent {
       value: 0,
     };
   }
+
   render() {
+  
     return (
+      
       <View style={styles.containerProc}>
+        
         <Slider
           
           width={screenWidth - 80}
@@ -193,6 +198,16 @@ export class MyPlayerBar extends TrackPlayer.ProgressComponent {
       </View>
     );
   }
+}
+const MyComponent = () => {
+  const { position, bufferedPosition, duration } = useTrackPlayerProgress()
+
+  return (
+    <View>
+      <Text>Track progress: {position} seconds out of {duration} total</Text>
+      <Text>Buffered progress: {bufferedPosition} seconds buffered out of {duration} total</Text>
+    </View>
+  )
 }
 
 export class MyLyric extends TrackPlayer.ProgressComponent {

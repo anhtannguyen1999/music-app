@@ -50,7 +50,7 @@ class ChiTiet_PlayListOfflineScreen extends Component {
                 {this.props.navigation.getParam('title', '')}
               </Text>
               <Text style={{fontSize: 15}}>
-                {parseInt(this.props.navigation.getParam('numberSong', 0))} bài
+                {this.props.myPlayListOffline.dataSong.length} bài
               </Text>
               <Text style={{fontSize: 15}}>
                 {'Lượt nghe: 0'}
@@ -61,7 +61,7 @@ class ChiTiet_PlayListOfflineScreen extends Component {
         </View>
         <View style={styles.container1}>
           {/*<Text style={styles.tieuDe}> Danh sach bai hat:</Text>*/}
-            <DanhSachBaiHat dataDanhSachBaiHat={this.props.myPlayListOffline.dataSong}></DanhSachBaiHat>
+            <DanhSachBaiHat kind={'PlayList_Offline'} canRemove={true} dataDanhSachBaiHat={this.props.myPlayListOffline.dataSong} /*dataDanhSachBaiHat={this.props.dataAllPlaylist.list[this.props.navigation.getParam('id', 0)].song.items}*/></DanhSachBaiHat>
         </View>
       </View>
     );
@@ -69,7 +69,7 @@ class ChiTiet_PlayListOfflineScreen extends Component {
 }
 
 function mapStateToProps(state) {
-  return {myPlayListOffline: state.currentPlayListOffline};
+  return {myPlayListOffline: state.currentPlayListOffline,dataAllPlaylist:state.dataAllPlaylist};
 }
 
 export default connect(mapStateToProps, {setSongPlay,setPlayListOnline,setPlayListOffline})(ChiTiet_PlayListOfflineScreen);

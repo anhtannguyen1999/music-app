@@ -279,44 +279,6 @@ _loadDataBHVuaNghe()
   })
 }
   render() {
-    var DSBaiHatVuaNghe = [
-      {
-        ten: 'Co tham khong ve',
-        casi: 'First Item',
-        image: 'url',
-        colorItem: 0,
-      },
-      {
-        ten: 'Em gi oi',
-        casi: 'Jack & KICM',
-        image: 'url',
-        colorItem: 1,
-      },
-      {
-        ten: 'Co tham khong ve1',
-        casi: 'First Item',
-        image: 'url',
-        colorItem: 0,
-      },
-      {
-        ten: 'Em gi oi1',
-        casi: 'Jack & KICM',
-        image: 'url',
-        colorItem: 1,
-      },
-      {
-        ten: 'Co tham khong ve2',
-        casi: 'First Item',
-        image: 'url',
-        colorItem: 0,
-      },
-      {
-        ten: 'Em gi oi2',
-        casi: 'Jack & KICM',
-        image: 'url',
-        colorItem: 1,
-      },
-    ];
 
     return (
       <View

@@ -26,3 +26,7 @@ export function setDataBHVuaNghe(dataBHVuaNghe)
     return {type:'SET_DATA_BH_VUA_NGHE',dataBHVuaNghe}
 }
 
+export function removeSongFromLocal(id)
+{
+    return {type:'REMOVE_SONG_FROM_LOCAL',id}
+}

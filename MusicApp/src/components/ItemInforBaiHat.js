@@ -13,7 +13,7 @@ import {
 import { Dimensions } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { setSongPlay, setDataAllPlayList, setDataMusicLocal, setDataBHVuaNghe } from '../redux/action';
+import { setSongPlay, setDataAllPlayList, setDataMusicLocal, setDataBHVuaNghe, removeSongFromLocal,setPlayListOffline } from '../redux/action';
 import Icon from 'react-native-vector-icons/Entypo';
 import Modal from 'react-native-modal';
 import { FlatList } from 'react-native-gesture-handler';
@@ -31,6 +31,7 @@ class ItemInforBaiHat extends Component {
       fadeAni: new Animated.Value(0),
       upPopup: false,
       upPopupAdd: false,
+      reaload: 0
     };
   }
 
@@ -39,6 +40,36 @@ class ItemInforBaiHat extends Component {
       toValue: 100,
       duration: 5000,
     }).start();
+  }
+
+
+
+  _removeSongFromPlayList()
+  {
+     var idPlaylist=this.props.idPlaylist
+
+   // var path = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/PlayList_Local/MusicLocalManager.js"
+   var path = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/PlayList_Local/PlayListManager.js"
+    RNFetchBlob.fs.readFile(path, 'utf8').then((data) => {
+      temp = JSON.parse(data);
+    }).then(()=>{
+      for(let i=0;i<temp.list[idPlaylist].song.items.length;i++)
+      {
+          if(temp.list[idPlaylist].song.items[i].id==this.props.id)
+          { 
+                temp.list[idPlaylist].song.items.splice(i,1)         
+                temp.list[idPlaylist].total_song--;
+               break;
+          }            
+      }
+      this.props.setDataAllPlayList(temp);
+      this.props.setPlayListOffline(idPlaylist,temp.list[idPlaylist].song.items)
+      RNFetchBlob.fs.writeFile(path, JSON.stringify(temp), 'utf8').then(()=>{  
+      })
+    })
+    this.setState({upPopup:false})
+
+
   }
 
   _addSongtoPlaylist(
@@ -50,8 +81,34 @@ class ItemInforBaiHat extends Component {
     lyric,
     duration,
   ) {
-    var temp = [],
-      temp = this.props.dataAllPlaylist;
+    var temp = {}
+    var PATH = RNFetchBlob.fs.dirs.SDCardDir + '/DataLocal/PlayList_Local/PlayListManager.js';
+    RNFetchBlob.fs.readFile(PATH).then((data)=>{temp=JSON.parse(data)
+    
+      for (let i = 0; i < temp.list[idPlaylist].song.items.length; i++) {
+        if (temp.list[idPlaylist].song.items[i].id == idSong) {
+          Alert.alert("Bài này đã thêm rồi!")
+          return;
+        }
+      }
+  
+      var obj = {
+        id: idSong.toString(),
+        title: title,
+        artists_names: artists_names,
+        thumbnail_medium: thumbnail_medium,
+        lyric: lyric,
+        duration: duration,
+      };
+      temp.list[idPlaylist].song.items.push(obj);
+      temp.list[idPlaylist].total_song++;
+      //var PATH = RNFetchBlob.fs.dirs.SDCardDir + '/DataLocal/PlayList_Local/PlayListManager.js';
+      RNFetchBlob.fs.writeFile(PATH, JSON.stringify(temp));
+      this.props.setDataAllPlayList(temp);
+      Alert.alert("Thêm thành công!");
+      
+      this.setState({ upPopupAdd: false })
+    })
     /*temp.list[idPlaylist].song.items.array.forEach(element => {
       if(element.id==idSong)
       {
@@ -60,28 +117,7 @@ class ItemInforBaiHat extends Component {
       }
       
     });*/
-    for (let i = 0; i < temp.list[idPlaylist].song.items.length; i++) {
-      if (temp.list[idPlaylist].song.items[i].id == idSong) {
-        Alert.alert("Bài này đã thêm rồi!")
-        return;
-      }
-    }
 
-    var obj = {
-      id: idSong.toString(),
-      title: title,
-      artists_names: artists_names,
-      thumbnail_medium: thumbnail_medium,
-      lyric: lyric,
-      duration: duration,
-    };
-    temp.list[idPlaylist].song.items.push(obj);
-    temp.list[idPlaylist].total_song++;
-    var PATH = RNFetchBlob.fs.dirs.SDCardDir + '/DataLocal/PlayList_Local/PlayListManager.js';
-    RNFetchBlob.fs.writeFile(PATH, JSON.stringify(temp));
-    this.props.setDataAllPlayList(temp);
-    Alert.alert("Thêm thành công!");
-    this.setState({ upPopupAdd: false })
     //console.log(JSON.stringify(temp));
   }
   _renderUpPoupAdd() { }
@@ -166,84 +202,132 @@ class ItemInforBaiHat extends Component {
   _addSongtoBHVuaNghe() {
     var RemoveId = false;
     var temp = [];
-    temp = this.props.dataBHVuaNghe;
-    console.log(temp)
-    let obj = { "id": this.props.id, "title": this.props.title, "artists_names": this.props.artists_names, "thumbnail_medium": this.props.thumbnail_medium, "lyric": this.props.lyric, "duration": this.props.duration, "linkMp3": this.props.linkMp3 }
-    for (let i = 0; i < temp.items.length; i++) {
-      if (temp.items[i].id == this.props.id) {
-        delete temp.items[i];
-        RemoveId = true;
-        break;
-      }
-    }
-    if (RemoveId) {
-      temp.items.push(obj)
-    }
-    else {
-      if(temp.items.length==5)
-      { temp.items.pop();}
-      temp.items.push(obj)
-    }
     var path = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/BaiHatVuaNghe/BaiHatVuaNghe.js";
-    RNFetchBlob.fs.writeFile(path, JSON.stringify(temp), 'utf8').then(()=> {}
-    )
-    this.props.setDataBHVuaNghe(temp)
+    
+    RNFetchBlob.fs.readFile(path).then((data)=>{
+      temp=JSON.parse(data)
+      let obj = { "id": this.props.id, "title": this.props.title, "artists_names": this.props.artists_names, "thumbnail_medium": this.props.image, "lyric": this.props.lyric, "duration": this.props.duration, "linkMp3": this.props.linkMp3 }
+      for (let i = 0; i < temp.items.length; i++) {
+        if (temp.items[i].id == this.props.id) {
+          temp.items.splice(i, 1);
+          RemoveId = true;
+          break;
+        }
+      }
+      if (RemoveId) {
+        temp.items.unshift(obj)
+      }
+      else {
+        if (temp.items.length == 5) { temp.items.pop(); }
+        temp.items.unshift(obj)
+      }
+  
+      RNFetchBlob.fs.writeFile(path, JSON.stringify(temp), 'utf8').then(() => { }
+      )
+      this.props.setDataBHVuaNghe(temp)
+
+
+    })
+    //temp = this.props.dataBHVuaNghe;
+    
    
+
   }
 
 
+  _renderRemove(kindOfPlayList) {
+   
+    return (
+      <TouchableOpacity onPress={() => {kindOfPlayList=="PlayList_Offline"? this._removeSongFromPlayList(): this._removeSongFromLocal() }}>
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            margin: 10,
+          }}>
+          <Icon name="trash" size={30}></Icon>
+          <Text>Xóa</Text>
+        </View>
+      </TouchableOpacity>
+    )
+  }
 
+  _removeSongFromLocal() {
+    var temp = {};
+    // temp=this.props.dataMusicLocal.slice()
+    var pathSong=RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/Music_Local/DataMusicLocal/"+this.props.id
+    var path = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/Music_Local/MusicLocalManager.js"
+    RNFetchBlob.fs.readFile(path, 'utf8').then((data) => {
+      temp = JSON.parse(data);
+    }).then(()=>{
+      for(let i=0;i<temp.items.length;i++)
+      {
+          if(temp.items[i].id==this.props.id)
+          { 
+               temp.items.splice(i,1)         
+               temp.total_song--;
+               break;
+          }            
+      }
+      this.props.setDataMusicLocal(temp);  
+      RNFetchBlob.fs.writeFile(path, JSON.stringify(temp), 'utf8').then(()=>{  
+      RNFetchBlob.fs.unlink(pathSong)
+      })
+    })
+    this.setState({upPopup:false})
+
+    //Alert.alert("Xóa thành công!")
+
+  }
 
   render() {
     const valueOpa = this.state.fadeAni;
     return (
-      <TouchableOpacity style={{flex:1,width:"100%"}}
-      onPress={() => {
-        this._addSongtoBHVuaNghe();
-        this.props.setSongPlay(
-          this.props.id,
-          this.props.title,
-          this.props.artists_names,
-          this.props.lyric,
-          this.props.duration,
-        );
+      <TouchableOpacity style={{ flex: 1, width: "100%" }}
+        onPress={() => {
+          this._addSongtoBHVuaNghe();
+          this.props.setSongPlay(
+            this.props.id,
+            this.props.title,
+            this.props.artists_names,
+            this.props.lyric,
+            this.props.duration,
+          );
 
-        if(this.props.linkMp3!=null)
-                {
-                  Player.PlayMusic(
-                    this.props.title,
-                    this.props.linkMp3,
-                    this.props.title,
-                    this.props.artists_names,
-                    this.props.thumbnail_medium,
-                    this.props.duration,
-                  )
-                }
-                else
-                {
-                  Player.PlayMusic(
-                    this.props.title,
-                    'http://api.mp3.zing.vn/api/streaming/audio/' +
-                    this.props.id +
-                      '/128',
-                      this.props.title,
-                      this.props.artists_names,
-                      this.props.thumbnail_medium,
-                      this.props.duration,
-                  )
-                }
-      }}>
-      <View
-        style={{
-          flex: 1,
-          width: screenWidth * 0.87,
-          flexDirection: 'row',
-          justifyContent: 'flex-start',
-          alignItems: 'center',
-          marginTop: 5,
-          marginLeft: 5,
-          backgroundColor: '#ccc',
+          if (this.props.linkMp3 != null) {
+            Player.PlayMusic(
+              this.props.title,
+              this.props.linkMp3,
+              this.props.title,
+              this.props.artists_names,
+              this.props.image,
+              this.props.duration,
+            )
+          }
+          else {
+            Player.PlayMusic(
+              this.props.title,
+              'http://api.mp3.zing.vn/api/streaming/audio/' +
+              this.props.id +
+              '/128',
+              this.props.title,
+              this.props.artists_names,
+              this.props.image,
+              this.props.duration,
+            )
+          }
         }}>
+        <View
+          style={{
+            flex: 1,
+            width: screenWidth * 0.87,
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            marginTop: 5,
+            marginLeft: 5,
+            backgroundColor: '#ccc',
+          }}>
 
 
           <View>
@@ -295,131 +379,133 @@ class ItemInforBaiHat extends Component {
             </Text>
 
           </View>
- 
 
 
 
 
 
-        <TouchableOpacity
-          onPress={() => {
-            this.setState({ upPopup: true });
-          }}>
-          <Image
-            style={{
-              width: 30,
-              height: 60,
-              marginRight: 10,
-              resizeMode: 'center',
-            }}
-            source={require('../../res/threeDot.png')}></Image>
-        </TouchableOpacity>
-        {/*Popup menu add playlist ,download....*/}
-        <Modal
-          isVisible={this.state.upPopup}
-          onBackdropPress={() => {
-            this.setState({ upPopup: false });
-          }}>
-          <View style={{ backgroundColor: '#aaa', height: 300 }}>
-            <Button
-              title={this.props.title}
-              onPress={() => {
-                this.setState({ upPopup: false });
-              }}></Button>
-            <View style={{ flexDirection: 'row', margin: 20 }}>
-              <TouchableOpacity
+
+          <TouchableOpacity
+            onPress={() => {
+              this.setState({ upPopup: true });
+            }}>
+            <Image
+              style={{
+                width: 30,
+                height: 60,
+                marginRight: 10,
+                resizeMode: 'center',
+              }}
+              source={require('../../res/threeDot.png')}></Image>
+          </TouchableOpacity>
+          {/*Popup menu add playlist ,download....*/}
+          <Modal
+            isVisible={this.state.upPopup}
+            onBackdropPress={() => {
+              this.setState({ upPopup: false });
+            }}>
+            <View style={{ backgroundColor: '#aaa', height: 300 }}>
+              <Button
+                title={this.props.title}
                 onPress={() => {
-                  this.setState({ upPopupAdd: true });
-                }}>
-                <View
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: 10,
+                  this.setState({ upPopup: false });
+                }}></Button>
+              <View style={{ flexDirection: 'row', margin: 20 }}>
+                <TouchableOpacity
+                  onPress={() => {
+                    this.setState({ upPopupAdd: true });
                   }}>
-                  <Icon name="add-to-list" size={30}></Icon>
-                  <Text>Thêm vào Playlist</Text>
-                </View>
-              </TouchableOpacity>
+                  <View
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: 10,
+                    }}>
+                    <Icon name="add-to-list" size={30}></Icon>
+                    <Text>Thêm vào </Text>
+                  </View>
+                </TouchableOpacity>
 
-              <TouchableOpacity onPress={() => { this._downloadMusic(this.props.id) }}>
-                <View
-                  style={{
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    margin: 10,
-                  }}>
-                  <Icon name="download" size={30}></Icon>
-                  <Text>Tải về</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Modal>
+                <TouchableOpacity onPress={() => { this._downloadMusic(this.props.id) }}>
+                  <View
+                    style={{
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      margin: 10,
+                    }}>
+                    <Icon name="download" size={30}></Icon>
+                    <Text>Tải về</Text>
+                  </View>
+                </TouchableOpacity>
 
-        {/* popup Addd*/}
-        <Modal
-          isVisible={this.state.upPopupAdd}
-          onBackdropPress={() => {
-            this.setState({ upPopupAdd: false });
-          }}>
-          <View style={{ backgroundColor: '#fff', height: 280 }}>
-            <Button
-              title={'Chọn playlist để thêm'}
-              onPress={() => {
-                this.setState({ upPopupAdd: false });
-              }}></Button>
-            <View style={{ flex: 1, margin: 0 }}>
-              <View
-                style={{
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: 5,
-                }}>
-                <FlatList
-                  data={this.props.dataAllPlaylist.list}
-                  renderItem={({ item, index }) => (
-                    <View
-                      style={{
-                        flex: 1,
-                        width: '100%',
-                        alignContent: 'center',
-                        marginBottom: 5,
-                        borderWidth: 2,
-                        borderColor: 'red',
-                        borderRadius: 3,
-                        backgroundColor: '#1abc9c',
-                      }}>
-                      <TouchableHighlight
-                        onPress={() => {
-                          this._addSongtoPlaylist(
-                            item.id,
-                            this.props.id,
-                            this.props.title,
-                            this.props.artists_names,
-                            this.props.image,
-                            this.props.lyric,
-                            this.props.duration,
-                          );
-
-                        }}
-                        underlayColor={'#e74c3c'}
-                        style={{}}>
-                        <View>
-                          <Text style={{ fontSize: 18 }}> {item.title}</Text>
-                          <Image
-                            source={{ uri: item.thumbnail_medium }}
-                            style={{ width: 20, height: 20 }}></Image>
-                        </View>
-                      </TouchableHighlight>
-                    </View>
-                  )}></FlatList>
+                {this.props.canRemove == true ? this._renderRemove(this.props.kind) : null}
               </View>
             </View>
-          </View>
-        </Modal>
+          </Modal>
 
-      </View>
+          {/* popup Addd*/}
+          <Modal
+            isVisible={this.state.upPopupAdd}
+            onBackdropPress={() => {
+              this.setState({ upPopupAdd: false });
+            }}>
+            <View style={{ backgroundColor: '#fff', height: 280 }}>
+              <Button
+                title={'Chọn playlist để thêm'}
+                onPress={() => {
+                  this.setState({ upPopupAdd: false });
+                }}></Button>
+              <View style={{ flex: 1, margin: 0 }}>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    margin: 5,
+                  }}>
+                  <FlatList
+                    data={this.props.dataAllPlaylist.list}
+                    renderItem={({ item, index }) => (
+                      <View
+                        style={{
+                          flex: 1,
+                          width: '100%',
+                          alignContent: 'center',
+                          marginBottom: 5,
+                          borderWidth: 2,
+                          borderColor: 'red',
+                          borderRadius: 3,
+                          backgroundColor: '#1abc9c',
+                        }}>
+                        <TouchableHighlight
+                          onPress={() => {
+                            this._addSongtoPlaylist(
+                              item.id,
+                              this.props.id,
+                              this.props.title,
+                              this.props.artists_names,
+                              this.props.image,
+                              this.props.lyric,
+                              this.props.duration,
+                            );
+
+                          }}
+                          underlayColor={'#e74c3c'}
+                          style={{}}>
+                          <View>
+                            <Text style={{ fontSize: 18 }}> {item.title}</Text>
+                            <Image
+                              source={{ uri: item.thumbnail_medium }}
+                              style={{ width: 20, height: 20 }}></Image>
+                          </View>
+                        </TouchableHighlight>
+                      </View>
+                    )}></FlatList>
+                </View>
+              </View>
+            </View>
+          </Modal>
+
+        </View>
       </TouchableOpacity>
     );
   }
@@ -431,11 +517,15 @@ function mapStateToProps(state) {
     myCurrentSong: state.currentSong,
     dataAllPlaylist: state.dataAllPlaylist,
     dataBHVuaNghe: state.dataBHVuaNghe,
+    dataMusicLocal: state.dataMusicLocal,
+    idPlaylist:state.currentPlayListOffline.id,
+    
+
   };
 }
 
-export default connect(mapStateToProps, { setSongPlay, setDataAllPlayList, setDataMusicLocal, setDataBHVuaNghe })(
-  ItemInforBaiHat,
+export default connect(mapStateToProps, { setSongPlay, setDataAllPlayList, setDataMusicLocal,setPlayListOffline, setDataBHVuaNghe, removeSongFromLocal })(
+  ItemInforBaiHat
 );
 const styles = StyleSheet.create({
   container: {

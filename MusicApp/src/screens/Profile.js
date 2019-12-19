@@ -25,6 +25,8 @@ class ProfileScreen extends TrackPlayer.ProgressComponent {
   };
 
   componentDidMount() {
+    var path = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/lala"
+    RNFetchBlob.fs.unlink(path, 'utf8')
   //   var path = RNFetchBlob.fs.dirs.SDCardDir + '/Datalocal/Music_Local/testLyric.js'
   //   console.log(path);
  

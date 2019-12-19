@@ -9,6 +9,7 @@ import {
 import {Dimensions} from 'react-native';
 import ItemInforBaiHat from '../components/ItemInforBaiHat';
 const screenWidth = Math.round(Dimensions.get('window').width);
+import Icon from 'react-native-vector-icons/Entypo'
 
 
 import {connect} from 'react-redux';
@@ -19,6 +20,14 @@ class DanhSachBaiHat extends Component {
     super(props);
     console.log('Constructor');
     this.state = {};
+  }
+  _renderRemove()
+  {
+    return(
+      <TouchableOpacity>
+      <Icon name="trash" size ={20} style={{marginTop:28}}></Icon>
+      </TouchableOpacity>
+    )
   }
 
 
@@ -37,9 +46,12 @@ class DanhSachBaiHat extends Component {
               initialNumToRender={5}
               maxToRenderPerBatch={6}
               windowSize={6}
+              
               renderItem={({item, index}) => (
-         
+                             
                   <ItemInforBaiHat
+                    kind={this.props.kind}
+                    canRemove={this.props.canRemove}
                     stt={++index}
                     id={item.id}
                     title={item.title}
@@ -50,6 +62,8 @@ class DanhSachBaiHat extends Component {
                     colorItem={1}
                     linkMp3={item.linkMp3}
                   />
+                  
+                 
              
               )}
               keyExtractor={item => item.id}
