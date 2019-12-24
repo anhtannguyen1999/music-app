@@ -1,160 +1,390 @@
-import React, { Component, cloneElement } from 'react';
-import { StyleSheet, View, FlatList, Text, Button, TouchableOpacity, SafeAreaView, AsyncStorage,Image } from 'react-native';
+import React, {Component, cloneElement} from 'react';
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  Text,
+  Button,
+  TouchableOpacity,
+  SafeAreaView,
+  AsyncStorage,
+  Image,
+  TextInput,
+} from 'react-native';
 
 import TrackPlayer from 'react-native-track-player';
-import { Autocomplete, withKeyboardAwareScrollView } from "react-native-dropdown-autocomplete";
+import {
+  Autocomplete,
+  withKeyboardAwareScrollView,
+} from 'react-native-dropdown-autocomplete';
 
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import RNFetchBlob from 'rn-fetch-blob'
-import Modal from "react-native-modal";
-import { connect } from 'react-redux';
-import { setSongPlay } from '../redux/action';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import RNFetchBlob from 'rn-fetch-blob';
+import Modal from 'react-native-modal';
+import {connect} from 'react-redux';
+import {setSongPlay} from '../redux/action';
 import Player from '../player/Player';
-class ProfileScreen extends TrackPlayer.ProgressComponent {
+import {FirebaseApp} from '../components/FirebaseConfig.js';
+import ItemComment from '../components/ItemComment';
+import { Alert } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+class ProfileScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: [],
-      temp: '',
-      up: false
+      onEditName: false,
+      tempName:'',
+      onEditPhone: false,
+      tempPhone:'',
+      phoneNumber:'',
+      onRePass:false,
+      pass:'',
+      newPass:'',
+      re_newPass:'',
     };
-
   }
   static navigationOptions = {
     header: null,
   };
 
   componentDidMount() {
-    var path = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/lala"
-    RNFetchBlob.fs.unlink(path, 'utf8')
-  //   var path = RNFetchBlob.fs.dirs.SDCardDir + '/Datalocal/Music_Local/testLyric.js'
-  //   console.log(path);
- 
-  //   const { config, fs } = RNFetchBlob
-  //  // let PictureDir = fs.dirs.PictureDir // this is the pictures directory. You can check the available directories in the wiki.
-  //   let options = {
-  //     fileCache: true,
-  //     addAndroidDownloads: {
-  //       useDownloadManager: true, // setting it to true will use the device's native download manager and will be shown in the notification bar.
-  //       notification: true,
-  //       title:'download',
-  //      // path: PictureDir + "/me_" + Math.floor(date.getTime() + date.getSeconds() / 2), // this is the path where your downloaded file will live in
-  //       path:path,
-  //      description: 'Downloading music.'
-  //     }
-  //   }
-  //   config(options).fetch('GET', 'https://static-zmp3.zadn.vn/lyrics/6/f/9/7/6f97fc3d7c394df24915e878b913d7bb.lrc').then((res) => {
-  //     console.log("down load!")
-      // do some magic here
-    
-
+    var t = new Date();
+    console.log(FirebaseApp.auth().currentUser.displayName);
+    console.log( this._refeshPhone())
+   
+    // FirebaseApp.auth().currentUser.updateProfile({displayName:'Thang Music',photoURL:'http://prod-upp-image-read.ft.com/cb04f9ee-e8f0-11e9-aefb-a946d2463e4b'})
   }
 
-
-
-
-  render() {
-    var tt = [
-      {
-        id: 1,
-        value: "111"
-      },
-      {
-        id: 2,
-        value: "222"
-      },
-      {
-        id: 3,
-        value: "333"
-      }
-    ]
-    const data = [
-      "Apples",
-      "Broccoli",
-      "Chicken",
-      "Duck",
-      "Eggs",
-      "Fish",
-      "Granola",
-      "Hash Browns",
-    ];
-    console.log(this.state.temp)
-    var p=RNFetchBlob.fs.dirs.SDCardDir+"/Download/thumbnail_medium.jpg"
-    return (
-      <View style={styles.autocompletesContainer}>
-        <Image width={150} height={150} source={{p}}></Image>
-        <Button title='Up' onPress={() => { this.setState({ up: true }) }}>
-        </Button>
-        <Modal isVisible={this.state.up} >
-          <View style={{ backgroundColor: '#aaa', height: 300 }}>
-            <Button title={'down'} onPress={() => { this.setState({ up: false }) }}></Button>
+  _renderEdit(type) {
+ 
+    if(type=='updateName'){
+      if (this.state.onEditName == false) {
+        return (
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              alignItems: 'flex-end',
+              justifyContent: 'space-evenly',
+            }}>
+            <TouchableOpacity onPress={() => this.setState({onEditName: true})}>
+              <Icon name="edit" size={20}></Icon>
+            </TouchableOpacity>
           </View>
-        </Modal>
+        );
+      } else {
+        return (
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              alignItems: 'flex-end',
+              //justifyContent: 'space-evenly',
+            }}>
+            <TouchableOpacity onPress={()=>{ this._updateName()}}>
+              <Icon name="check" size={20}></Icon>
+            </TouchableOpacity>
+  
+            <TouchableOpacity onPress={() => this.setState({onEditName: false})}>
+              <Icon name="window-close" size={20}></Icon>
+            </TouchableOpacity>
+          </View>
+        );
+      }
+
+    }
+   else 
+    if(type=='updatePhone'){
+      if (this.state.onEditPhone == false) {
+        return (
+         
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              alignItems: 'flex-end',
+              justifyContent: 'space-evenly',
+            }}>
+            <TouchableOpacity onPress={() => this.setState({onEditPhone: true})}>
+              <Icon name="edit" size={20}></Icon>
+            </TouchableOpacity>
+          </View>
+        );
+      } else {
+        return (
+          <View
+            style={{
+              flexDirection: 'row',
+              flex: 1,
+              alignItems: 'flex-start',
+              //justifyContent: '',
+            }}>
+            <TouchableOpacity onPress={()=>{ this._updatePhone()}}>
+              <Icon name="check" size={20}></Icon>
+            </TouchableOpacity>
+  
+            <TouchableOpacity onPress={() => this.setState({onEditPhone: false})}>
+              <Icon name="window-close" size={20}></Icon>
+            </TouchableOpacity>
+            
+          </View>
+          
+        );
+      }
+
+    }
+  }
+
+  _renderRePass()
+  {
+    if(!this.state.onRePass)
+    return(
+      <TouchableOpacity onPress={()=>{this.setState({onRePass:true})}}>
+    <View style={styles.conItem}>
+    <Text> </Text>
+      <Icon name="lock" size={20}></Icon>
+      <Text> ChangePass </Text>
+      <TextInput
+      secureTextEntry={true}
+        style={{height: 40, width: '65%'}}
+        value={ "aaaaaaaaaaaaaaaaaaaaaa"}
+        placeholder={'null'}
+        editable={false}
+        onChangeText={(text)=>{ if(this.state.onEditPhone) this.setState({tempPhone:text})}}
+        disableFullscreenUI={false}></TextInput>     
+    </View>
+    </TouchableOpacity>
+    )
+    else{
+      return(
+      <View style={{borderColor:'#000',borderWidth:3,width:'96%',borderRadius:5}}>
+      <View style={styles.conPass}>
+    <Text> </Text>
+      <Icon name="lock" size={20}></Icon>
+      <Text> Pre-Pass: </Text>
+      <TextInput
+        secureTextEntry={true}
+        style={{height: 40, width: '65%'}}
+        placeholder={'null'}
+        editable={true}
+        onChangeText={(text)=>{ if(this.state.onEditPhone) this.setState({tempPhone:text})}}
+        disableFullscreenUI={false}></TextInput>     
+    </View >
+    <View style={styles.conPass}>
+    <Text> </Text>
+      <Icon name="unlock" size={20}></Icon>
+      <Text> newPass: </Text>
+      <TextInput
+        secureTextEntry={true}
+        style={{height: 40, width: '65%'}}
+        placeholder={'null'}
+        editable={true}
+        onChangeText={(text)=>{ if(this.state.onEditPhone) this.setState({tempPhone:text})}}
+        disableFullscreenUI={false}></TextInput>     
+    </View>
+    <View style={styles.conPass}>
+    <Text> </Text>
+      <Icon name="unlock-alt" size={20}></Icon>
+      <Text> Re-newPass: </Text>
+      <TextInput
+        secureTextEntry={true}
+        style={{height: 40, width: '65%'}}
+        placeholder={'null'}
+        editable={true}
+        onChangeText={(text)=>{ if(this.state.onEditPhone) this.setState({tempPhone:text})}}
+        disableFullscreenUI={false}></TextInput>     
+    </View>
+
+    <View>
+
+      <Button title="Ok" style={{}}></Button>
+      
+      <Button title="Hủy" onPress={()=>{this.setState({onRePass:false})}}></Button>
+    </View>
 
       </View>
+      )
+    }
+  }
+
+  _updatePhone()
+  {
+    FirebaseApp.database()
+      .ref('User/' + FirebaseApp.auth().currentUser.uid)
+      .set({
+       // name: FirebaseApp.auth().currentUser.displayName,
+        phone: this.state.tempPhone,      
+      }).then(()=>{this.setState({tempPhone:'',onEditPhone:false})}).then(()=>{this._refeshPhone()})
+  }
+
+  _refeshPhone()
+  {
+    var phoneNumber='';
+    FirebaseApp.database()
+    .ref('User/' + FirebaseApp.auth().currentUser.uid+"/phone")
+    .once('value',data=>{
+
+      phoneNumber=data.val();
+      this.setState({phoneNumber:phoneNumber})       
+    })
+  }
+
+  _updateName()
+  {
+    FirebaseApp.auth().currentUser.updateProfile({displayName:this.state.tempName})
+    .then(()=>{this.setState({onEditName:false,tempName:''});})
+    .then(function() {
+      // Profile updated successfully!
+      // "Jane Q. User"
+      
+      
+
+    }, function(error) {
+        Alert.alert("Update name error")
+      // An error happened.
+    });
+  }
+_changePass()
+{
+ 
+  
+}
+  render() {
+    console.log(this.state.temp);
+
+    return (
+      <ScrollView>
+      <View style={styles.container}>
+        <View
+          style={{
+            margin: 10,
+            flex: 1.2,
+            alignItems: 'center',
+            borderWidth: 2,
+            borderColor: 'red',
+            width: '95%',
+          }}>
+          <Image style={styles.conAvatar} resizeMode={'cover'} source={{uri: FirebaseApp.auth().currentUser.photoURL}}></Image>
+          <Text>Upload Avatar </Text>
+        </View>
+
+        <View
+          style={{
+            margin: 10,
+            justifyContent: 'flex-start',
+            flex: 2,
+            width: '100%',
+          }}>
+          <View style={styles.conItem}>
+            <Text> </Text>
+            <Icon name="envelope" size={20}></Icon>
+            <Text> E-mail: {FirebaseApp.auth().currentUser.email}</Text>
+          </View>
+
+          <View style={styles.conItem}>
+          <Text> </Text>
+            <Icon name="id-card" size={20}></Icon>
+            <Text> Id User: {FirebaseApp.auth().currentUser.uid}</Text>
+          </View>
+
+          <View style={styles.conItem}>
+          <Text> </Text>
+            <Icon name="signature" size={20}></Icon>
+            <Text> Name: </Text>
+            <TextInput
+              style={{height: 40, width: '65%'}}
+              value={ this.state.onEditName==false? FirebaseApp.auth().currentUser.displayName: this.state.tempName}
+              placeholder={'null'}
+              editable={true}
+              onChangeText={(text)=>{ if(this.state.onEditName) this.setState({tempName:text})}}
+              disableFullscreenUI={false}></TextInput>
+            {this._renderEdit('updateName')}
+          </View>
+
+          <View style={styles.conItem}>
+          <Text> </Text>
+            <Icon name="phone" size={20}></Icon>
+            <Text> Phone: </Text>
+            <TextInput
+              style={{height: 40, width: '65%'}}
+              value={ this.state.onEditPhone==false? this.state.phoneNumber: this.state.tempPhone}
+              placeholder={'null'}
+              editable={true}
+              onChangeText={(text)=>{ if(this.state.onEditPhone) this.setState({tempPhone:text})}}
+              disableFullscreenUI={false}></TextInput>
+
+            {this._renderEdit('updatePhone')}
+          </View>
+          {this._renderRePass()}
+        </View>
+      </View>
+      </ScrollView>
     );
   }
 }
 
 function mapStateToProps(state) {
-  return { myCurrentSong: state.currentSong };
+  return {myCurrentSong: state.currentSong};
 }
 
-export default connect(mapStateToProps, { setSongPlay })(ProfileScreen);
+export default connect(mapStateToProps, {setSongPlay})(ProfileScreen);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: 1000,
+    width: '100%',
     justifyContent: 'center',
     alignItems: 'flex-start',
     backgroundColor: '#fff',
     flexDirection: 'column',
   },
-  autocompletesContainer: {
-    paddingTop: 0,
-    zIndex: 1,
-    width: '100%',
-    paddingHorizontal: 8,
-    alignSelf: 'stretch'
+  conAvatar: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    backgroundColor: '#999',
+    borderColor: '#456',
+    borderWidth: 5,
   },
-  input: { maxHeight: 40 },
-  con1: {
-    width: "100%",
-    fontSize: 20,
-    color: "#000",
+  conItem: {
+    height: 40,
+    flexDirection: 'row',
+    width: '95%',
+    borderColor: '#987',
+    borderWidth: 1,
+    borderRadius: 1,
+    alignItems: 'center',
+    margin: 2,
+    alignContent: 'center',
   },
-  con2: {
-    width: "100%",
-    fontSize: 20,
-    color: "#f0f",
-    color: "#F45"
+  conPass:{
+    height: 40,
+    flexDirection: 'row',
+    width: '99%',
+    borderColor: '#000',
+    borderWidth: 1,
+    borderRadius: 1,
+    alignItems: 'center',
+    margin: 2,
+    alignContent: 'center',
+
   },
 
-  input: { maxHeight: 40 },
+  input: {maxHeight: 40},
   inputContainer: {
-    display: "flex",
+    flex: 1,
+    display: 'flex',
     flexShrink: 0,
     flexGrow: 0,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
     borderBottomWidth: 1,
-    borderColor: "#c7c6c1",
+    borderColor: '#c7c6c1',
     paddingVertical: 13,
     paddingLeft: 12,
-    paddingRight: "5%",
-    width: "100%",
-    justifyContent: "flex-start",
+    paddingRight: '5%',
+    width: '100%',
+    justifyContent: 'flex-start',
   },
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-  },
-  plus: {
-    position: "absolute",
-    left: 15,
-    top: 10,
-  },
-
 });
