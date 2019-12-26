@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  Button
 } from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {Dimensions} from 'react-native';
@@ -16,7 +17,7 @@ import PlayList from '../components/PlayList';
 import DanhSachBaiHat from '../components/DanhSachBaiHat'
 
 import {connect} from 'react-redux';
-import {setSongPlay, setPlayListOnline} from '../redux/action';
+import {setSongPlay, setPlayListOnline,setDataDanhSachDangNghe,playInIndex} from '../redux/action';
 
 class ChiTiet_PlayListOnlineScreen extends Component {
   constructor(props) {
@@ -61,6 +62,27 @@ class ChiTiet_PlayListOnlineScreen extends Component {
         </View>
         <View style={styles.container1}>
           {/*<Text style={styles.tieuDe}> Danh sach bai hat:</Text>*/}
+          <View style={{ alignItems: 'flex-start', width: '89%' }}>
+            <Button title="Nghe tất cả" onPress={() => {
+              //Player.AddPlayingList();
+              Player.ClearPlayingList();
+              this.props.setDataDanhSachDangNghe('DSDN',this.props.myPlayListOnline.dataSong.song.items);
+              this.props.myPlayListOnline.dataSong.song.items.forEach(element => {
+                Player.AddASongToPlayingList(
+                  element.id,
+                  'http://api.mp3.zing.vn/api/streaming/audio/' + element.id + '/128',
+                  element.title,
+                  element.artists_names,
+                  element.thumbnail_medium,
+                  element.duration,
+                  element.lyric,
+                );
+                //console.log("Them " + element.title);
+              });
+             // this.props.playInIndex(1,'1',this.props.myPlayListOnline.dataSong.song.items);
+              Player.PlayMusicAtIndex(1);
+            }}></Button>
+          </View>
             <DanhSachBaiHat dataDanhSachBaiHat={this.props.myPlayListOnline.dataSong.song.items}></DanhSachBaiHat>
         </View>
       </View>
@@ -72,7 +94,7 @@ function mapStateToProps(state) {
   return {myPlayListOnline: state.currentPlayListOnline};
 }
 
-export default connect(mapStateToProps, {setSongPlay})(ChiTiet_PlayListOnlineScreen);
+export default connect(mapStateToProps, {setSongPlay,setDataDanhSachDangNghe,playInIndex})(ChiTiet_PlayListOnlineScreen);
 
 const styles = StyleSheet.create({
   container: {

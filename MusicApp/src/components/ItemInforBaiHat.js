@@ -13,12 +13,13 @@ import {
 import { Dimensions } from 'react-native';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { setSongPlay, setDataAllPlayList, setDataMusicLocal, setDataBHVuaNghe, removeSongFromLocal,setPlayListOffline } from '../redux/action';
+import { setSongPlay, setDataAllPlayList, setDataMusicLocal, setDataBHVuaNghe, removeSongFromLocal,setPlayListOffline ,setPlay} from '../redux/action';
 import Icon from 'react-native-vector-icons/Entypo';
 import Modal from 'react-native-modal';
 import { FlatList } from 'react-native-gesture-handler';
 import RNFetchBlob from 'rn-fetch-blob';
 import Player from '../player/Player';
+import DanhSachBaiHat from "./DanhSachBaiHat"
 
 const screenWidth = Math.round(Dimensions.get('window').width);
 
@@ -46,6 +47,7 @@ class ItemInforBaiHat extends Component {
 
   _removeSongFromPlayList()
   {
+  
      var idPlaylist=this.props.idPlaylist
 
    // var path = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/PlayList_Local/MusicLocalManager.js"
@@ -285,7 +287,11 @@ class ItemInforBaiHat extends Component {
     return (
       <TouchableOpacity style={{ flex: 1, width: "100%" }}
         onPress={() => {
-          this._addSongtoBHVuaNghe();
+          if (this.props.kind !='PlayingList'){
+            Player.ClearPlayingList();
+            Player.AddASongToPlayingList(this.props.id, this.props.linkMp3, this.props.title, this.props.artists_names, this.props.image, this.props.duration, this.props.lyric);
+          }
+          this.props.setPlay();
           this.props.setSongPlay(
             this.props.id,
             this.props.title,
@@ -315,10 +321,13 @@ class ItemInforBaiHat extends Component {
               this.props.image,
               this.props.duration,
             )
-          }
+          };
+          this._addSongtoBHVuaNghe();
+          DanhSachBaiHat.setMusicPlaying();
+
         }}>
         <View
-          style={{
+          style={[{
             flex: 1,
             width: screenWidth * 0.87,
             flexDirection: 'row',
@@ -326,8 +335,7 @@ class ItemInforBaiHat extends Component {
             alignItems: 'center',
             marginTop: 5,
             marginLeft: 5,
-            backgroundColor: '#ccc',
-          }}>
+          }, this.props.isTrongSuot == 'true' ? { backgroundColor: '#c8d6e570' } : { backgroundColor: '#ccc',}]}>
 
 
           <View>
@@ -520,11 +528,12 @@ function mapStateToProps(state) {
     dataMusicLocal: state.dataMusicLocal,
     idPlaylist:state.currentPlayListOffline.id,
     
+    
 
   };
 }
 
-export default connect(mapStateToProps, { setSongPlay, setDataAllPlayList, setDataMusicLocal,setPlayListOffline, setDataBHVuaNghe, removeSongFromLocal })(
+export default connect(mapStateToProps, { setSongPlay, setDataAllPlayList, setDataMusicLocal,setPlayListOffline, setDataBHVuaNghe, removeSongFromLocal,setPlay })(
   ItemInforBaiHat
 );
 const styles = StyleSheet.create({

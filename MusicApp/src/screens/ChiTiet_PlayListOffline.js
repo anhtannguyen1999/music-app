@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  Button
 } from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {Dimensions} from 'react-native';
@@ -45,21 +46,43 @@ class ChiTiet_PlayListOfflineScreen extends Component {
                 uri: this.props.navigation.getParam('thumbnail_medium', 0),
               }}
               onError={e => {}}></Image>
-            <View>
-              <Text style={{fontSize: 17}}>
-                {this.props.navigation.getParam('title', '')}
-              </Text>
-              <Text style={{fontSize: 15}}>
-                {this.props.myPlayListOffline.dataSong.length} bài
-              </Text>
-              <Text style={{fontSize: 15}}>
-                {'Lượt nghe: 0'}
-                {}
-              </Text>
+            <View style={{flexDirection:'column'}}>
+              <View style={{flex:1}}>
+                <Text style={{ fontSize: 17 }}>
+                  {this.props.navigation.getParam('title', '')}
+                </Text>
+                <Text style={{ fontSize: 15 }}>
+                  {this.props.myPlayListOffline.dataSong.length} bài
+                </Text>
+                <Text style={{ fontSize: 15 }}>
+                  {'Lượt nghe: 0'}
+                  {}
+                </Text>
+              </View>              
             </View>
           </View>
         </View>
         <View style={styles.container1}>
+
+        <View style={{alignItems:'flex-start',width:'89%'}}>
+            <Button title="Nghe tất cả" onPress={()=>{
+              //Player.AddPlayingList();
+              Player.ClearPlayingList();
+              this.props.myPlayListOffline.dataSong.forEach(element => {
+                Player.AddASongToPlayingList(
+                  element.id,
+                  'http://api.mp3.zing.vn/api/streaming/audio/' + element.id +'/128',
+                  element.title,
+                  element.artists_names,
+                  element.thumbnail_medium,
+                  element.duration,
+                  element.lyric,
+            );
+            //console.log("Them " + element.title);
+          });
+          Player.PlayMusicAtIndex(1);
+            }}></Button>
+          </View>
           {/*<Text style={styles.tieuDe}> Danh sach bai hat:</Text>*/}
             <DanhSachBaiHat kind={'PlayList_Offline'} canRemove={true} dataDanhSachBaiHat={this.props.myPlayListOffline.dataSong} /*dataDanhSachBaiHat={this.props.dataAllPlaylist.list[this.props.navigation.getParam('id', 0)].song.items}*/></DanhSachBaiHat>
         </View>

@@ -25,9 +25,23 @@ import {connect} from 'react-redux';
 import {setSongPlay} from '../redux/action';
 import Player from '../player/Player';
 import {FirebaseApp} from '../components/FirebaseConfig.js';
+import firebase from 'firebase'
 import ItemComment from '../components/ItemComment';
 import { Alert } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import ImagePicker from 'react-native-image-picker';
+const options = {
+  title: 'Select Avatar',
+  customButtons: [{ name: 'fb', title: 'Choose Photo from Facebook' }],
+  storageOptions: {
+    skipBackup: true,
+    path: 'images',
+  },
+};
+
+const Blob = RNFetchBlob.polyfill.Blob;
+const fs = RNFetchBlob.fs;
+
 class ProfileScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -41,6 +55,7 @@ class ProfileScreen extends React.Component {
       pass:'',
       newPass:'',
       re_newPass:'',
+      avatarSource:''
     };
   }
   static navigationOptions = {
@@ -50,6 +65,7 @@ class ProfileScreen extends React.Component {
   componentDidMount() {
     var t = new Date();
     console.log(FirebaseApp.auth().currentUser.displayName);
+    this.setState({avatarSource:FirebaseApp.auth().currentUser.photoURL})
     console.log( this._refeshPhone())
    
     // FirebaseApp.auth().currentUser.updateProfile({displayName:'Thang Music',photoURL:'http://prod-upp-image-read.ft.com/cb04f9ee-e8f0-11e9-aefb-a946d2463e4b'})
@@ -163,11 +179,12 @@ class ProfileScreen extends React.Component {
       <Icon name="lock" size={20}></Icon>
       <Text> Pre-Pass: </Text>
       <TextInput
+      ref={'currentPass'}
         secureTextEntry={true}
         style={{height: 40, width: '65%'}}
         placeholder={'null'}
         editable={true}
-        onChangeText={(text)=>{ if(this.state.onEditPhone) this.setState({tempPhone:text})}}
+        onChangeText={(text)=>{ if(this.state.onRePass) this.setState({pass:text})}}
         disableFullscreenUI={false}></TextInput>     
     </View >
     <View style={styles.conPass}>
@@ -175,11 +192,12 @@ class ProfileScreen extends React.Component {
       <Icon name="unlock" size={20}></Icon>
       <Text> newPass: </Text>
       <TextInput
+      ref={'newPass1'}
         secureTextEntry={true}
         style={{height: 40, width: '65%'}}
         placeholder={'null'}
         editable={true}
-        onChangeText={(text)=>{ if(this.state.onEditPhone) this.setState({tempPhone:text})}}
+        onChangeText={(text)=>{ if(this.state.onRePass) this.setState({newPass:text})}}
         disableFullscreenUI={false}></TextInput>     
     </View>
     <View style={styles.conPass}>
@@ -187,17 +205,18 @@ class ProfileScreen extends React.Component {
       <Icon name="unlock-alt" size={20}></Icon>
       <Text> Re-newPass: </Text>
       <TextInput
+      ref={'newPass2'}
         secureTextEntry={true}
         style={{height: 40, width: '65%'}}
         placeholder={'null'}
         editable={true}
-        onChangeText={(text)=>{ if(this.state.onEditPhone) this.setState({tempPhone:text})}}
+        onChangeText={(text)=>{ if(this.state.onRePass) this.setState({re_newPass:text})}}
         disableFullscreenUI={false}></TextInput>     
     </View>
 
     <View>
 
-      <Button title="Ok" style={{}}></Button>
+      <Button title="Ok" onPress={()=>{this._changePassword(this.state.pass,this.state.newPass)}} style={{}}></Button>
       
       <Button title="Hủy" onPress={()=>{this.setState({onRePass:false})}}></Button>
     </View>
@@ -244,13 +263,107 @@ class ProfileScreen extends React.Component {
       // An error happened.
     });
   }
-_changePass()
+
+_changePassword = (currentPassword, newPassword) => {
+  if(this.state.newPass!=this.state.re_newPass)
+  {
+    Alert.alert("New pass must = Re new pass!!")
+  }
+  console.log(this.state.pass +"----"+this.state.newPass)
+  this.reauthenticate(currentPassword).then(() => {
+    var user = FirebaseApp.auth().currentUser;
+    user.updatePassword(newPassword).then(() => {
+      console.log("Password updated!");
+      Alert.alert("Password updated!!");
+      this.setState({pass:'',newPass:'',re_newPass:'',onRePass:false})
+    }).catch((error) => { console.log("1"+error); Alert.alert("Password should be at least 6 characters")});
+  }).catch((error) => { console.log("2"+error); Alert.alert("Curent Password invalid!!") });
+}
+
+
+reauthenticate = (currentPassword) => {
+  var user = FirebaseApp.auth().currentUser;
+  var cred = firebase.auth.EmailAuthProvider.credential(
+      user.email, currentPassword);
+  return user.reauthenticateWithCredential(cred);
+}
+
+_sign_out()
 {
- 
+  FirebaseApp.auth().signOut().then(function() {
+    // Sign-out successful.
+   // this._gotoLogin();
+   
+  }).catch(function(error) {
+     console.log(error)
+  });
+  this.props.navigation.navigate('Login')
   
 }
+_upload()
+{
+  ImagePicker.showImagePicker(options, (response) => {
+    //console.log('Response = ', response);
+  
+    if (response.didCancel) {
+//console.log('User cancelled image picker');
+    } else if (response.error) {
+      //console.log('ImagePicker Error: ', response.error);
+    } else if (response.customButton) {
+     // console.log('User tapped custom button: ', response.customButton);
+    } else {
+
+     
+      const source = { uri: response.uri };
+      this.uploadImage(response.uri).then(url =>{FirebaseApp.auth().currentUser.updateProfile({photoURL:url}), this.setState({
+        avatarSource: url,
+      }),console.log(this.state.avatarSource)})
+;
+    }
+  });
+}
+
+ uploadImage(uri, mime = 'image/jpeg', name) {
+  window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest;
+  window.Blob = Blob;
+  return new Promise((resolve, reject) => {
+    let imgUri = uri; let uploadBlob = null;
+    const uploadUri = Platform.OS === 'ios' ? imgUri.replace('file://', '') : imgUri;
+    const { currentUser } = FirebaseApp.auth();
+    const imageRef = FirebaseApp.storage().ref("images").child(`${currentUser.uid}.jpg`)
+
+    fs.readFile(uploadUri, 'base64')
+      .then(data => {
+        return Blob.build(data, { type: `${mime};BASE64` });
+      })
+      .then(blob => {
+        uploadBlob = blob;
+        return imageRef.put(blob, { contentType: mime, name: name });
+      })
+      .then(() => {
+        uploadBlob.close()
+        //FirebaseApp.auth().currentUser.updateProfile({photoURL:imageRef.getDownloadURL()})
+        console.log("link"+ imageRef.getDownloadURL())
+        
+        return imageRef.getDownloadURL();
+        
+      })
+      .then(url => {
+        resolve(url);
+      })
+      .catch(error => {
+        reject(error)
+    })
+  })
+}
+
+
+_upImagetofirebase()
+{
+
+}
   render() {
-    console.log(this.state.temp);
+ 
 
     return (
       <ScrollView>
@@ -261,11 +374,14 @@ _changePass()
             flex: 1.2,
             alignItems: 'center',
             borderWidth: 2,
-            borderColor: 'red',
+            borderColor: "#999",
+            borderRadius:5,
             width: '95%',
+            padding:5
           }}>
-          <Image style={styles.conAvatar} resizeMode={'cover'} source={{uri: FirebaseApp.auth().currentUser.photoURL}}></Image>
-          <Text>Upload Avatar </Text>
+            
+          <Image style={styles.conAvatar} resizeMode={'cover'} source={{uri:this.state.avatarSource}}></Image>
+          <Button title="Upload image" onPress={()=>{this._upload()}}></Button>
         </View>
 
         <View
@@ -316,6 +432,17 @@ _changePass()
             {this._renderEdit('updatePhone')}
           </View>
           {this._renderRePass()}
+          <TouchableOpacity onPress={()=>{this._sign_out()}}>
+          <View style={styles.conItem}>
+           
+              
+            
+          <Text> </Text>
+            <Icon name="sign-out-alt" size={20}></Icon>
+            <Text> Log out </Text> 
+          </View>
+          </TouchableOpacity>
+
         </View>
       </View>
       </ScrollView>
@@ -342,8 +469,8 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    backgroundColor: '#999',
-    borderColor: '#456',
+    backgroundColor: '#81ecec',
+    borderColor: '#0984e3',
     borderWidth: 5,
   },
   conItem: {
@@ -351,6 +478,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '95%',
     borderColor: '#987',
+    backgroundColor:'#fff',
     borderWidth: 1,
     borderRadius: 1,
     alignItems: 'center',

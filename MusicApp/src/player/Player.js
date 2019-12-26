@@ -12,27 +12,35 @@ import {
 import Slider from 'react-native-slider';
 import RNFetchBlob from 'rn-fetch-blob'
 const screenWidth = Math.round(Dimensions.get('window').width);
-export default class Player {
+
+import {connect} from 'react-redux';
+import {setPause,setPlay,setDataDanhSachDangNghe} from '../redux/action';
+
+
+
+ class Player {
   static KhoiTaoPlayer() {
     TrackPlayer.addEventListener('remote-play', () => TrackPlayer.play());
     TrackPlayer.addEventListener('remote-pause', () => TrackPlayer.pause());
     TrackPlayer.addEventListener('remote-stop', () => TrackPlayer.destroy());
     TrackPlayer.addEventListener('remote-next', () => {
-      console.log(TrackPlayer.getCurrentTrack());
-      console.log(TrackPlayer.getDuration());
-      console.log(TrackPlayer.getPosition());
-      console.log(TrackPlayer.getQueue());
-      console.log(TrackPlayer.getRate());
-      console.log(TrackPlayer.getState());
-      console.log(TrackPlayer.getTrack());
-      console.log(TrackPlayer.getVolume());
+      // console.log(TrackPlayer.getCurrentTrack());
+      // console.log(TrackPlayer.getDuration());
+      // console.log(TrackPlayer.getPosition());
+      // console.log(TrackPlayer.getQueue());
+      // console.log(TrackPlayer.getRate());
+      // console.log(TrackPlayer.getState());
+      // console.log(TrackPlayer.getTrack());
+      // console.log(TrackPlayer.getVolume());
       //console.log(TrackPlayer.reset());
-      console.log(TrackPlayer);
-      TrackPlayer.skipToNext();
+      // console.log(TrackPlayer);
+      // TrackPlayer.skipToNext();
+      this.PlayNext();
     });
-    TrackPlayer.addEventListener('remote-previous', () =>
-      TrackPlayer.skipToPrevious(),
-    );
+    TrackPlayer.addEventListener('remote-previous', () =>{
+      //TrackPlayer.skipToPrevious(),
+     this.PlayPre();
+    });
     TrackPlayer.updateOptions({
       // One of RATING_HEART, RATING_THUMBS_UP_DOWN, RATING_3_STARS, RATING_4_STARS, RATING_5_STARS, RATING_PERCENTAGE
       ratingType: TrackPlayer.RATING_5_STARS,
@@ -71,9 +79,51 @@ export default class Player {
       icon: require('../../res/ic_notifi.png'), // The notification icon
     });
   }
+
+  static PlayNext(){
+    if (this.playingList.length>1)
+    {
+      console.log(this.typeNext);
+      if (this.typeNext == 0) { //phat tuan tu
+        console.log("Next to: " + (this.playingIndexList - 1 + 1) % this.playingList.length + 1);
+        this.PlayMusicAtIndex((this.playingIndexList - 1 + 1) % this.playingList.length + 1);
+      }
+      else { //phat ngau nhien
+        let ranNum = Math.floor(Math.random() * this.playingList.length) + 1;
+        this.PlayMusicAtIndex(ranNum);
+      }
+    }
+    
+  }
+  static PlayPre() {
+    if (this.playingList.length > 1){
+      if (this.typeNext == 0) { //phat tuan tu
+        console.log("Pre to: " + (this.playingIndexList - 1 - 1 + this.playingList.length) % this.playingList.length + 1);
+        this.PlayMusicAtIndex((this.playingIndexList - 1 - 1 + this.playingList.length) % this.playingList.length + 1);
+      }
+      else { //phat ngau nhien
+        let ranNum = Math.floor(Math.random() * this.playingList.length) + 1;
+        this.PlayMusicAtIndex(ranNum);
+      }
+    }
+    
+  }
+
+
   static daKhoiTao = false;
   static duration = 0;
   static _getDuration() {
+    try{
+      TrackPlayer.getDuration().then(res => {
+        if (this.duration != parseInt(res + "")){
+          //console.log('a');
+          this.duration = parseInt(res + "");
+        }
+      });
+      
+    }catch(e){
+      
+    }
     return this.duration;
   }
 
@@ -82,9 +132,13 @@ export default class Player {
   }
   static _setPlay() {
     TrackPlayer.play();
+   // this.props.setPause();
   }
   static _setSeek(value) {
     TrackPlayer.seekTo(value);
+  }
+  static _setRate(value) {
+    TrackPlayer.setRate(value);
   }
   static _getProg()
   {
@@ -129,7 +183,49 @@ export default class Player {
       // TrackPlayer.seekTo(10.5);// tua den 10.5s
     });
   }
+  static typeLoop= 0; //==0 la khong lap lai,==1 la lap lai khi het, ==2 la lap lai 1 bai
+  static typeNext= 0; //==0 la phat bai ke tiep tuan tu, ==1 la phat ngau nhien
+  static GetTypeLoop(){
+    console.log('type loop: '+this.typeLoop);
+    return this.typeLoop;
+  }
+  static NextTypeLoop(){
+    this.typeLoop=(this.typeLoop+1)%3;
+    console.log('type loop: '+this.typeLoop);
+  }
+  static NextTypeNext() {
+    this.typeNext = (this.typeNext + 1) % 2;
+    console.log(this.typeNext);
+  }
+
+  static playingList = [];
+  static playingIndexList=0;
+  static PlayMusicAtIndex(index){
+    let i=0;
+    this.playingList.forEach(element => {
+      i++;
+      if(i==index){
+        this.PlayMusic(element.id, element.url, element.title, element.artist, element.artwork, element.total_time);
+      }
+    });
+    this.playingIndexList=index;
+  }
+  
+  static AddASongToPlayingList(id, url, title, artist, artwork, total_time, lyric) {
+    this.playingList.push({ id, url, title, artist, artwork, total_time, lyric});
+   // console.log(this.playingList);
+    
+  }
+  static ClearPlayingList(){
+    this.playingList=[];
+  }
+
 }
+function mapStateToProps(state) {
+  return {myCurrentSong: state.currentSong,isPause:state.isPause,dataDanhSachDangNghe:state.dataDanhSachDangNghe};
+}
+export default connect(mapStateToProps, {setPause,setPlay})(Player);
+
 
 export class PlayerInfo extends Component {
   componentDidMount() {
@@ -162,6 +258,32 @@ export class MyPlayerBar extends TrackPlayer.ProgressComponent {
   }
 
   render() {
+    if (parseInt(this.getProgress() * Player._getDuration()) >= Player._getDuration() - 1 && Player._getDuration()!=0){ 
+      //console.log('Het ' + this.getProgress() * Player._getDuration());
+      Player._setSeek(0);
+      Player._setPause();
+      console.log('type loop 2 '+Player.typeLoop);
+      //Them rang buoc cho neu no la cai cuoi cung va no khong lap thi next (else dung hat)
+      if (!(Player.typeLoop == 0 && Player.playingIndexList == Player.playingList.length)) {
+        Player.PlayNext();
+        Player._setPlay(); 
+      }
+      //them rang buoc neu no la lap 1 bai thi cho nó play lai
+      if(Player.typeLoop==2){
+        Player._setPlay();
+      }
+    }
+    //else console.log('con');
+
+    var currTime = ( parseInt((this.getProgress() * Player._getDuration()) % 60) < 10
+                ? parseInt((this.getProgress() * Player._getDuration()) / 60) +
+                ':' +
+                '0' +
+                parseInt((this.getProgress() * Player._getDuration()) % 60, 10)
+                : parseInt((this.getProgress() * Player._getDuration()) / 60) +
+                ':' +
+                parseInt((this.getProgress() * Player._getDuration()) % 60, 10));
+    SetCurrentTime(currTime);
   
     return (
       
@@ -199,6 +321,12 @@ export class MyPlayerBar extends TrackPlayer.ProgressComponent {
     );
   }
 }
+function SetCurrentTime(time){
+  
+  if(time.length<5)
+    time='0'+time;
+  this.setState({ curentTime: time});
+}
 const MyComponent = () => {
   const { position, bufferedPosition, duration } = useTrackPlayerProgress()
 
@@ -218,10 +346,12 @@ export class MyLyric extends TrackPlayer.ProgressComponent {
       tempString: '',
       stringLyric: '',
       index:'',
-      curentTime:0,
+      curentTime:'0',
       up:0,
       link:''
     };
+    this.curentLineIndex=0;
+    SetCurrentTime = SetCurrentTime.bind(this);
    
   }
   componentDidMount() {
@@ -307,20 +437,40 @@ export class MyLyric extends TrackPlayer.ProgressComponent {
     }
 
     }
+    let i=0;
     return (
       <View style={styles.container}>
         {/*<TouchableOpacity  onPress={()=>{this._showLyric(),this._renderText('hahaah')}}> 
         <Text style={{fontSize:20}}> Render </Text>       
         </TouchableOpacity>*/}
         <FlatList
+        scrollEnabled={true}
         data={this.state.data_temp}
         extraData={this.state.data_temp}
-        renderItem={({item})=>(
-     
+        ref={(ref) => { this.flatListRef = ref; }}
+        getItemLayout={(data, index) => (
+          { length: 40, offset:24 * index, index }
+        )}
+        initialScrollIndex={1}
+        renderItem={
+          ({ item }) => { 
+            i++;
+            //gan dong hien tai
+            if (item.id == this.state.curentTime){
+              this.curentLineIndex=i;
+              //console.log(this.curentLineIndex);
+              try{
+                this.flatListRef.scrollToIndex({ animated: true, index: this.curentLineIndex });
+              }catch(e){}
+              
+            }
+             return (<TouchableOpacity onPress={() => { Player._setSeek(this._stringToTime(item.id)) }}>
+              {/* <Text style={(parseInt(this.getProgress*Player._getDuration())-this._stringToTime(item.id))==0? styles.con1:styles.con2}>    [{item.id}]   {item.value}</Text>    */}
+               {/* <Text style={item.id == this.state.curentTime ? styles.con1 : styles.con2}>{item.value}</Text> */}
+              <Text style={i== this.curentLineIndex ? styles.con1 : styles.con2}>{item.value}</Text>
 
-      <TouchableOpacity onPress={()=>{Player._setSeek(this._stringToTime(item.id))}}>   
-        <Text style={(parseInt(this.getProgress*Player._getDuration())-this._stringToTime(item.id))==0? styles.con1:styles.con2}>    [{item.id}]   {item.value}</Text>   
-        </TouchableOpacity>)
+            </TouchableOpacity>);
+          }
         }
         >
         </FlatList>
@@ -332,21 +482,34 @@ export class MyLyric extends TrackPlayer.ProgressComponent {
 
 const styles = StyleSheet.create({
   containerProc: {
-    flex: 1,
+    flex: .6,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#f55',
+    backgroundColor: '#0abde320',
     flexDirection: 'row',
     width: screenWidth,
   },
   con1:{
     width:"100%",
-    fontSize:15, 
-    color:"#000",
+    height:30,
+    fontSize:17, 
+    color: "#10ac84",
+    textShadowColor: '#48dbfb',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 15,
+    textAlign: 'center',
+    marginTop:0,
   },
   con2:{
     width:"100%",
-     fontSize:15, 
-    color:"#F45"
+    height: 30,
+    fontSize:17, 
+    color:"#341f97",
+    textShadowColor: '#48dbfb',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 15,
+    textAlign:'center',
+    marginTop: 0,
   }
 });
+

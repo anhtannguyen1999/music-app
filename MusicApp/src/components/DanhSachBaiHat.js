@@ -13,7 +13,7 @@ import Icon from 'react-native-vector-icons/Entypo'
 
 
 import {connect} from 'react-redux';
-import {setSongPlay} from '../redux/action';
+import {setSongPlay,setDataDanhSachDangNghe} from '../redux/action';
 
 class DanhSachBaiHat extends Component {
   constructor(props) {
@@ -30,8 +30,16 @@ class DanhSachBaiHat extends Component {
     )
   }
 
+  static setMusicPlaying()
+  {
+    
+   // this.props.setDataDanhSachDangNghe('',this.props.dataDanhSachBaiHat)
+   // console.log(this.props.dataDanhSachDangNghe.dataSong)
+    
+  }
 
   render() {
+    
     const screenWidth = Math.round(Dimensions.get('window').width);
     return (
       <View style={styles.container}>
@@ -49,19 +57,20 @@ class DanhSachBaiHat extends Component {
               
               renderItem={({item, index}) => (
                              
-                  <ItemInforBaiHat
-                    kind={this.props.kind}
-                    canRemove={this.props.canRemove}
-                    stt={++index}
-                    id={item.id}
-                    title={item.title}
-                    artists_names={item.artists_names}
-                    image={item.thumbnail_medium}
-                    lyric={item.lyric}
-                    duration={item.duration}
-                    colorItem={1}
-                    linkMp3={item.linkMp3}
-                  />
+                <ItemInforBaiHat
+                kind={this.props.kind}
+                canRemove={this.props.canRemove}
+                stt={++index}
+                id={item.id}
+                title={item.title}
+                artists_names={this.props.kind == 'PlayingList' ? item.artist:item.artists_names}
+                image={this.props.kind == 'PlayingList' ? item.artwork :item.thumbnail_medium}
+                lyric={item.lyric}
+                duration={this.props.kind == 'PlayingList' ? item.total_time :item.duration}
+                colorItem={1}
+                linkMp3={item.linkMp3}
+                isTrongSuot={this.props.isTrongSuot}
+              />
                   
                  
              
@@ -74,14 +83,21 @@ class DanhSachBaiHat extends Component {
   }
 }
 
-export default connect(null, {setSongPlay})(DanhSachBaiHat);
+function mapStateToProps(state) {
+  return {
+    dataDanhSachDangNghe:state.dataDanhSachDangNghe,
+
+  };
+}
+
+export default connect(mapStateToProps, {setSongPlay,setDataDanhSachDangNghe})(DanhSachBaiHat);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    backgroundColor: '#fff',
+   // backgroundColor: '#fff',
     flexDirection: 'column',
   },
   container1: {

@@ -30,3 +30,27 @@ export function removeSongFromLocal(id)
 {
     return {type:'REMOVE_SONG_FROM_LOCAL',id}
 }
+
+export function setPause()
+{
+    return {type:'SET_PAUSE'}
+}
+
+export function setPlay()
+{
+    return {type:'SET_PLAY'}
+}
+
+export function setDataDanhSachDangNghe(id,dataSong)
+{
+    
+    return {type:'SET_CURRENT_PLAYLIST_PLAYING',id,dataSong}
+}
+
+export function playInIndex(id,dataSong)
+{
+    
+    return {type:'PLAY_IN_INDEX',id,dataSong}
+}
+
+

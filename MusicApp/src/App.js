@@ -11,9 +11,11 @@ import ProfileScreen from './screens/Profile';
 import ChiTiet_PlayListOnlineScreen from './screens/ChiTiet_PlayListOnlineScreen'
 import ChiTiet_PlayListOfflineScreen from './screens/ChiTiet_PlayListOffline'
 import LibraryScreen from './screens/Library';
+import ForgotPassScreen from './screens/ForgotPass'
 import SongScreen from './screens/Song';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Icon_ from 'react-native-vector-icons/FontAwesome5';
+
 
 import store from './redux/store';
 import {Provider} from 'react-redux';
@@ -66,7 +68,7 @@ const Tabs = createBottomTabNavigator(
           if (routeName === 'Home') {
             iconName = 'home';
           } else if (routeName === 'Stream') {
-            iconName = 'headphones';
+            iconName = 'headphones-alt';
           } else if (routeName === 'Search') {
             iconName = 'search';
           } else if (routeName === 'Profile') {
@@ -77,7 +79,7 @@ const Tabs = createBottomTabNavigator(
           }
 
           return (
-            <Icon
+            <Icon_
               name={iconName}
               size={25}
               
@@ -106,6 +108,13 @@ const Tabs = createBottomTabNavigator(
   },
 );
 
+const LoginStack = createStackNavigator({
+  Login: LoginScreen,
+  ForgotPass:ForgotPassScreen,
+
+  // Song: SongScreen,
+});
+
 const RootStack = createStackNavigator(
   {
     Login: {
@@ -113,7 +122,17 @@ const RootStack = createStackNavigator(
       navigationOptions: {
         header: null,
       },
+      
     },
+    
+      ForgotPass: {
+        screen: ForgotPassScreen,
+        navigationOptions: {
+          header: "Quên mật khẩu",
+        },
+        
+      },
+
 
     Home: {
       screen: Tabs,
