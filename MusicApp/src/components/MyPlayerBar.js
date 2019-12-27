@@ -39,16 +39,22 @@ class ReLoadSong extends TrackPlayer.ProgressComponent {
     //console.log("index of: "+this.state.indexOf)
     if(Player.getIndex()!=this.state.indexOf)
     {
+      try {
+        var obj = this.props.dataDanhSachDangNghe.dataSong[Player.getIndex()];
+        this.props.setSongPlay(
+        obj.id,
+        obj.title,
+        obj.artists_names,
+        obj.lyric,
+        obj.duration,
+      );
       this.setState({indexOf:Player.getIndex()})
-      var obj = this.props.dataDanhSachDangNghe.dataSong[Player.getIndex()];
-            this.props.setSongPlay(
-            obj.id,
-            obj.title,
-            obj.artists_names,
-            obj.lyric,
-            obj.duration,
-          );
-          console.log("reload: "+obj.title)
+      console.log("reload: "+obj.title)
+        
+      } catch (error) {
+        
+      }
+
           
     }
     // if (

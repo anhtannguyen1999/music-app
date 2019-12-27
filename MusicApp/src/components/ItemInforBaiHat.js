@@ -427,26 +427,27 @@ class ItemInforBaiHat extends Component {
                 onPress={() => {
                   this.setState({ upPopupAdd: false });
                 }}></Button>
-              <View style={{ flex: 1, margin: 0 }}>
+              <View style={{ flex: 1, margin: 0 ,width:'100%'}}>
                 <View
                   style={{
                     alignItems: 'center',
                     justifyContent: 'center',
                     margin: 5,
+                    width:'100%'
                   }}>
                   <FlatList
                     data={this.props.dataAllPlaylist.list}
                     renderItem={({ item, index }) => (
                       <View
                         style={{
-                          flex: 1,
-                          width: '100%',
+                          minWidth: 300,
+
                           alignContent: 'center',
                           marginBottom: 5,
                           borderWidth: 2,
-                          borderColor: 'red',
+                          borderColor: '#2e86de',
                           borderRadius: 3,
-                          backgroundColor: '#1abc9c',
+                          backgroundColor: '#54a0ff88',
                         }}>
                         <TouchableHighlight
                           onPress={() => {
@@ -461,13 +462,13 @@ class ItemInforBaiHat extends Component {
                             );
 
                           }}
-                          underlayColor={'#e74c3c'}
+                          underlayColor={'#ff6b6b'}
                           style={{}}>
-                          <View>
-                            <Text style={{ fontSize: 18 }}> {item.title}</Text>
+                          <View style={{ flexDirection: 'row', margin:10}}>
                             <Image
                               source={{ uri: item.thumbnail_medium }}
                               style={{ width: 20, height: 20 }}></Image>
+                              <Text style={{ fontSize: 18, color:'#341f97' }}> {item.title}</Text>
                           </View>
                         </TouchableHighlight>
                       </View>

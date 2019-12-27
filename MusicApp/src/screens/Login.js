@@ -18,7 +18,6 @@ import {FirebaseApp} from '../components/FirebaseConfig.js';
 import firebase from 'firebase';
 import Spinner from 'react-native-loading-spinner-overlay';
 //import {firebaseConfig} from "../components/FirebaseConfig"
-import {GoogleSignin} from 'react-native-google-signin';
 import { ScrollView } from 'react-native-gesture-handler';
 
 //import * as Google from 'expo-google-app-auth';
@@ -121,7 +120,7 @@ export default class LoginScreen extends Component {
         </View>
       </TouchableOpacity>
       <TouchableOpacity onPress={()=>{this.props.navigation.navigate('ForgotPass')}}>
-      <Text>---------------Quên mật khẩu---------------</Text>
+      <Text style={{color:"#FFF"}}>---------------Quên mật khẩu---------------</Text>
       </TouchableOpacity>
       
     </View>
@@ -142,6 +141,7 @@ export default class LoginScreen extends Component {
       .then(() => {
         this.setState({spinner:false})
         Alert.alert('Đăng kí thành công!');
+        FirebaseApp.auth().currentUser.sendEmailVerification();
         this.setState({renderLogin: true});
       })
       .catch(function(error) {

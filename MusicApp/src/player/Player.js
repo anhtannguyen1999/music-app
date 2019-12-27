@@ -198,6 +198,10 @@ export default class Player {
     this.typeNext = (this.typeNext + 1) % 2;
     console.log(this.typeNext);
   }
+  static _setRate(value)
+  {
+    TrackPlayer.setRate(value);
+  }
 
   static playingList = [];
   static playingIndexList=0;
@@ -275,20 +279,34 @@ export class MyPlayerBar extends TrackPlayer.ProgressComponent {
   }
 
   render() {
-    if (parseInt(this.getProgress() * Player._getDuration()) >= Player._getDuration() - 1 && Player._getDuration()!=0){ 
+    if (parseInt(this.getProgress() * Player._getDuration()) >= Player._getDuration() && Player._getDuration()!=0){ 
       //console.log('Het ' + this.getProgress() * Player._getDuration());
       Player._setSeek(0);
       Player._setPause();
       console.log('type loop 2 '+Player.typeLoop);
+      if(Player.typeLoop==0)
+      {
+        return(<View></View>)
+      }
       //Them rang buoc cho neu no la cai cuoi cung va no khong lap thi next (else dung hat)
-      if (!(Player.typeLoop == 0 && Player.playingIndexList == Player.playingList.length)) {
-        Player.PlayNext();
-        Player._setPlay(); 
+
+
+      else {
+        // if (!(Player.typeLoop == 0 && Player.playingIndexList == Player.playingList.length))
+        if(Player.typeLoop==1)
+         {
+          Player.PlayNext();
+          Player._setPlay(); 
+        }
+        //them rang buoc neu no la lap 1 bai thi cho nó play lai
+        else if(Player.typeLoop==2){
+          Player._setPlay();
+        }
+
       }
-      //them rang buoc neu no la lap 1 bai thi cho nó play lai
-      if(Player.typeLoop==2){
-        Player._setPlay();
-      }
+
+      
+
     }
     //else console.log('con');
 
@@ -306,14 +324,15 @@ export class MyPlayerBar extends TrackPlayer.ProgressComponent {
       <View style={styles.containerProc}>
         
         <Slider
-          
+           minimumTrackTintColor='white'
+           thumbTintColor='white'
           width={screenWidth - 80}
           marginBottom={0}
           value={this.getProgress()}
           onSlidingComplete={time =>
             Player._setSeek(parseInt(Player._getDuration() * time))
           }></Slider>
-        <Text fontSize={15}>
+        <Text fontSize={15} style={{ color:'#341f97'}}>
           {' '}
           {parseInt((this.getProgress() * Player._getDuration()) % 60) < 10
             ? parseInt((this.getProgress() * Player._getDuration()) / 60) +
@@ -511,10 +530,10 @@ const styles = StyleSheet.create({
     width:"100%",
     height:30,
     fontSize:17, 
-    color: "#10ac84",
-    textShadowColor: '#48dbfb',
+    color: "#00fdff",
+    textShadowColor: '#48dbfb99',
     textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 15,
+    textShadowRadius: 39,
     textAlign: 'center',
     marginTop:0,
   },
@@ -523,9 +542,9 @@ const styles = StyleSheet.create({
     height: 30,
     fontSize:17, 
     color:"#341f97",
-    textShadowColor: '#48dbfb',
+    textShadowColor: '#48dbfb88',
     textShadowOffset: { width: 1, height: 1 },
-    textShadowRadius: 15,
+    textShadowRadius: 39,
     textAlign:'center',
     marginTop: 0,
   }

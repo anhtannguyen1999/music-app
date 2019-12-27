@@ -38,62 +38,75 @@ export default class ItemComment extends Component {
       <TouchableOpacity style={{flex: 1, width: '100%'}}>
         <View
           style={{
+            marginTop:6,
             flex: 1,
             width: '100%',
             flexDirection: 'column',
             justifyContent: 'flex-start',
             alignItems: 'flex-start',
             padding: 0,
-            backgroundColor: '#fff',
+            backgroundColor: 'transparent',
             marginBottom: 2,
             borderWidth: 2,
-            borderColor: '#000',
-
+            borderColor: '#c8d6e599',
             borderRadius: 5,
+            
           }}>
           <View
             style={
               (styles.inforStyle,
               {flexDirection: 'row', padding: 2, alignItems: 'center'})
             }>
-            <Image
-              style={{
-                borderRadius: 10,
-                width: 20,
-                height: 20,
-                backgroundColor: '#000',
-              }}
-              source={
-                this.props.urlImage == null
-                  ? {
-                      uri:
-                        'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.macrumors.com%2Farticle-new%2F2018%2F05%2Fapple-music-note-800x420.jpg&imgrefurl=https%3A%2F%2Fwww.macrumors.com%2Fguide%2Fapple-music%2F&docid=GhBKqUc-8Hrm_M&tbnid=i4ZMj59EAkdbCM%3A&vet=10ahUKEwjyt-zMi8jmAhXLyIsBHXQoCP4QMwhMKAAwAA..i&w=800&h=420&bih=680&biw=1353&q=music&ved=0ahUKEwjyt-zMi8jmAhXLyIsBHXQoCP4QMwhMKAAwAA&iact=mrc&uact=8',
-                    }
-                  : {uri: this.props.urlImage}
-              }></Image>
-            <Text style={{fontSize: 15}}> {this.props.name} </Text>
-            <View
-              style={{
-                backgroundColor: '#b8e994',
-                borderRadius: 10,
-                marginBottom: 0,
-                marginLeft: 0,
-                padding:2,
-                flex: 1,
-              }}>
-              <Text style={{fontSize: 15}}> {this.props.cmt}</Text>
+            <View style={{flex:1,padding:3}}>
+              <View style={{flexDirection:'row'}}>
+                <Image
+                  style={{
+                    borderRadius: 10,
+                    width: 20,
+                    height: 20,
+                    backgroundColor: '#c8d6e5',
+                  }}
+                  source={
+                    this.props.urlImage == null
+                      ? {
+                        uri:
+                          'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimages.macrumors.com%2Farticle-new%2F2018%2F05%2Fapple-music-note-800x420.jpg&imgrefurl=https%3A%2F%2Fwww.macrumors.com%2Fguide%2Fapple-music%2F&docid=GhBKqUc-8Hrm_M&tbnid=i4ZMj59EAkdbCM%3A&vet=10ahUKEwjyt-zMi8jmAhXLyIsBHXQoCP4QMwhMKAAwAA..i&w=800&h=420&bih=680&biw=1353&q=music&ved=0ahUKEwjyt-zMi8jmAhXLyIsBHXQoCP4QMwhMKAAwAA&iact=mrc&uact=8',
+                      }
+                      : { uri: this.props.urlImage }
+                  }></Image>
+                <Text style={{ fontSize: 15 }}> {this.props.name} </Text>
+              </View>
+              
+              <View style={{ flex: 1,marginTop:3 }}>
+                <View
+                  style={{
+                    backgroundColor: '#48dbfb33',
+                    borderRadius: 10,
+                    marginBottom: 0,
+                    marginLeft: 0,
+                    padding: 2,
+                    flex: 1,
+                  }}>
+                  <Text style={{ fontSize: 15 }}> {this.props.cmt}</Text>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: '#ffffff00',
+                    borderRadius: 3,
+                    marginBottom: 0,
+                    marginLeft: 25,
+                    justifyContent: 'flex-end',
+                  }}>
+                  <Text style={{ fontSize: 10, color: 'gray', textAlign: 'right' }}> {this.props.time} </Text>
+                </View>
+              </View>
+            
+            
+
             </View>
+            
           </View>
-          <View
-            style={{
-              backgroundColor: '#ccc',
-              borderRadius: 3,
-              marginBottom: 0,
-              marginLeft: 25,
-              justifyContent: 'flex-end',
-            }}>
-            <Text style={{fontSize: 10}}> {this.props.time} </Text>
-          </View>
+          
         </View>
       </TouchableOpacity>
     );

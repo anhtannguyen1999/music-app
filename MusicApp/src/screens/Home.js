@@ -17,7 +17,8 @@ import DanhSachBaiHat from '../components/DanhSachBaiHat';
 import PlayList from '../components/PlayList';
 import Player, {MyPlayerBar} from '../player/Player';
 const screenWidth = Math.round(Dimensions.get('window').width);
-import Icon from 'react-native-vector-icons/FontAwesome';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+import Icon_ from 'react-native-vector-icons/FontAwesome5Pro';
 import StreamScreen from '../screens/Stream';
 import RNFetchBlob from 'rn-fetch-blob';
 
@@ -311,7 +312,12 @@ _loadDataBHVuaNghe()
 
           <View style={styles.containerBHTop}>
             <View style={styles.containerTieuDe}>
-              <Text style={styles.tieuDe}> Bài hát gần đây</Text>
+            <View style={{flexDirection:'row',marginLeft:10,alignItems:'center'}}>
+              <Icon name={'file-audio'} color={'#341f97'} size={20}> </Icon>
+              <Text style={styles.tieuDe}>Bài hát gần đây </Text>
+              
+              </View>
+              
             </View>
 
             <View
@@ -335,7 +341,12 @@ _loadDataBHVuaNghe()
             {/* Top song */}
             <View style={styles.containerBHTop100}>
               <View style={styles.containerTieuDe}>
-                <Text style={styles.tieuDe}> Bảng xếp hạng</Text>
+              <View style={{flexDirection:'row',marginLeft:10,alignItems:'center'}}>
+              <Icon name={'list-ol'} color={'#341f97'} size={20}> </Icon>
+              <Text style={styles.tieuDe}>Bảng xếp hạng </Text>
+              
+              </View>
+                
               </View>
 
               <View
@@ -351,7 +362,12 @@ _loadDataBHVuaNghe()
                       dataTop100: this.state.dataTop100nhacTre,
                     });
                   }}>
-                  <Text
+                                      <View style={
+                      this.state.loaiNhacTop100 == 'nhacTre'
+                        ? styles.textLoaiNhacTop100Active
+                        : styles.textLoaiNhacTop100
+                    }>
+                    <Text
                     style={
                       this.state.loaiNhacTop100 == 'nhacTre'
                         ? styles.textLoaiNhacTop100Active
@@ -360,6 +376,12 @@ _loadDataBHVuaNghe()
                     {' '}
                     Nhạc trẻ{' '}
                   </Text>
+                  <Icon name='guitar' size={15} style={[
+                      this.state.loaiNhacTop100 == 'nhacTre'
+                        ? styles.textLoaiNhacTop100Active
+                        : styles.textLoaiNhacTop100
+                    ,{borderWidth:0}]}></Icon>
+                    </View>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -369,7 +391,12 @@ _loadDataBHVuaNghe()
                       dataTop100: this.state.dataTop100EDM,
                     });
                   }}>
-                  <Text
+                    <View style={
+                      this.state.loaiNhacTop100 == 'EDM'
+                        ? styles.textLoaiNhacTop100Active
+                        : styles.textLoaiNhacTop100
+                    }>
+                    <Text
                     style={
                       this.state.loaiNhacTop100 == 'EDM'
                         ? styles.textLoaiNhacTop100Active
@@ -378,6 +405,14 @@ _loadDataBHVuaNghe()
                     {' '}
                     EDM{' '}
                   </Text>
+                  <Icon name='dot-circle' size={15} style={[
+                      this.state.loaiNhacTop100 == 'EDM'
+                        ? styles.textLoaiNhacTop100Active
+                        : styles.textLoaiNhacTop100
+                    ,{borderWidth:0}]}></Icon>
+                    </View>
+
+                  
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -387,7 +422,12 @@ _loadDataBHVuaNghe()
                       dataTop100: this.state.dataTop100truTinh,
                     });
                   }}>
-                  <Text
+                                                        <View style={
+                      this.state.loaiNhacTop100 == 'truTinh'
+                        ? styles.textLoaiNhacTop100Active
+                        : styles.textLoaiNhacTop100
+                    }>
+                    <Text
                     style={
                       this.state.loaiNhacTop100 == 'truTinh'
                         ? styles.textLoaiNhacTop100Active
@@ -396,6 +436,12 @@ _loadDataBHVuaNghe()
                     {' '}
                     Trữ tình{' '}
                   </Text>
+                  <Icon name='heart' size={15} style={[
+                      this.state.loaiNhacTop100 == 'truTinh'
+                        ? styles.textLoaiNhacTop100Active
+                        : styles.textLoaiNhacTop100
+                    ,{borderWidth:0}]} ></Icon>
+                    </View>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -405,7 +451,12 @@ _loadDataBHVuaNghe()
                       dataTop100: this.state.dataTop100cachMang,
                     });
                   }}>
-                  <Text
+                 <View style={
+                      this.state.loaiNhacTop100 == 'cachMang'
+                        ? styles.textLoaiNhacTop100Active
+                        : styles.textLoaiNhacTop100
+                    }>
+                    <Text
                     style={
                       this.state.loaiNhacTop100 == 'cachMang'
                         ? styles.textLoaiNhacTop100Active
@@ -414,6 +465,12 @@ _loadDataBHVuaNghe()
                     {' '}
                     Cách mạng{' '}
                   </Text>
+                  <Icon name='fighter-jet' size={15} style={[
+                      this.state.loaiNhacTop100 == 'cachMang'
+                        ? styles.textLoaiNhacTop100Active
+                        : styles.textLoaiNhacTop100
+                    ,{borderWidth:0}]}></Icon>
+                    </View>
                 </TouchableOpacity>
               </View>
 
@@ -438,7 +495,11 @@ _loadDataBHVuaNghe()
             {/* Play list goi y */}
             <View style={styles.containerBHTop}>
               <View style={styles.containerTieuDe}>
-                <Text style={styles.tieuDe}> PlayList gợi ý </Text>
+              <View style={{flexDirection:'row',marginLeft:10,alignItems:'center'}}>
+              <Icon name={'playstation'} color={'#341f97'} size={20}> </Icon>
+              <Text style={styles.tieuDe}>Playlist gợi ý </Text>
+              
+              </View>
               </View>
 
               <ScrollView
@@ -510,7 +571,7 @@ _loadDataBHVuaNghe()
                   />
                 </View>
               </ScrollView>
-              <Text style={{ color:'#341f97'}}> {'<< '}Lướt để xem playlist khác >></Text>
+              <Text style={{ color:'#341f97'}}> {'<< '}Lướt để xem Playlist khác >></Text>
             </View>
           </View>
 
@@ -518,10 +579,15 @@ _loadDataBHVuaNghe()
           <View style={(styles.container, {backgroundColor: '#eee'})}>
             <TouchableOpacity
               onPress={() => this.props.navigation.navigate('Library')}>
-              <Text style={styles.tieuDe}>
+                              <View style={{flexDirection:'row'}}>
+                              <Text style={styles.tieuDe}>
                 {' '}
                 {'Đến playlist - thư viện của bạn'}
               </Text>
+              <Icon name={'sign-in-alt'} color={'#341f97'} size={30}> </Icon>
+              </View>
+
+
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -590,7 +656,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     borderWidth: 2,
     borderColor: '#00000011',
-    height: 495,
+    height: 515,
   },
   tieuDe: {
     justifyContent: 'flex-start',
@@ -634,7 +700,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#c8d6e5cc',
     marginLeft: 2,
     borderRadius: 5,
-    color:'#222f3e'
+    color:'#222f3e',
+    alignItems:'center'
+
   },
   textLoaiNhacTop100Active: {
     fontSize: 20,
@@ -643,6 +711,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     borderWidth: 1,
     borderColor: '#ffffffbe',
-    color:'#ffffff'
+    color:'#ffffff',
+    alignItems:'center'
   },
 });

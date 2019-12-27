@@ -50,23 +50,23 @@ class ChiTiet_PlayListOfflineScreen extends Component {
               onError={e => {}}></Image>
             <View style={{flexDirection:'column'}}>
               <View style={{flex:1}}>
-                <Text style={{ fontSize: 17, fontWeight: 'bold' }}>
+              <Text style={{ fontSize: 17, fontWeight: 'bold',maxWidth:200 }}>
                   {this.props.navigation.getParam('title', '')}
                 </Text>
                 <Text style={{ fontSize: 15 }}>
                   {this.props.myPlayListOffline.dataSong.length} bài
                 </Text>
-                <Text style={{ fontSize: 15 }}>
+                {/* <Text style={{ fontSize: 15 }}>
                   {'Lượt nghe: 0'}
                   {}
-                </Text>
+                </Text> */}
               </View>              
             </View>
           </View>
         </View>
         <View style={styles.container1}>
           <View style={{ alignItems: 'flex-start', width: '89%',paddingTop: 5, paddingBottom: 5}}>
-            <Button title="Nghe tất cả" onPress={()=>{
+            {/* <Button title="Nghe tất cả" onPress={()=>{
               //Player.AddPlayingList();
               Player.ClearPlayingList();
               this.props.myPlayListOffline.dataSong.forEach(element => {
@@ -83,6 +83,7 @@ class ChiTiet_PlayListOfflineScreen extends Component {
           });
           Player.PlayMusicAtIndex(1);
             }}></Button>
+           */}
           </View>
           {/*<Text style={styles.tieuDe}> Danh sach bai hat:</Text>*/}
             <DanhSachBaiHat kind={'PlayList_Offline'} canRemove={true} dataDanhSachBaiHat={this.props.myPlayListOffline.dataSong} /*dataDanhSachBaiHat={this.props.dataAllPlaylist.list[this.props.navigation.getParam('id', 0)].song.items}*/></DanhSachBaiHat>

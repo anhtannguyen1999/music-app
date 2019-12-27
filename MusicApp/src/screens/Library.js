@@ -238,7 +238,7 @@ class LibraryScreen extends Component {
         <View style={styles.container}>
           <View style={styles.containerTieuDe}>
           <View style={styles.containerTieuDe,{flexDirection:'row'}}>
-          <Icon name='music' size={30}></Icon>
+          <Icon name='music' color={'#341f97'} size={30}></Icon>
             <Text style={styles.tieuDe}> Playlist của bạn </Text>
              
           </View>
@@ -288,7 +288,7 @@ class LibraryScreen extends Component {
           <View style={{width:'100%',marginTop:10}}>
 
           <View style={styles.containerTieuDe,{flexDirection:'row'}}>
-          <Icon name='download' size={30}></Icon>
+          <Icon name='download' color={'#341f97'} size={30}></Icon>
             <Text style={styles.tieuDe}> Bài hát đã tải </Text>   
           </View>
               <View style={{alignItems:'center'}}>

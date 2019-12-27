@@ -27,7 +27,7 @@ import Player from '../player/Player';
 import {FirebaseApp} from '../components/FirebaseConfig.js';
 import firebase from 'firebase'
 import ItemComment from '../components/ItemComment';
-import { Alert } from 'react-native';
+import { Alert, ImageBackground } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import ImagePicker from 'react-native-image-picker';
 const options = {
@@ -63,8 +63,8 @@ class ProfileScreen extends React.Component {
   };
 
   componentDidMount() {
-    var t = new Date();
-    console.log(FirebaseApp.auth().currentUser.displayName);
+
+    
     this.setState({avatarSource:FirebaseApp.auth().currentUser.photoURL})
     console.log( this._refeshPhone())
    
@@ -159,7 +159,7 @@ class ProfileScreen extends React.Component {
     <View style={styles.conItem}>
     <Text> </Text>
       <Icon name="lock" size={20}></Icon>
-      <Text> ChangePass </Text>
+      <Text> Đổi mật khẩu </Text>
       <TextInput
       secureTextEntry={true}
         style={{height: 40, width: '65%'}}
@@ -173,16 +173,16 @@ class ProfileScreen extends React.Component {
     )
     else{
       return(
-      <View style={{borderColor:'#000',borderWidth:3,width:'96%',borderRadius:5}}>
+        <View style={{borderColor:'#ffffff02',borderWidth:3,width:'96%',borderRadius:5}}>
       <View style={styles.conPass}>
     <Text> </Text>
       <Icon name="lock" size={20}></Icon>
-      <Text> Pre-Pass: </Text>
+      <Text> Mật khẩu hiện tại: </Text>
       <TextInput
       ref={'currentPass'}
         secureTextEntry={true}
         style={{height: 40, width: '65%'}}
-        placeholder={'null'}
+        placeholder={'******'}
         editable={true}
         onChangeText={(text)=>{ if(this.state.onRePass) this.setState({pass:text})}}
         disableFullscreenUI={false}></TextInput>     
@@ -190,12 +190,12 @@ class ProfileScreen extends React.Component {
     <View style={styles.conPass}>
     <Text> </Text>
       <Icon name="unlock" size={20}></Icon>
-      <Text> newPass: </Text>
+      <Text> Mật khẩu mới: </Text>
       <TextInput
       ref={'newPass1'}
         secureTextEntry={true}
         style={{height: 40, width: '65%'}}
-        placeholder={'null'}
+        placeholder={'******'}
         editable={true}
         onChangeText={(text)=>{ if(this.state.onRePass) this.setState({newPass:text})}}
         disableFullscreenUI={false}></TextInput>     
@@ -203,22 +203,23 @@ class ProfileScreen extends React.Component {
     <View style={styles.conPass}>
     <Text> </Text>
       <Icon name="unlock-alt" size={20}></Icon>
-      <Text> Re-newPass: </Text>
+      <Text> Nhập lại mật khẩu mới: </Text>
       <TextInput
       ref={'newPass2'}
         secureTextEntry={true}
         style={{height: 40, width: '65%'}}
-        placeholder={'null'}
+        placeholder={'******'}
         editable={true}
         onChangeText={(text)=>{ if(this.state.onRePass) this.setState({re_newPass:text})}}
         disableFullscreenUI={false}></TextInput>     
     </View>
 
-    <View>
+    <View style={{paddingLeft:10,paddingRight:10}}>
+      <Button style={{ margin: 5 }}
+        title="Ok" onPress={()=>{this._changePassword(this.state.pass,this.state.newPass)}} style={{}}></Button>
+      <Button style={{ margin: 5 }}
+        title="Hủy" onPress={()=>{this.setState({onRePass:false})}}></Button>
 
-      <Button title="Ok" onPress={()=>{this._changePassword(this.state.pass,this.state.newPass)}} style={{}}></Button>
-      
-      <Button title="Hủy" onPress={()=>{this.setState({onRePass:false})}}></Button>
     </View>
 
       </View>
@@ -366,86 +367,91 @@ _upImagetofirebase()
  
 
     return (
-      <ScrollView>
-      <View style={styles.container}>
-        <View
-          style={{
-            margin: 10,
-            flex: 1.2,
-            alignItems: 'center',
-            borderWidth: 2,
-            borderColor: "#999",
-            borderRadius:5,
-            width: '95%',
-            padding:5
-          }}>
-            
-          <Image style={styles.conAvatar} resizeMode={'cover'} source={{uri:this.state.avatarSource}}></Image>
-          <Button title="Upload image" onPress={()=>{this._upload()}}></Button>
-        </View>
+      <ImageBackground style={styles.container} source={require('../../res/BG2.jpg')}>
+        <View style={{ width: '96%', height: '98%', margin:'2%',marginTop:'2%', backgroundColor:'#ffffffaa',borderRadius:8 }}>
+          <ScrollView>
+          <View style={[styles.container]} >
+            <View
+              style={{
+                margin: 10,
+                flex: 1.2,
+                alignItems: 'center',
+                borderWidth: 2,
+                borderColor: "#999",
+                borderRadius:5,
+                width: '95%',
+                padding:5
+              }}>
+                
+              <Image style={styles.conAvatar} resizeMode={'cover'} source={{uri:this.state.avatarSource}}></Image>
+              <Button title="Upload image" onPress={()=>{this._upload()}}></Button>
+            </View>
 
-        <View
-          style={{
-            margin: 10,
-            justifyContent: 'flex-start',
-            flex: 2,
-            width: '100%',
-          }}>
-          <View style={styles.conItem}>
-            <Text> </Text>
-            <Icon name="envelope" size={20}></Icon>
-            <Text> E-mail: {FirebaseApp.auth().currentUser.email}</Text>
-          </View>
+            <View
+              style={{
+                margin: 10,
+                justifyContent: 'flex-start',
+                flex: 2,
+                width: '100%',
+              }}>
+              <View style={styles.conItem}>
+                <Text> </Text>
+                <Icon name="envelope" size={20}></Icon>
+                <Text> E-mail: {FirebaseApp.auth().currentUser.email}</Text>
+              </View>
 
-          <View style={styles.conItem}>
-          <Text> </Text>
-            <Icon name="id-card" size={20}></Icon>
-            <Text> Id User: {FirebaseApp.auth().currentUser.uid}</Text>
-          </View>
+              <View style={styles.conItem}>
+              <Text> </Text>
+                <Icon name="id-card" size={20}></Icon>
+                <Text> ID: {FirebaseApp.auth().currentUser.uid}</Text>
+              </View>
 
-          <View style={styles.conItem}>
-          <Text> </Text>
-            <Icon name="signature" size={20}></Icon>
-            <Text> Name: </Text>
-            <TextInput
-              style={{height: 40, width: '65%'}}
-              value={ this.state.onEditName==false? FirebaseApp.auth().currentUser.displayName: this.state.tempName}
-              placeholder={'null'}
-              editable={true}
-              onChangeText={(text)=>{ if(this.state.onEditName) this.setState({tempName:text})}}
-              disableFullscreenUI={false}></TextInput>
-            {this._renderEdit('updateName')}
-          </View>
+              <View style={styles.conItem}>
+              <Text> </Text>
+                <Icon name="signature" size={20}></Icon>
+                <Text> Tên: </Text>
+                <TextInput
+                  style={{height: 40, width: '65%'}}
+                  value={ this.state.onEditName==false? FirebaseApp.auth().currentUser.displayName: this.state.tempName}
+                  placeholder={'Chưa có'}
+                  editable={true}
+                  onChangeText={(text)=>{ if(this.state.onEditName) this.setState({tempName:text})}}
+                  disableFullscreenUI={false}></TextInput>
+                {this._renderEdit('updateName')}
+              </View>
 
-          <View style={styles.conItem}>
-          <Text> </Text>
-            <Icon name="phone" size={20}></Icon>
-            <Text> Phone: </Text>
-            <TextInput
-              style={{height: 40, width: '65%'}}
-              value={ this.state.onEditPhone==false? this.state.phoneNumber: this.state.tempPhone}
-              placeholder={'null'}
-              editable={true}
-              onChangeText={(text)=>{ if(this.state.onEditPhone) this.setState({tempPhone:text})}}
-              disableFullscreenUI={false}></TextInput>
+              <View style={styles.conItem}>
+              <Text> </Text>
+                <Icon name="phone" size={20}></Icon>
+                <Text> SĐT: </Text>
+                <TextInput
+                  style={{height: 40, width: '65%'}}
+                  value={ this.state.onEditPhone==false? this.state.phoneNumber: this.state.tempPhone}
+                  placeholder={'Chưa có'}
+                  keyboardType='numeric'
+                  editable={true}
+                  onChangeText={(text)=>{ if(this.state.onEditPhone) this.setState({tempPhone:text})}}
+                  disableFullscreenUI={false}></TextInput>
 
-            {this._renderEdit('updatePhone')}
-          </View>
-          {this._renderRePass()}
-          <TouchableOpacity onPress={()=>{this._sign_out()}}>
-          <View style={styles.conItem}>
-           
+                {this._renderEdit('updatePhone')}
+              </View>
+              {this._renderRePass()}
+              <TouchableOpacity onPress={()=>{this._sign_out()}}>
+              <View style={styles.conItem}>
               
-            
-          <Text> </Text>
-            <Icon name="sign-out-alt" size={20}></Icon>
-            <Text> Log out </Text> 
-          </View>
-          </TouchableOpacity>
+                  
+                
+              <Text> </Text>
+                <Icon name="sign-out-alt" size={20}></Icon>
+                <Text> Đăng xuất </Text> 
+              </View>
+              </TouchableOpacity>
 
+            </View>
+          </View>
+          </ScrollView>
         </View>
-      </View>
-      </ScrollView>
+      </ImageBackground>
     );
   }
 }
@@ -462,8 +468,9 @@ const styles = StyleSheet.create({
     width: '100%',
     justifyContent: 'center',
     alignItems: 'flex-start',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffff66',
     flexDirection: 'column',
+    borderRadius:8,
   },
   conAvatar: {
     width: 200,
@@ -478,9 +485,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '95%',
     borderColor: '#987',
-    backgroundColor:'#fff',
+    backgroundColor:'transparent',
     borderWidth: 1,
-    borderRadius: 1,
+    borderRadius: 8,
     alignItems: 'center',
     margin: 2,
     alignContent: 'center',
@@ -489,9 +496,9 @@ const styles = StyleSheet.create({
     height: 40,
     flexDirection: 'row',
     width: '99%',
-    borderColor: '#000',
+    borderColor: '#341f97',
     borderWidth: 1,
-    borderRadius: 1,
+    borderRadius: 8,
     alignItems: 'center',
     margin: 2,
     alignContent: 'center',
@@ -514,5 +521,6 @@ const styles = StyleSheet.create({
     paddingRight: '5%',
     width: '100%',
     justifyContent: 'flex-start',
+    borderRadius:8,
   },
 });

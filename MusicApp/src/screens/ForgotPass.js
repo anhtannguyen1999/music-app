@@ -17,7 +17,6 @@ import {Alert} from 'react-native';
 import {FirebaseApp} from '../components/FirebaseConfig.js';
 import firebase from 'firebase';
 //import {firebaseConfig} from "../components/FirebaseConfig"
-import {GoogleSignin} from 'react-native-google-signin';
 import { ScrollView } from 'react-native-gesture-handler';
 
 //import * as Google from 'expo-google-app-auth';

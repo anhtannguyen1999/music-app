@@ -47,23 +47,23 @@ class ChiTiet_PlayListOnlineScreen extends Component {
               }}
               onError={e => {}}></Image>
             <View>
-              <Text style={{fontSize: 17}}>
+            <Text style={{fontSize: 17,maxWidth:200,fontWeight:'bold'}}>
                 {this.props.myPlayListOnline.dataSong.title}
               </Text>
               <Text style={{fontSize: 15}}>
                 {parseInt(this.props.navigation.getParam('numberSong', 0))} bài
               </Text>
-              <Text style={{fontSize: 15}}>
-                {'Lượt nghe: 0'}
+              {/* <Text style={{fontSize: 15}}>
+                {'Lượt nghe: '+this.props.getParam()}
                 {}
-              </Text>
+              </Text> */}
             </View>
           </View>
         </View>
         <View style={styles.container1}>
           {/*<Text style={styles.tieuDe}> Danh sach bai hat:</Text>*/}
           <View style={{ alignItems: 'flex-start', width: '89%' }}>
-            <Button title="Nghe tất cả" onPress={() => {
+            {/* <Button title="Nghe tất cả" onPress={() => {
               //Player.AddPlayingList();
               Player.ClearPlayingList();
               this.props.setDataDanhSachDangNghe('DSDN',this.props.myPlayListOnline.dataSong.song.items);
@@ -82,6 +82,7 @@ class ChiTiet_PlayListOnlineScreen extends Component {
              // this.props.playInIndex(1,'1',this.props.myPlayListOnline.dataSong.song.items);
               Player.PlayMusicAtIndex(1);
             }}></Button>
+           */}
           </View>
             <DanhSachBaiHat dataDanhSachBaiHat={this.props.myPlayListOnline.dataSong.song.items}></DanhSachBaiHat>
         </View>

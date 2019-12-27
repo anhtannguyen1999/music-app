@@ -84,13 +84,17 @@ class StreamScreen extends Component {
   }
 
   _sendCmt() {
+    if(this.state.valueCmt=="")
+     return;
+     if(this.props.myCurrentSong.id==null)
+     return;
     let t = new Date();
     if (FirebaseApp.auth().currentUser == null) {
-      Alert.alert('Login to comment');
+      Alert.alert('Vui lòng đăng nhập để bình luận!');
       return;
     }
     if (FirebaseApp.auth().currentUser.displayName == null) {
-      Alert.alert('Update profile to comment');
+      Alert.alert('Vui lòng cập nhật hồ sơ cá nhân để bình luận!');
       return;
     }
     FirebaseApp.database()
@@ -114,7 +118,7 @@ class StreamScreen extends Component {
   }
 
   _loadDataCmt(idSong) {
-    if (idSong == null) return;
+    if (idSong == ''|| idSong==null) return;
     var items = [];
     FirebaseApp.database()
       .ref('Comment/' + idSong)
@@ -156,7 +160,7 @@ class StreamScreen extends Component {
       StreamScreen._on = true;
       Player._setPause();
       Alert.alert('Đã tắt');
-    }, this.state.timerValue * 1000);
+    }, this.state.timerValue * 1000*60);
   };
 
   openLink()
@@ -248,16 +252,16 @@ class StreamScreen extends Component {
               }}>
               <View style={[styles.con2, {position: 'relative'}]}>
                 <Text
-                  style={{fontSize: 15, color: '#341f97', textAlign: 'center'}}>
+                  style={{fontSize: 17, color: '#341f97', textAlign: 'center',fontWeight:'bold',paddingLeft:5}}>
                   ♪{this.props.myCurrentSong.title}♫
                 </Text>
                 <Text
-                  style={{fontSize: 15, color: '#341f97', textAlign: 'center'}}>
+                  style={{fontSize: 15, color: '#341f97', textAlign: 'center', paddingLeft: 5}}>
                   - {this.props.myCurrentSong.artists_names} -
                 </Text>
               </View>
 
-              <View style={{justifyContent: 'flex-end'}}>
+              <View style={{justifyContent: 'center', marginLeft:5}}>
                 <TouchableOpacity
                   onPress={() => {
                     this.setState({popUpClock: !this.state.popUpClock});
@@ -270,6 +274,7 @@ class StreamScreen extends Component {
             <ScrollView
               horizontal={true}
               pagingEnabled={true}
+              ref={myScroll => (this._myScroll = myScroll)}
               showsHorizontalScrollIndicator={true}>
               {/* Man hinh loi */}
               <View
@@ -309,15 +314,15 @@ class StreamScreen extends Component {
           </View>
 
           {/* Phan thanh player */}
-          <View style={[styles.con1, {backgroundColor: 'transparent'}]}>
-            <View style={{flexDirection: 'row',margin:3}}>
+          <View style={[styles.con1, {backgroundColor: '48dbfb33'}]}>
+            <View style={{flexDirection: 'row',padding:3}}>
               {/* <Button
             title="Comment"
             onPress={() => {
               this._loadDataCmt(this.props.myCurrentSong.id);
               this.setState({popUpCmt: true});
             }}></Button> */}
-              <View style={{margin: 3, alignItems: 'center'}}>
+              <View style={{ padding: 2, paddingRight: 9, paddingLeft: 9, alignItems: 'center'}}>
                 <TouchableOpacity
                   onPress={() => {
                     this._loadDataCmt(this.props.myCurrentSong.id);
@@ -328,7 +333,7 @@ class StreamScreen extends Component {
                 {/* <Text style={{color:"#FFF"}}>Comment</Text> */}
               </View>
 
-              <View style={{margin: 3, alignItems: 'center'}}>
+              <View style={{ padding: 2, paddingRight: 9, paddingLeft: 9, alignItems: 'center'}}>
                 <TouchableOpacity
                   onPress={() => {
                     this.setState({popUpSpeed: true});
@@ -338,21 +343,21 @@ class StreamScreen extends Component {
                 {/* <Text style={{color:"#FFF"}}>Speed</Text> */}
               </View>
 
-              <View style={{margin: 3, alignItems: 'center'}}>
-                <TouchableOpacity onPress={() => {}}>
+              <View style={{ padding: 2, paddingRight: 9, paddingLeft: 9, alignItems: 'center'}}>
+                <TouchableOpacity onPress={() => {this._myScroll.scrollToEnd()}}>
                   <Icon_ name="list-alt" color="#FFF" size={25}></Icon_>
                 </TouchableOpacity>
                 {/* <Text style={{color:"#FFF"}}>List song</Text> */}
               </View>
 
-              <View style={{margin: 3, alignItems: 'center'}}>
+              <View style={{ padding: 2, paddingRight: 9, paddingLeft: 9, alignItems: 'center'}}>
                 <TouchableOpacity onPress={() => {this._shareSong()}}>
                   <Icon_ name="share-alt-square" color="#FFF" size={25}></Icon_>
                 </TouchableOpacity>
                 {/* <Text style={{color:"#FFF"}}>Share</Text> */}
               </View>
 
-              <View style={{margin: 3, alignItems: 'center'}}>
+              <View style={{ padding: 2, paddingRight: 9, paddingLeft: 9, alignItems: 'center'}}>
                 <TouchableOpacity onPress={() => {this.openLink()}}>
                   <Icon_ name="info-circle" color="#FFF" size={25}></Icon_>
                 </TouchableOpacity>
@@ -367,6 +372,7 @@ class StreamScreen extends Component {
 
             <View
               style={[styles.containerButton, {backgroundColor: 'transparent'}]}>
+                <Text>   </Text>
               <View flex={1}>
                 <TouchableOpacity
                   flex={1}
@@ -458,7 +464,7 @@ class StreamScreen extends Component {
                 marginTop: -50,
                 height: 550,
                 width: 350,
-                backgroundColor: '#ffcccc',
+                backgroundColor: '#ffffffec',
                 //justifyContent: 'center',
               }}>
               <Button title={this.props.myCurrentSong.title}></Button>
@@ -466,7 +472,7 @@ class StreamScreen extends Component {
               <View
                 style={{
                   flex: 7,
-                  backgroundColor: '#fff',
+                  backgroundColor: '#ffffffdd',
                   marginBottom: 10,
                   borderRadius: 10,
                 }}>
@@ -476,7 +482,7 @@ class StreamScreen extends Component {
                   extraData={this.state.dataCmt}
                   renderItem={({item, index}) => (
                     <ItemComment
-                      urlImage={item.image}
+                      urlImage={item.image!=null? item.image: 'https://image.flaticon.com/icons/png/512/1390/1390561.png'}
                       name={item.name}
                       time={item.time}
                       cmt={item.cmt}></ItemComment>
@@ -496,6 +502,7 @@ class StreamScreen extends Component {
                       borderRadius: 5,
                     }}></TextInput>
                   <TouchableOpacity
+                  style={{padding:5}}
                     onPress={() => {
                       this._sendCmt();
                     }}>
@@ -521,7 +528,7 @@ class StreamScreen extends Component {
                 // marginTop: -50,
                 height: 150,
                 width: 150,
-                backgroundColor: '#ffcccc',
+                backgroundColor: '#fffffffa',
                 alignItems: 'center',
                 //justifyContent: 'center',
               }}>
@@ -543,7 +550,7 @@ class StreamScreen extends Component {
                       height: 35,
                       borderRadius: 5,
                     }}></TextInput>
-
+  <Text style={{color:'gray'}}> phút</Text>
                   {/* <Button title={this.state.clock_On==false? 'Tắt':"Bật"} onPress={()=>{this.setState({clock_On:!this.state.clock_On});
                   if(this.state.clock_On)
                   {
@@ -586,11 +593,11 @@ class StreamScreen extends Component {
                 // marginTop: -50,
                 height: 150,
                 width: 250,
-                backgroundColor: '#ffcccc',
+                backgroundColor: '#fffffffa',
                 alignItems: 'center',
                 //justifyContent: 'center',
               }}>
-              <Button title={'Speed'}></Button>
+              <Button title={'Tốc độ phát'}></Button>
               <Text></Text>
 
               <View style={{justifyContent: 'center', alignItems: 'center'}}>
@@ -607,6 +614,8 @@ class StreamScreen extends Component {
                       borderRadius: 5,
                     }}></TextInput>
                   <Slider
+                  minimumTrackTintColor='#2e86de'                 	
+                  thumbTintColor='#2e86de'
                     width={200}
                     marginBottom={0}
                     maximumValue={2}
@@ -614,7 +623,13 @@ class StreamScreen extends Component {
                     step={0.25}
                     value={this.state.speedValue}
                     onSlidingComplete={value => {
-                      Player._setRate(value);
+                      
+                        Player._setRate(value);
+                        
+                      
+                        
+                      
+                      
                       this.setState({speedValue: value});
                     }}></Slider>
                 </View>
