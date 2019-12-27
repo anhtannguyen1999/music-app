@@ -52,5 +52,38 @@ With Music App, you can:
 <img src="https://i.imgur.com/biSMQXL.png" width=300, height=540>
 </div>
 
+* Recent songs and Music charts
+<img src="https://i.imgur.com/XzqgrPW.png" width=300, height=540>
 
+* Suggested playlists and Playlist's songs
+<div style="display: inline;">
+<img src="https://i.imgur.com/uyfVBMW.png" width=300, height=540>
+<img src="https://i.imgur.com/zHsMxWw.png.png" width=300, height=540>
+</div>
 
+* Searching your favorite songs
+<img src="https://i.imgur.com/5RhYQOl.png" width=300, height=540>
+
+* Download songs, add song to playlist and Your song, playlist
+<div style="display: inline;">
+<img src="https://i.imgur.com/GybGBVU.png" width=300, height=540>
+<img src="https://i.imgur.com/WqKK88C.png" width=300, height=540>
+</div>
+
+* Playing song
+<div style="display: inline;">
+<img src="https://i.imgur.com/TO4Q2O4.png" width=300, height=540>
+<img src="https://i.imgur.com/ASva8J5.png" width=300, height=540>
+</div>
+
+* Set speed and set time stop
+<div style="display: inline;">
+<img src="https://i.imgur.com/ZCq73z8.png" width=300, height=540>
+<img src="https://i.imgur.com/oarjCDl.png" width=300, height=540>
+</div>
+
+* Comment
+<img src="https://i.imgur.com/OExBpYw.png" width=300, height=540>
+
+* Update your profile
+<img src="https://i.imgur.com/A5E4Iqe.png" width=300, height=540>
