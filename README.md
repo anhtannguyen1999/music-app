@@ -9,8 +9,10 @@
 Music App is an mobile application for listening to millions of songs. This app also show you top trending of songs and playlists in VietNam.
 
 # Team Members
-Nguyễn Anh Tấn - 17521013
-Lộc Đức Thắng - 17521039
+| Họ và tên        | MSSV           |
+| ------------- |:-------------:|
+| Nguyễn Anh Tấn      | 17521013|
+| Lộc Đức Thắng      | 17521039|
 
 # Technologies used
 This project was coded by React native + Redux.
@@ -40,3 +42,11 @@ This project was coded by React native + Redux.
 | react-redux      | 7.1.3      |
 | redux      | 4.0.4      |
 | rn-fetch-blob      | 0.11.2      |
+
+# Usage
+With Music App, you can:
+
+
+
+
+
