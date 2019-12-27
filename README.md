@@ -119,3 +119,4 @@ react-native run-ios
 </code>
 <p></p>
 
+<hr/>
