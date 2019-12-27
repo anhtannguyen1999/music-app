@@ -7,6 +7,7 @@ import dataMusicLocal from './dataMusicLocalReducer'
 import dataBHVuaNghe from './dataBHVuaNgheReducer'
 import isPause from './pauseReducer'
 import dataDanhSachDangNghe from './dataDanhSachDangNgheReducer'
+import indexPlayingInList from './indexPlayingInListReducer'
 const reducer =combineReducers({
     currentSong:currentSong,
     currentPlayListOnline:currentPlayListOnline,
@@ -15,6 +16,7 @@ const reducer =combineReducers({
     dataMusicLocal:dataMusicLocal,
     dataBHVuaNghe:dataBHVuaNghe,
     isPause:isPause,
-    dataDanhSachDangNghe:dataDanhSachDangNghe
+    dataDanhSachDangNghe:dataDanhSachDangNghe,
+    indexPlayingInList:indexPlayingInList
 });
 export default reducer;

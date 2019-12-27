@@ -285,46 +285,8 @@ class ItemInforBaiHat extends Component {
   render() {
     const valueOpa = this.state.fadeAni;
     return (
-      <TouchableOpacity style={{ flex: 1, width: "100%" }}
+      <View style={{ flex: 1, width: "100%" }}
         onPress={() => {
-          if (this.props.kind !='PlayingList'){
-            Player.ClearPlayingList();
-            Player.AddASongToPlayingList(this.props.id, this.props.linkMp3, this.props.title, this.props.artists_names, this.props.image, this.props.duration, this.props.lyric);
-          }
-          this.props.setPlay();
-          this.props.setSongPlay(
-            this.props.id,
-            this.props.title,
-            this.props.artists_names,
-            this.props.lyric,
-            this.props.duration,
-          );
-
-          if (this.props.linkMp3 != null) {
-            Player.PlayMusic(
-              this.props.title,
-              this.props.linkMp3,
-              this.props.title,
-              this.props.artists_names,
-              this.props.image,
-              this.props.duration,
-            )
-          }
-          else {
-            Player.PlayMusic(
-              this.props.title,
-              'http://api.mp3.zing.vn/api/streaming/audio/' +
-              this.props.id +
-              '/128',
-              this.props.title,
-              this.props.artists_names,
-              this.props.image,
-              this.props.duration,
-            )
-          };
-          this._addSongtoBHVuaNghe();
-          DanhSachBaiHat.setMusicPlaying();
-
         }}>
         <View
           style={[{
@@ -335,7 +297,9 @@ class ItemInforBaiHat extends Component {
             alignItems: 'center',
             marginTop: 5,
             marginLeft: 5,
-          }, this.props.isTrongSuot == 'true' ? { backgroundColor: '#c8d6e570' } : { backgroundColor: '#ccc',}]}>
+            borderRadius:8,
+          }, this.props.isTrongSuot == 'true' ? { backgroundColor: '#c8d6e570' } : { backgroundColor: '#c8d6e570',}]}>
+
 
 
           <View>
@@ -412,7 +376,7 @@ class ItemInforBaiHat extends Component {
             onBackdropPress={() => {
               this.setState({ upPopup: false });
             }}>
-            <View style={{ backgroundColor: '#aaa', height: 300 }}>
+            <View style={{ backgroundColor: '#fff'}}>
               <Button
                 title={this.props.title}
                 onPress={() => {
@@ -514,7 +478,7 @@ class ItemInforBaiHat extends Component {
           </Modal>
 
         </View>
-      </TouchableOpacity>
+      </View>
     );
   }
   // https://facebook.github.io/react-native/docs/flatlist
@@ -569,7 +533,7 @@ const styles = StyleSheet.create({
     height: 60,
     margin: 3,
     resizeMode: 'center',
-    borderRadius: 3,
+    borderRadius: 8,
   },
   styleStt0: {
     paddingLeft: 10,

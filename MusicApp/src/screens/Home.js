@@ -8,6 +8,7 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
+  ImageBackground,
 } from 'react-native';
 import {Dimensions} from 'react-native';
 import {SearchBar} from 'react-native-elements';
@@ -281,11 +282,13 @@ _loadDataBHVuaNghe()
   render() {
 
     return (
-      <View
+      <ImageBackground
+        source={require('../../res/BG2.jpg')} style={{ flex: 1, backgroundColor:'#48dbfb'}}>
+          <View
         onStartShouldSetResponderCapture={() => {
           this.setState({enableScrollViewScroll: true});
         }}
-        style={{flex: 1}}>
+        style={{ flex: 1, backgroundColor:'transparent'}}>
         <ScrollView
           pagingEnabled={false}
           scrollEnabled={this.state.enableScrollViewScroll}
@@ -312,7 +315,7 @@ _loadDataBHVuaNghe()
             </View>
 
             <View
-              style={(styles.containerBHTop, {height: 200})}
+              style={(styles.containerBHTop, {height: 220})}
               onStartShouldSetResponderCapture={() => {
                 this.setState({enableScrollViewScroll: false});
                 /*if (
@@ -332,13 +335,13 @@ _loadDataBHVuaNghe()
             {/* Top song */}
             <View style={styles.containerBHTop100}>
               <View style={styles.containerTieuDe}>
-                <Text style={styles.tieuDe}> Bảng xếp hạng:</Text>
+                <Text style={styles.tieuDe}> Bảng xếp hạng</Text>
               </View>
 
               <View
                 style={{
                   flexDirection: 'row',
-                  backgroundColor: '#fff',
+                  backgroundColor: '#ffffff66',
                   marginLeft: 13,
                 }}>
                 <TouchableOpacity
@@ -426,7 +429,6 @@ _loadDataBHVuaNghe()
               {/*button next page*/}
               <View
                 style={{
-                  backgroundColor: '#fff',
                   width: '100%',
                   flexDirection: 'row',
                   marginBottom: 40,
@@ -436,7 +438,7 @@ _loadDataBHVuaNghe()
             {/* Play list goi y */}
             <View style={styles.containerBHTop}>
               <View style={styles.containerTieuDe}>
-                <Text style={styles.tieuDe}> PlayList gợi ý: </Text>
+                <Text style={styles.tieuDe}> PlayList gợi ý </Text>
               </View>
 
               <ScrollView
@@ -508,7 +510,7 @@ _loadDataBHVuaNghe()
                   />
                 </View>
               </ScrollView>
-              <Text> {'<< '}Slide to load more >></Text>
+              <Text style={{ color:'#341f97'}}> {'<< '}Lướt để xem playlist khác >></Text>
             </View>
           </View>
 
@@ -518,12 +520,13 @@ _loadDataBHVuaNghe()
               onPress={() => this.props.navigation.navigate('Library')}>
               <Text style={styles.tieuDe}>
                 {' '}
-                {'Tới PlayList & Thư viện của bạn'}
+                {'Đến playlist - thư viện của bạn'}
               </Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </View>
+        </View>
+      </ImageBackground>
     );
   }
 
@@ -571,7 +574,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffffbe',
     margin: 10,
     borderRadius: 10,
 
@@ -582,11 +585,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'flex-start',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffffbe',
     margin: 10,
     borderRadius: 10,
     borderWidth: 2,
-    borderColor: '#000',
+    borderColor: '#00000011',
     height: 495,
   },
   tieuDe: {
@@ -595,45 +598,51 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'vincHand',
     fontWeight: 'bold',
-    marginTop: 5,
-    marginLeft: 3,
-    marginBottom: 3,
+    marginTop: 3,
+    marginLeft: 8,
+    marginBottom: 5,
     borderStartWidth: 2,
     borderRightColor: 'red',
+    color:'#341f97',
+    
   },
   containerSerchBar: {
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffffbe',
   },
   containerTieuDe: {
     borderWidth: 1,
-    borderColor: '#fff',
+    borderTopColor:'transparent',
+    borderLeftColor:'transparent',
+    borderRightColor:'transparent',
+    borderBottomColor:'#00000011',
     borderRadius: 10,
-    borderColor: '#888',
     width: '100%',
-    marginTop: -2,
-    paddingBottom: 0,
+    paddingBottom: 1,
+    backgroundColor:'#ffffffdd',
   },
   containerScrollList: {
     //flex: 1,
     //justifyContent: 'center',
     //alignItems: 'flex-start',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffffbe',
     margin: 10,
     borderRadius: 10,
     height: 500,
   },
   textLoaiNhacTop100: {
     fontSize: 20,
-    backgroundColor: '#ccc',
+    backgroundColor: '#c8d6e5cc',
     marginLeft: 2,
     borderRadius: 5,
+    color:'#222f3e'
   },
   textLoaiNhacTop100Active: {
     fontSize: 20,
-    backgroundColor: '#00cec9',
+    backgroundColor: '#0abde3cc',
     marginLeft: 2,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: 'red',
+    borderColor: '#ffffffbe',
+    color:'#ffffff'
   },
 });

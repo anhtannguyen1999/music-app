@@ -53,4 +53,12 @@ export function playInIndex(id,dataSong)
     return {type:'PLAY_IN_INDEX',id,dataSong}
 }
 
+export function setIndexPlayingInList(index)
+{
+    
+    return {type:'SET_INDEX',index}
+}
+
+
+
 

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
   Button,
+  ImageBackground
 } from 'react-native';
 import { test } from './test';
 
@@ -232,12 +233,13 @@ class LibraryScreen extends Component {
   render() {
 
     return (
-      <ScrollView>
+      <ImageBackground style={{ flex: 1 }} source={require('../../res/BG2.jpg')}>
+      <ScrollView style={{flex:1,backgroundColor:'#ffffffaa', margin:5, paddingLeft:2, paddingTop:10, borderRadius:8}}>
         <View style={styles.container}>
           <View style={styles.containerTieuDe}>
           <View style={styles.containerTieuDe,{flexDirection:'row'}}>
           <Icon name='music' size={30}></Icon>
-            <Text style={styles.tieuDe}> Playlist của ban: </Text>
+            <Text style={styles.tieuDe}> Playlist của bạn </Text>
              
           </View>
             <TouchableOpacity
@@ -245,7 +247,7 @@ class LibraryScreen extends Component {
                 this.setState({ isRenderAdd: !this.state.isRenderAdd });
               }}>
               <View style={this.state.isRenderAdd ? styles.con1 : styles.con2}>
-                <Text style={{ fontSize: 18 }}> Add Playlist</Text>
+                <Text style={{ fontSize: 18 }}> Thêm Playlist</Text>
               </View>
             </TouchableOpacity>
           </View>
@@ -287,7 +289,7 @@ class LibraryScreen extends Component {
 
           <View style={styles.containerTieuDe,{flexDirection:'row'}}>
           <Icon name='download' size={30}></Icon>
-            <Text style={styles.tieuDe}> Bài hát đã tải : </Text>   
+            <Text style={styles.tieuDe}> Bài hát đã tải </Text>   
           </View>
               <View style={{alignItems:'center'}}>
               <DanhSachBaiHat kind="downLoad" canRemove={true} dataDanhSachBaiHat={this.props.dataMusicLocal.items}></DanhSachBaiHat>
@@ -295,7 +297,8 @@ class LibraryScreen extends Component {
         
           </View>
         </View>
-      </ScrollView>
+        </ScrollView>     
+      </ImageBackground>
 
     );
   }
@@ -315,28 +318,28 @@ export default connect(mapStateToProps, {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    width: '100%',
+   // width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    backgroundColor: '#fff',
+    //backgroundColor: '#fff',
     flexDirection: 'column',
-    padding: 10,
+   // padding: 10,
   },
   input: { maxHeight: 40 },
   con2: {
     fontSize: 20,
-    backgroundColor: '#ccc',
+    backgroundColor: '#0abde3cc',
     marginLeft: 2,
     borderRadius: 5,
     margin: 5,
   },
   con1: {
     fontSize: 20,
-    backgroundColor: '#00cec9',
+    backgroundColor: '#2e86decc',
     marginLeft: 2,
     borderRadius: 5,
     borderWidth: 1,
-    borderColor: 'red',
+    borderColor: '#0abde3cc',
     margin: 5,
   },
 
@@ -372,5 +375,6 @@ const styles = StyleSheet.create({
     marginBottom: 3,
     borderStartWidth: 2,
     borderRightColor: 'red',
+    color:'#341f97',
   },
 });

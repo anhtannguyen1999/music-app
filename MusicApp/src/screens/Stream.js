@@ -10,9 +10,12 @@ import {
   Button,
   Switch,
   Slider,
-  ImageBackground
+  ImageBackground,
+  Share,
+  Linking
 } from 'react-native';
-import Player, {MyPlayerBar, MyLyric} from '../player/Player';
+import Player, {MyLyric, MyPlayerBar} from '../player/Player';
+import ReLoadSong from '../components/MyPlayerBar';
 import Modal from 'react-native-modal';
 import Icon_ from 'react-native-vector-icons/FontAwesome5';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -22,7 +25,12 @@ import ItemComment from '../components/ItemComment';
 import DanhSachBaiHat from '../components/DanhSachBaiHat';
 
 import {connect} from 'react-redux';
-import {setSongPlay, setPause, setPlay} from '../redux/action';
+import {
+  setSongPlay,
+  setPause,
+  setPlay,
+  setIndexPlayingInList,
+} from '../redux/action';
 import {TextInput, FlatList} from 'react-native-gesture-handler';
 import {FirebaseApp} from '../components/FirebaseConfig.js';
 import {Alert} from 'react-native';
@@ -48,8 +56,8 @@ class StreamScreen extends Component {
       timerValue: 0,
       popUpSpeed: false,
       speedValue: 1,
-      typeLoop:0,
-      typeNext:0,
+      typeLoop: 0,
+      typeNext: 0,
     };
   }
   static navigationOptions = {
@@ -151,6 +159,61 @@ class StreamScreen extends Component {
     }, this.state.timerValue * 1000);
   };
 
+  openLink()
+  {
+    var name=(this.change_alias(this.props.myCurrentSong.title))
+    var art=(this.change_alias(this.props.myCurrentSong.artists_names))
+   var url="https://zingmp3.vn/bai-hat/"+name+"-"+art+"/"+this.props.myCurrentSong.id+".html"
+   Linking.canOpenURL(url).then(supported => {
+    if (supported) {
+      Linking.openURL(url);
+    } else {
+      console.log("Don't know how to open URI: " +url);
+    }
+  });
+
+  }
+
+
+  _shareSong() {
+    var name=(this.change_alias(this.props.myCurrentSong.title))
+    var art=(this.change_alias(this.props.myCurrentSong.artists_names))
+   var link="https://zingmp3.vn/bai-hat/"+name+"-"+art+"/"+this.props.myCurrentSong.id+".html"
+    console.log();
+    Share.share({
+      message: this.props.myCurrentSong.title+" "+ link,
+      url: link,
+      title: 'Wow, did you see that?'
+    }, {
+      // Android only:
+      dialogTitle: 'Share '+this.props.myCurrentSong.title,
+      // iOS only:
+      excludedActivityTypes: [
+        'com.apple.UIKit.activity.PostToTwitter'
+      ]
+    })
+  }
+
+   change_alias(str) {
+    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+    str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+    str = str.replace(/đ/g, "d");
+    str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+    str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+    str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+    str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+    str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+    str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+    str = str.replace(/Đ/g, "D");
+    str = str.replace(/,/g, "");
+    str = str.replace(/ /g, "-");
+    return str;
+}
+
   //   componentWillReceiveProps(nextProps) {
   //     if(nextProps.hasClock != this.props.hasClock){
   //         this.setState({
@@ -171,170 +234,216 @@ class StreamScreen extends Component {
       StreamScreen._on = false;
     }
     return (
-      <ImageBackground source={require('../../res/BGStream1.jpg')} style={{ width: '100%', height: '100%' }}>
-        <View style={[styles.container,{backgroundColor:'transparent'}]}>
-          <View style={[styles.con2, { position: 'relative'}]}>
+      <ImageBackground
+        source={require('../../res/BGStream1.jpg')}
+        style={{width: '100%', height: '100%'}}>
+        <View style={[styles.container, {backgroundColor: 'transparent'}]}>
+          <View style={[styles.con2, {position: 'relative'}]}>
             {/*Ten bai hat  */}
-            <View style={{
-              backgroundColor:'#0abde395',
-              zIndex: 9,
-            }}>
-              <Text style={{ fontSize: 15, color: '#341f97', textAlign:"center" }}>
-                ♪{this.props.myCurrentSong.title}♫
-              </Text>
-              <Text style={{ fontSize: 15, color: '#341f97', textAlign: "center" }}>
-                - {this.props.myCurrentSong.artists_names} -
-              </Text>
+            <View
+              style={{
+                backgroundColor: '#0abde395',
+                zIndex: 9,
+                flexDirection: 'row',
+              }}>
+              <View style={[styles.con2, {position: 'relative'}]}>
+                <Text
+                  style={{fontSize: 15, color: '#341f97', textAlign: 'center'}}>
+                  ♪{this.props.myCurrentSong.title}♫
+                </Text>
+                <Text
+                  style={{fontSize: 15, color: '#341f97', textAlign: 'center'}}>
+                  - {this.props.myCurrentSong.artists_names} -
+                </Text>
+              </View>
 
-              <View style={{alignItems: 'flex-start'}}>
+              <View style={{justifyContent: 'flex-end'}}>
                 <TouchableOpacity
                   onPress={() => {
                     this.setState({popUpClock: !this.state.popUpClock});
                   }}>
-                  <Text></Text>
                   <Icon_ name="clock" size={20} color={'#fff'}></Icon_>
                 </TouchableOpacity>
               </View>
             </View>
 
-            <ScrollView horizontal={true} pagingEnabled={true} showsHorizontalScrollIndicator={true}>
+            <ScrollView
+              horizontal={true}
+              pagingEnabled={true}
+              showsHorizontalScrollIndicator={true}>
               {/* Man hinh loi */}
-              <View style={{ flex: 1, width: screenWidth }} backgroundColor="transparent">
-                
-                  <MyLyric linkLyric={this.props.myCurrentSong.lyric}>  </MyLyric>
-                
+              <View
+                style={{flex: 1, width: screenWidth}}
+                backgroundColor="transparent">
+                <MyLyric linkLyric={this.props.myCurrentSong.lyric}> </MyLyric>
               </View>
 
               {/*Man hinh khac  */}
-              <View style={{ flex: 1, width: screenWidth,backgroundColor:'transparent'}} >
-                <View style={{
-                      flex:1,
-                      justifyContent: 'flex-start',
-                      alignItems: 'flex-start',
-                      width: screenWidth,
-                      marginLeft: 10,
-                      width:screenWidth,
-                      
-                      zIndex:9,
-                    }}>
-                 
-                  <DanhSachBaiHat kind={'BHDN'} canRemove={false} dataDanhSachBaiHat={this.props.dataDanhSachDangNghe.dataSong} isTrongSuot='true'></DanhSachBaiHat>
+              <View
+                style={{
+                  flex: 1,
+                  width: screenWidth,
+                  backgroundColor: 'transparent',
+                }}>
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: 'flex-start',
+                    alignItems: 'flex-start',
+                    width: screenWidth,
+                    marginLeft: 10,
+                    width: screenWidth,
 
+                    zIndex: 9,
+                  }}>
+                  <DanhSachBaiHat
+                    kind={'BHDN'}
+                    canRemove={false}
+                    dataDanhSachBaiHat={
+                      this.props.dataDanhSachDangNghe.dataSong
+                    }
+                    isTrongSuot="true"></DanhSachBaiHat>
                 </View>
-                
               </View>
-
-              
             </ScrollView>
           </View>
-        
-
 
           {/* Phan thanh player */}
-          <View style={[styles.con1,{backgroundColor:'transparent'}]}>
-            
-<View style={{flexDirection: 'row'}}>
-          {/* <Button
+          <View style={[styles.con1, {backgroundColor: 'transparent'}]}>
+            <View style={{flexDirection: 'row',margin:3}}>
+              {/* <Button
             title="Comment"
             onPress={() => {
               this._loadDataCmt(this.props.myCurrentSong.id);
               this.setState({popUpCmt: true});
             }}></Button> */}
-          <View style={{margin: 3, alignItems: 'center'}}>
-            <TouchableOpacity
-              onPress={() => {
-                this._loadDataCmt(this.props.myCurrentSong.id);
-                this.setState({popUpCmt: true});
-              }}>
-              <Icon_ name="comment-alt" size={25}></Icon_>
-            </TouchableOpacity>
-            <Text>Comment</Text>
-          </View>
-
-          <View style={{margin: 3, alignItems: 'center'}}>
-            <TouchableOpacity
-              onPress={() => {
-                this.setState({popUpSpeed: true});
-              }}>
-              <Icon_ name="tachometer-alt" size={25}></Icon_>
-            </TouchableOpacity>
-            <Text>Speed</Text>
-          </View>
-
-          <View style={{margin: 3, alignItems: 'center'}}>
-            <TouchableOpacity onPress={() => {}}>
-              <Icon_ name="list-alt" size={25}></Icon_>
-            </TouchableOpacity>
-            <Text>List song</Text>
-          </View>
-
-          <View style={{margin: 3, alignItems: 'center'}}>
-            <TouchableOpacity onPress={() => {}}>
-              <Icon_ name="share-alt-square" size={25}></Icon_>
-            </TouchableOpacity>
-            <Text>Share</Text>
-          </View>
-
-          <View style={{margin: 3, alignItems: 'center'}}>
-            <TouchableOpacity onPress={() => {}}>
-              <Icon_ name="info-circle" size={25}></Icon_>
-            </TouchableOpacity>
-            <Text>Infomation</Text>
-          </View>
-        </View>
-            <MyPlayerBar style={{}}></MyPlayerBar>
-
-            <View style={[styles.containerButton, { backgroundColor: '#0abde380' }]}>
-              <View flex={1} >
-                <TouchableOpacity flex={1} onPress={() => { Player.NextTypeNext(); this.setState({typeNext:Player.typeNext});}}>
-                  <Image style={{ height: '100%'}}            
-                    resizeMode="center"
-                    source={this.state.typeNext == 0 ? require('../../res/shuffle.png') : require('../../res/shuffle_selected.png')}>
-                  </Image>
+              <View style={{margin: 3, alignItems: 'center'}}>
+                <TouchableOpacity
+                  onPress={() => {
+                    this._loadDataCmt(this.props.myCurrentSong.id);
+                    this.setState({popUpCmt: true});
+                  }}>
+                  <Icon_ name="comment-alt" color="#FFF" size={25}></Icon_>
                 </TouchableOpacity>
-                
-                
+                {/* <Text style={{color:"#FFF"}}>Comment</Text> */}
               </View>
 
-              <View flex={1} >
-                <TouchableOpacity flex={1} onPress={() => { Player.PlayPre(); Player._setPlay() }}>
-                  <Image style={{ height: '83%', marginTop:5,marginBottom:5 }}
+              <View style={{margin: 3, alignItems: 'center'}}>
+                <TouchableOpacity
+                  onPress={() => {
+                    this.setState({popUpSpeed: true});
+                  }}>
+                  <Icon_ name="tachometer-alt" color="#FFF" size={25}></Icon_>
+                </TouchableOpacity>
+                {/* <Text style={{color:"#FFF"}}>Speed</Text> */}
+              </View>
+
+              <View style={{margin: 3, alignItems: 'center'}}>
+                <TouchableOpacity onPress={() => {}}>
+                  <Icon_ name="list-alt" color="#FFF" size={25}></Icon_>
+                </TouchableOpacity>
+                {/* <Text style={{color:"#FFF"}}>List song</Text> */}
+              </View>
+
+              <View style={{margin: 3, alignItems: 'center'}}>
+                <TouchableOpacity onPress={() => {this._shareSong()}}>
+                  <Icon_ name="share-alt-square" color="#FFF" size={25}></Icon_>
+                </TouchableOpacity>
+                {/* <Text style={{color:"#FFF"}}>Share</Text> */}
+              </View>
+
+              <View style={{margin: 3, alignItems: 'center'}}>
+                <TouchableOpacity onPress={() => {this.openLink()}}>
+                  <Icon_ name="info-circle" color="#FFF" size={25}></Icon_>
+                </TouchableOpacity>
+                {/* <Text style={{color:"#FFF"}}>Infomation</Text> */}
+              </View>
+            </View>
+           
+            <ReLoadSong index={this.props.indexPlayingInList}></ReLoadSong>
+            
+              <MyPlayerBar></MyPlayerBar>
+            
+
+            <View
+              style={[styles.containerButton, {backgroundColor: 'transparent'}]}>
+              <View flex={1}>
+                <TouchableOpacity
+                  flex={1}
+                  onPress={() => {
+                    Player.NextTypeNext();
+                    this.setState({typeNext: Player.typeNext});
+                  }}>
+                  <Image
+                    style={{height: '100%'}}
+                    resizeMode="center"
+                    source={
+                      this.state.typeNext == 0
+                        ? require('../../res/shuffle.png')
+                        : require('../../res/shuffle_selected.png')
+                    }></Image>
+                </TouchableOpacity>
+              </View>
+
+              <View flex={1}>
+                <TouchableOpacity
+                  flex={1}
+                  onPress={() => {
+                    Player.PlayPre();
+                    Player._setPlay();
+                  }}>
+                  <Image
+                    style={{height: '83%', marginTop: 5, marginBottom: 5}}
                     resizeMode="center"
                     source={require('../../res/prev.png')}></Image>
                 </TouchableOpacity>
               </View>
 
-              <View flex={1} >
+              <View flex={1}>
                 <TouchableOpacity
                   onPress={() => {
                     this._setPause();
                   }}>
                   {this._renderButtonPause()}
                 </TouchableOpacity>
-
               </View>
 
-              <View flex={1} >
-                <TouchableOpacity onPress={() => {Player.PlayNext(); Player._setPlay()}}>
-                  <Image style={{ height: '83%',marginTop:5,marginBottom:5 }}
+              <View flex={1}>
+                <TouchableOpacity
+                  onPress={() => {
+                    Player.PlayNext();
+                    Player._setPlay();
+                  }}>
+                  <Image
+                    style={{height: '83%', marginTop: 5, marginBottom: 5}}
                     resizeMode="center"
                     source={require('../../res/next.png')}></Image>
                 </TouchableOpacity>
               </View>
 
               <View flex={1}>
-                <TouchableOpacity onPress={() => { Player.NextTypeLoop(); this.setState({ typeLoop: Player.typeLoop }); }}>
-                  <Image style={{ height: '100%' }}
+                <TouchableOpacity
+                  onPress={() => {
+                    Player.NextTypeLoop();
+                    this.setState({typeLoop: Player.typeLoop});
+                  }}>
+                  <Image
+                    style={{height: '100%'}}
                     resizeMode="center"
-                    source={this.state.typeLoop == 0 ? require('../../res/repeat.png') : (this.state.typeLoop == 1 ? require('../../res/repeat_all.png') : require('../../res/repeat_one.png'))}></Image>
+                    source={
+                      this.state.typeLoop == 0
+                        ? require('../../res/repeat.png')
+                        : this.state.typeLoop == 1
+                        ? require('../../res/repeat_all.png')
+                        : require('../../res/repeat_one.png')
+                    }></Image>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
         </View>
 
-        
-       <View style={{justifyContent: 'center', alignItems: 'center'}}>
+        <View style={{justifyContent: 'center', alignItems: 'center'}}>
           <Modal
             visible={this.state.popUpCmt}
             transparent={true}
@@ -486,7 +595,7 @@ class StreamScreen extends Component {
 
               <View style={{justifyContent: 'center', alignItems: 'center'}}>
                 <View style={{flexDirection: 'row', marginLeft: 0}}>
-                <TextInput
+                  <TextInput
                     keyboardType="numeric"
                     maxLength={4}
                     editable={false}
@@ -498,20 +607,16 @@ class StreamScreen extends Component {
                       borderRadius: 5,
                     }}></TextInput>
                   <Slider
-                    width={ 200}
+                    width={200}
                     marginBottom={0}
                     maximumValue={2}
                     minimumValue={0.25}
                     step={0.25}
                     value={this.state.speedValue}
-                    onSlidingComplete={value =>{
-
-                    
-                      Player._setRate((value))
-                      this.setState({speedValue:value})
-                    }
-                    }></Slider>
-
+                    onSlidingComplete={value => {
+                      Player._setRate(value);
+                      this.setState({speedValue: value});
+                    }}></Slider>
                 </View>
                 {/* <Switch
                   value={this.state.clock_On}
@@ -527,19 +632,24 @@ class StreamScreen extends Component {
           </Modal>
         </View>
       </ImageBackground>
-    
-    
-    
     );
   }
 }
 
 function mapStateToProps(state) {
-  return {myCurrentSong: state.currentSong, isPause: state.isPause,dataDanhSachDangNghe:state.dataDanhSachDangNghe};
+  return {
+    myCurrentSong: state.currentSong,
+    isPause: state.isPause,
+    dataDanhSachDangNghe: state.dataDanhSachDangNghe,
+    indexPlayingInList: state.indexPlayingInList,
+  };
 }
-export default connect(mapStateToProps, {setSongPlay, setPause, setPlay})(
-  StreamScreen,
-);
+export default connect(mapStateToProps, {
+  setSongPlay,
+  setPause,
+  setPlay,
+  setIndexPlayingInList,
+})(StreamScreen);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -550,22 +660,23 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   con1: {
-    flex: .9,
+    flex: 1.2,
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
   con2: {
-    width:screenWidth,
+    width: screenWidth,
     flex: 5,
   },
 
   containerButton: {
-    flex: 1.5,
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
     width: screenWidth,
-    
+    marginBottom: 20,
+    marginTop:15
   },
   containerProc: {
     flex: 1,

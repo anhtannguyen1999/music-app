@@ -12,13 +12,8 @@ import {
 import Slider from 'react-native-slider';
 import RNFetchBlob from 'rn-fetch-blob'
 const screenWidth = Math.round(Dimensions.get('window').width);
-
-import {connect} from 'react-redux';
-import {setPause,setPlay,setDataDanhSachDangNghe} from '../redux/action';
-
-
-
- class Player {
+export default class Player {
+  
   static KhoiTaoPlayer() {
     TrackPlayer.addEventListener('remote-play', () => TrackPlayer.play());
     TrackPlayer.addEventListener('remote-pause', () => TrackPlayer.pause());
@@ -40,7 +35,8 @@ import {setPause,setPlay,setDataDanhSachDangNghe} from '../redux/action';
     TrackPlayer.addEventListener('remote-previous', () =>{
       //TrackPlayer.skipToPrevious(),
      this.PlayPre();
-    });
+    }
+    );
     TrackPlayer.updateOptions({
       // One of RATING_HEART, RATING_THUMBS_UP_DOWN, RATING_3_STARS, RATING_4_STARS, RATING_5_STARS, RATING_PERCENTAGE
       ratingType: TrackPlayer.RATING_5_STARS,
@@ -85,12 +81,14 @@ import {setPause,setPlay,setDataDanhSachDangNghe} from '../redux/action';
     {
       console.log(this.typeNext);
       if (this.typeNext == 0) { //phat tuan tu
-        console.log("Next to: " + (this.playingIndexList - 1 + 1) % this.playingList.length + 1);
-        this.PlayMusicAtIndex((this.playingIndexList - 1 + 1) % this.playingList.length + 1);
+        //console.log("Next to: " + (this.playingIndexList - 1 + 1) % this.playingList.length + 1);
+        //this.playingIndexList=((this.playingIndexList - 1 + 1) % this.playingList.length + 1);
+        console.log("Next to index: "+this.playingIndexList)
+        this.PlayMusicAtIndex((this.playingIndexList - 1 + 1) % this.playingList.length+1);
       }
       else { //phat ngau nhien
-        let ranNum = Math.floor(Math.random() * this.playingList.length) + 1;
-        this.PlayMusicAtIndex(ranNum);
+        let ranNum = Math.floor(Math.random() * this.playingList.length);
+        this.PlayMusicAtIndex(ranNum)+1;
       }
     }
     
@@ -98,8 +96,9 @@ import {setPause,setPlay,setDataDanhSachDangNghe} from '../redux/action';
   static PlayPre() {
     if (this.playingList.length > 1){
       if (this.typeNext == 0) { //phat tuan tu
-        console.log("Pre to: " + (this.playingIndexList - 1 - 1 + this.playingList.length) % this.playingList.length + 1);
-        this.PlayMusicAtIndex((this.playingIndexList - 1 - 1 + this.playingList.length) % this.playingList.length + 1);
+       // console.log("Pre to: " + (this.playingIndexList - 1 - 1 + this.playingList.length) % this.playingList.length + 1);
+       this.PlayMusicAtIndex((this.playingIndexList - 1 - 1 + this.playingList.length) % this.playingList.length + 1)
+        //console.log("Next to: "+this.PlayMusicAtIndex((this.playingIndexList - 1 - 1 + this.playingList.length) % this.playingList.length + 1));
       }
       else { //phat ngau nhien
         let ranNum = Math.floor(Math.random() * this.playingList.length) + 1;
@@ -127,18 +126,19 @@ import {setPause,setPlay,setDataDanhSachDangNghe} from '../redux/action';
     return this.duration;
   }
 
+  static getIndex()
+  {
+    return Player.playingIndexList;
+  }
+
   static _setPause() {
     TrackPlayer.pause();
   }
   static _setPlay() {
     TrackPlayer.play();
-   // this.props.setPause();
   }
   static _setSeek(value) {
-    TrackPlayer.seekTo(value);
-  }
-  static _setRate(value) {
-    TrackPlayer.setRate(value);
+    TrackPlayer.seekTo(value)
   }
   static _getProg()
   {
@@ -153,7 +153,6 @@ import {setPause,setPlay,setDataDanhSachDangNghe} from '../redux/action';
       this.daKhoiTao = true;
       this.KhoiTaoPlayer();
     }
-
 
     this.duration = parseInt(total_time);
     TrackPlayer.setupPlayer().then(async () => {
@@ -174,15 +173,17 @@ import {setPause,setPlay,setDataDanhSachDangNghe} from '../redux/action';
           ' OK! _dakhoitao' +
           this.daKhoiTao,
       );
+      
       // Starts playing it
       //TrackPlayer.seekTo(10.5);// tua den 10.5s
-      TrackPlayer.play();
-      console.log(TrackPlayer.getBufferedPosition());
+      
+      //console.log(TrackPlayer.getBufferedPosition());
       //TrackPlayer.pause();
       //TrackPlayer.setRate(2);//tang toc do len 1.25
       // TrackPlayer.seekTo(10.5);// tua den 10.5s
-    });
+    }).then(()=>{TrackPlayer.play();})
   }
+
   static typeLoop= 0; //==0 la khong lap lai,==1 la lap lai khi het, ==2 la lap lai 1 bai
   static typeNext= 0; //==0 la phat bai ke tiep tuan tu, ==1 la phat ngau nhien
   static GetTypeLoop(){
@@ -201,19 +202,40 @@ import {setPause,setPlay,setDataDanhSachDangNghe} from '../redux/action';
   static playingList = [];
   static playingIndexList=0;
   static PlayMusicAtIndex(index){
-    let i=0;
+    let i=-1;
     this.playingList.forEach(element => {
       i++;
       if(i==index){
-        this.PlayMusic(element.id, element.url, element.title, element.artist, element.artwork, element.total_time);
+       // this.PlayMusic(element.id, element.url, element.title, element.artist, element.artwork, element.total_time);
+        if (element.linkMp3 != null) {
+          this.PlayMusic(
+            element.title,
+            element.linkMp3,
+            element.title,
+            element.artists_names,
+            element.thumbnail_medium,
+            element.duration,
+          )
+        }
+        else {
+          this.PlayMusic(
+            element.title,
+            'http://api.mp3.zing.vn/api/streaming/audio/' +
+            element.id +
+            '/128',
+            element.title,
+            element.artists_names,
+            element.thumbnail_medium,
+            element.duration,
+          )
+        };
       }
     });
     this.playingIndexList=index;
   }
-  
   static AddASongToPlayingList(id, url, title, artist, artwork, total_time, lyric) {
     this.playingList.push({ id, url, title, artist, artwork, total_time, lyric});
-   // console.log(this.playingList);
+    console.log(this.playingList);
     
   }
   static ClearPlayingList(){
@@ -221,11 +243,6 @@ import {setPause,setPlay,setDataDanhSachDangNghe} from '../redux/action';
   }
 
 }
-function mapStateToProps(state) {
-  return {myCurrentSong: state.currentSong,isPause:state.isPause,dataDanhSachDangNghe:state.dataDanhSachDangNghe};
-}
-export default connect(mapStateToProps, {setPause,setPlay})(Player);
-
 
 export class PlayerInfo extends Component {
   componentDidMount() {
@@ -284,7 +301,6 @@ export class MyPlayerBar extends TrackPlayer.ProgressComponent {
                 ':' +
                 parseInt((this.getProgress() * Player._getDuration()) % 60, 10));
     SetCurrentTime(currTime);
-  
     return (
       
       <View style={styles.containerProc}>
@@ -327,6 +343,7 @@ function SetCurrentTime(time){
     time='0'+time;
   this.setState({ curentTime: time});
 }
+
 const MyComponent = () => {
   const { position, bufferedPosition, duration } = useTrackPlayerProgress()
 
@@ -339,6 +356,7 @@ const MyComponent = () => {
 }
 
 export class MyLyric extends TrackPlayer.ProgressComponent {
+
   constructor(props) {
     super(props);
     this.state = {
@@ -348,11 +366,10 @@ export class MyLyric extends TrackPlayer.ProgressComponent {
       index:'',
       curentTime:'0',
       up:0,
-      link:''
+      link:'',
     };
     this.curentLineIndex=0;
     SetCurrentTime = SetCurrentTime.bind(this);
-   
   }
   componentDidMount() {
 
@@ -404,7 +421,6 @@ export class MyLyric extends TrackPlayer.ProgressComponent {
     return parseInt(value.substring(0,2))*60 +parseInt(value.substring(3,6));
   }
 
-
   render() {
 
 
@@ -435,8 +451,9 @@ export class MyLyric extends TrackPlayer.ProgressComponent {
         this.xuLiLyric(this.state.stringLyric)
       })
     }
-
     }
+
+    //console.log(this.state.curentTime);
     let i=0;
     return (
       <View style={styles.container}>
@@ -486,6 +503,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: '#0abde320',
+    
     flexDirection: 'row',
     width: screenWidth,
   },

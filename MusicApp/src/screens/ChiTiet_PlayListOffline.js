@@ -6,7 +6,8 @@ import {
   Text,
   TouchableOpacity,
   Image,
-  Button
+  Button,
+  ImageBackground
 } from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {Dimensions} from 'react-native';
@@ -32,11 +33,12 @@ class ChiTiet_PlayListOfflineScreen extends Component {
   render() {
     const screenWidth = Math.round(Dimensions.get('window').width);
     return (
-      <View style={styles.container}>
+      <ImageBackground source={require('../../res/BG2.jpg')}
+        style={styles.container}>
         <View
           style={
             (styles.container,
-            {margin: 0, marginLeft: 0, borderWidh: 2, borderColor: '#000'})
+            {margin: 0, marginLeft: 0, borderWidh: 2, borderColor: '#000',backgroundColor:'#ffffffcc',borderRadius:8, padding:5})
           }>
           <View style={{flexDirection: 'row'}}>
             <Image
@@ -48,7 +50,7 @@ class ChiTiet_PlayListOfflineScreen extends Component {
               onError={e => {}}></Image>
             <View style={{flexDirection:'column'}}>
               <View style={{flex:1}}>
-                <Text style={{ fontSize: 17 }}>
+                <Text style={{ fontSize: 17, fontWeight: 'bold' }}>
                   {this.props.navigation.getParam('title', '')}
                 </Text>
                 <Text style={{ fontSize: 15 }}>
@@ -63,8 +65,7 @@ class ChiTiet_PlayListOfflineScreen extends Component {
           </View>
         </View>
         <View style={styles.container1}>
-
-        <View style={{alignItems:'flex-start',width:'89%'}}>
+          <View style={{ alignItems: 'flex-start', width: '89%',paddingTop: 5, paddingBottom: 5}}>
             <Button title="Nghe tất cả" onPress={()=>{
               //Player.AddPlayingList();
               Player.ClearPlayingList();
@@ -86,7 +87,7 @@ class ChiTiet_PlayListOfflineScreen extends Component {
           {/*<Text style={styles.tieuDe}> Danh sach bai hat:</Text>*/}
             <DanhSachBaiHat kind={'PlayList_Offline'} canRemove={true} dataDanhSachBaiHat={this.props.myPlayListOffline.dataSong} /*dataDanhSachBaiHat={this.props.dataAllPlaylist.list[this.props.navigation.getParam('id', 0)].song.items}*/></DanhSachBaiHat>
         </View>
-      </View>
+      </ImageBackground>
     );
   }
 }
@@ -110,10 +111,11 @@ const styles = StyleSheet.create({
     width: screenWidth * 0.95,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: '#ffffffcc',
     flexDirection: 'column',
     margin: 10,
     borderRadius: 10,
+    padding:2,
   },
   tieuDe: {
     justifyContent: 'flex-start',
@@ -143,9 +145,10 @@ const styles = StyleSheet.create({
     width: 135,
     height: 135,
     margin: 3,
+    marginRight:7,
     padding: 0,
     resizeMode: 'center',
-    borderRadius: 3,
+    borderRadius: 8,
     borderColor: '#000',
     borderWidth: 2,
   },

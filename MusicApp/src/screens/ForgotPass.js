@@ -257,6 +257,8 @@ export default class ForgotPassScreen extends Component {
   render() {
     return (
       
+      <ImageBackground style={styles.container} source={require('../../res/BGStream1.jpg')}>
+
       <View style={styles.container}>
         <View style={{alignItems:'center',justifyContent:'flex-start',flex:1,marginTop:80}}>
         <Icon
@@ -306,6 +308,7 @@ export default class ForgotPassScreen extends Component {
           </TouchableOpacity>
         </View> */}
       </View>
+      </ImageBackground>
    
     );
   }
@@ -316,7 +319,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#00a8ff',
+    //backgroundColor: '#00a8ff',
     width: '100%',
     
   },
@@ -336,7 +339,7 @@ const styles = StyleSheet.create({
     width: 280,
     height:50,
     borderWidth: 2,
-    borderColor: '#555',
+    borderColor: '#8395a7',
     marginBottom: 5,
     borderRadius: 25,
     margin: 3,
@@ -349,7 +352,7 @@ const styles = StyleSheet.create({
     width: 130,
     height: 30,
     borderWidth: 2,
-    borderColor: '#555',
+    borderColor: '#8395a7',
     marginBottom: 5,
     borderRadius: 25,
     margin: 3,

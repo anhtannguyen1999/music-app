@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {StyleSheet, View, FlatList, Text, TouchableOpacity} from 'react-native';
+import {StyleSheet, View, FlatList, Text, TouchableOpacity, ImageBackground} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {Dimensions} from 'react-native';
 import ItemInforBaiHat from '../components/ItemInforBaiHat';
@@ -116,17 +116,17 @@ class SearchScreen extends Component {
     var timeout = 500;
     const screenWidth = Math.round(Dimensions.get('window').width);
     return (
-      <View style={styles.container}>
+      <ImageBackground source={require('../../res/BG2.jpg')}
+       style={styles.container}>
         <View
           style={{
             paddingTop: 0,
             marginBottom: 0,
             width: screenWidth,
-            backgroundColor: '#fff',
           }}>
           <View>
             <SearchBar
-              containerStyle={{backgroundColor: '#fff'}}
+              containerStyle={{backgroundColor: '#ffffffcc'}}
               value={this.state.searchValue}
               backgroundColor
               round
@@ -152,38 +152,35 @@ class SearchScreen extends Component {
             />
             <View
               style={{
-                backgroundColor: '#ffe',
-                //  justifyContent:'center',
-                // alignItems:'center',
-                // alignContent:'center',
-
+                
+                backgroundColor: '#ffffffee',
                 zIndex: 2,
                 padding: 0,
-                marginLeft: 30,
                 marginTop: 0,
-                borderRadius: 0,
-                borderWidth: 1,
-                borderColor: '#000',
-                width: '85%',
+                marginLeft:'2.5%',
+                borderRadius: 8,
+                borderColor: '#fff',
+                width: '95%',
                 //height:150
               }}>
               {/*Flatlist load goi y search*/}
 
               <FlatList
-                //backgroundColor={"#000"}
+                style={{borderRadius:8}}
                 borderColor={'#000'}
-                borderWidth={0}
                 data={this.state.dataGoiY}
                 zIndex={2}
                 extraData={this.state.searchValue}
                 //keyExtractor={(item)=>item}
                 renderItem={({item}) => (
-                  <TouchableOpacity
+                  <TouchableOpacity 
+                    style={{backgroundColor: '#c8d6e511', marginTop: 2,marginBottom:1,
+                            marginLeft:10,marginRight:10, borderRadius:8,}}
                     onPress={() => {
                       this.setState({searchValue: item, dataGoiY: []}),
                         this._loadDataSearch(item);
                     }}>
-                    <Text style={{fontSize: 15, color: '#000', marginLeft: 20}}>
+                    <Text style={{fontSize: 15, color: '#000', marginLeft: 20, paddingBottom:3}}>
                       {item}
                     </Text>
                   </TouchableOpacity>
@@ -194,13 +191,12 @@ class SearchScreen extends Component {
           </View>
         </View>
 
-        <View style={styles.container1,{alignItems:"center"}}>
+        <View style={styles.container1}>
           {/*<Text style={styles.tieuDe}> Kết quả tìm kiếm:</Text>*/}
             <DanhSachBaiHat dataDanhSachBaiHat={this.state.dataSearch}></DanhSachBaiHat>
          
         </View>
-        <Text> haah</Text>
-      </View>
+      </ImageBackground>
     );
   }
 }
@@ -216,7 +212,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: 'transparent',
     flexDirection: 'column',
   },
   container1: {
@@ -224,10 +220,10 @@ const styles = StyleSheet.create({
     width: screenWidth * 0.95,
     justifyContent: 'center',
     alignItems: 'flex-start',
-    backgroundColor: '#fff',
     flexDirection: 'column',
-    margin: 10,
+    marginTop: 1,
     borderRadius: 10,
+    alignItems: "center", backgroundColor: '#ffffffcc'
   },
   tieuDe: {
     justifyContent: 'flex-start',

@@ -93,38 +93,38 @@ export default class LoginScreen extends Component {
   _renderButton() {
     return (
       <View style={{flex:1,flexDirection: 'column',alignItems:'center',justifyContent:'flex-end',marginBottom:10}}>
-        <TouchableOpacity
-          onPress={() => {
-            if (this.state.renderLogin == true) {
-              this._Login();
-            } else {
-              this.setState({renderLogin: true});
-              this._clearAll();
-            }
-          }}>
-          <View style={this.state.renderLogin==true? styles.conButon1:styles.conButon2}>
-            <Text> Đăng nhập</Text>
-          </View>
-        </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => {
+          if (this.state.renderLogin == true) {
+            this._Login();
+          } else {
+            this.setState({renderLogin: true});
+            this._clearAll();
+          }
+        }}>
+        <View style={this.state.renderLogin==true? styles.conButon1:styles.conButon2}>
+          <Text> Đăng nhập</Text>
+        </View>
+      </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => {
-            if (this.state.renderLogin == false) {
-              this._Register();
-            } else {
-              this.setState({renderLogin: false});
-              this._clearAll();
-            }
-          }}>
-          <View style={this.state.renderLogin==false? styles.conButon1:styles.conButon2}>
-        <Text> {this.state.renderLogin==true? "Chưa có tài khoản?":"Đăng kí"}</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={()=>{this.props.navigation.navigate('ForgotPass')}}>
-        <Text>---------------Quên mật khẩu---------------</Text>
-        </TouchableOpacity>
-        
-      </View>
+      <TouchableOpacity
+        onPress={() => {
+          if (this.state.renderLogin == false) {
+            this._Register();
+          } else {
+            this.setState({renderLogin: false});
+            this._clearAll();
+          }
+        }}>
+        <View style={this.state.renderLogin==false? styles.conButon1:styles.conButon2}>
+      <Text> {this.state.renderLogin==true? "Chưa có tài khoản?":"Đăng kí"}</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={()=>{this.props.navigation.navigate('ForgotPass')}}>
+      <Text>---------------Quên mật khẩu---------------</Text>
+      </TouchableOpacity>
+      
+    </View>
     );
   }
   _Register() {
@@ -238,7 +238,8 @@ export default class LoginScreen extends Component {
   render() {
     return (
       
-      <View style={styles.container}>
+      <ImageBackground source={require('../../res/BGStream1.jpg')}
+      style={styles.container}>
         <Spinner
           visible={this.state.spinner}
           textContent={'Loading...'}
@@ -305,7 +306,7 @@ export default class LoginScreen extends Component {
             </View>
           </TouchableOpacity>
         </View> */}
-      </View>
+      </ImageBackground>
    
     );
   }
@@ -316,14 +317,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#00a8ff',
+   // backgroundColor: '#00a8ff',
     width: '100%',
     
   },
-  conLogin: {flexDirection: 'row', justifyContent: 'center',borderWidth:2,backgroundColor:'#fff',borderRadius:25},
+  conLogin: {flexDirection: 'row', justifyContent: 'center',borderWidth:2,backgroundColor:'transparent',borderRadius:25},
   conInput: {
     width: 300,
-    backgroundColor: '#FFF',
+    backgroundColor: 'transparent',
     marginBottom: 0,
     borderRadius: 30,
   },
