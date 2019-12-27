@@ -46,9 +46,11 @@ This project was coded by React native + Redux.
 # Usage
 With Music App, you can:
 * Login, SignIn, Forgot password
-<img src="https://i.imgur.com/ILJXqHN.png">
-<img src="https://i.imgur.com/SsUYxVz.png">
-<img src="https://i.imgur.com/biSMQXL.png">
+<div style="display: inline;">
+<img src="https://i.imgur.com/ILJXqHN.png" width=300, height=540>
+<img src="https://i.imgur.com/SsUYxVz.png" width=300, height=540>
+<img src="https://i.imgur.com/biSMQXL.png" width=300, height=540>
+</div>
 
 
 
