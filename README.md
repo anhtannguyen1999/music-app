@@ -93,7 +93,7 @@ With Music App, you can:
 <code>
 git clone https://github.com/anhtannguyen1999/music-app.git
 </code>
-
+<p></p>
 
 Make sure you have npm (or yarn) and react-native-cli installed globally.
 
