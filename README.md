@@ -87,3 +87,31 @@ With Music App, you can:
 
 * Update your profile
 <img src="https://i.imgur.com/A5E4Iqe.png" width=300, height=540>
+
+# Build from source
+
+<code>
+git clone https://github.com/anhtannguyen1999/music-app.git
+</code>
+
+Make sure you have npm (or yarn) and react-native-cli installed globally.
+
+First, install dependencies.
+
+<code>
+npm install
+// or using "yarn install"
+</code>
+
+If using Windows, you may want to connect to a physical device or run an emulator first, then run:
+
+<code>
+react-native run-android
+</code>
+
+Alternatively, for iOS:
+<code>
+react-native run-ios
+</code>
+
+
