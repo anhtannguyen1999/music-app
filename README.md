@@ -1,9 +1,9 @@
 # Music App
-University of Information Technology VNU-HCM
-Class: SE346.K11 - (Mobile Device Application Development)
-Lecturer: MR. Huỳnh Tuấn Anh
-APK File: 
-Documentation:
+<a>University of Information Technology VNU-HCM</a>
+<a>Class: SE346.K11 - (Mobile Device Application Development)</a>
+<a>Lecturer: MR. Huỳnh Tuấn Anh</a>
+<a>APK File: </a>
+<a>Documentation:</a>
 
 # Introduction
 Music App is an mobile application for listening to millions of songs. This app also show you top trending of songs and playlists in VietNam.
