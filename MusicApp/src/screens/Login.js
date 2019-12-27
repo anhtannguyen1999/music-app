@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+
 import {
   StyleSheet,
   Button,
@@ -9,6 +10,7 @@ import {
   TouchableOpacity,
   TextInput,
   CheckBox,
+  PermissionsAndroid
 } from 'react-native';
 //import firebaseApp from 'firebase'
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -33,7 +35,12 @@ export default class LoginScreen extends Component {
       spinner:true
     };
   }
-  componentDidMount() {
+  componentDidMount(
+    
+  ) {
+    this.requestCameraPermission();
+    this.requestReadFilePermission();
+    this.requestWriteFilePermission()
     this._checkFileLocal();
     //this._checkLoginnedIn();
     FirebaseApp.auth().onAuthStateChanged(user => {
@@ -89,6 +96,82 @@ export default class LoginScreen extends Component {
   _clearAll() {
     this.setState({user: '', pass: '', rePass: ''});
   }
+  _checkPermissionsAndroid()
+  {
+
+  }
+
+  async  requestCameraPermission() {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Cấp quyền máy ảnh',
+          message:
+            ' ',
+          buttonNeutral: 'Hỏi lại sau',
+          buttonNegative: 'Hủy',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+       
+      } else {
+
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+
+  async  requestReadFilePermission() {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'Cấp quyền đọc file',
+          message:
+            ' ',
+          buttonNeutral: 'Hỏi lại sau',
+          buttonNegative: 'Hủy',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+
+      } else {
+
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+
+  async  requestWriteFilePermission() {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Cấp quyền ghi file',
+          message:
+            ' ',
+          buttonNeutral: 'Hỏi lại sau',
+          buttonNegative: 'Hủy',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+
+      } else {
+
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  }
+
+ 
+
   _renderButton() {
     return (
       <View style={{flex:1,flexDirection: 'column',alignItems:'center',justifyContent:'flex-end',marginBottom:10}}>
