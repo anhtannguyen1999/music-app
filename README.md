@@ -103,19 +103,19 @@ First, install dependencies.
 npm install
 // or using "yarn install"
 </code>
-
+<p></p>
 
 If using Windows, you may want to connect to a physical device or run an emulator first, then run:
 
 <code>
 react-native run-android
 </code>
-
+<p></p>
 
 Alternatively, for iOS:
 
 <code>
 react-native run-ios
 </code>
-
+<p></p>
 
