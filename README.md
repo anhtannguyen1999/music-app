@@ -17,8 +17,8 @@ This project was coded by React native + Redux.
 
 **Dependencies**
 
-| Dependency        | Version           | Cool  |
-| ------------- |:-------------:| -----:|
-| "col 3 is"      | "right-aligned "| "$1600" |
-| col 2 is      | centered      |   $12 |
-| zebra stripes | are neat      |    $1 |
+| Dependency        | Version           |
+| ------------- |:-------------:|
+| firebase      | "right-aligned "|
+| react      | centered      |
+| react-native | are neat      |
