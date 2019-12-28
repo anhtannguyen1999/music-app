@@ -58,7 +58,7 @@ With Music App, you can:
 * Suggested playlists and Playlist's songs
 <div style="display: inline;">
 <img src="https://i.imgur.com/uyfVBMW.png" width=300, height=540>
-<img src="https://i.imgur.com/zHsMxWw.png.png" width=300, height=540>
+<img src="https://i.imgur.com/JjGHaFs.png" width=300, height=540>
 </div>
 
 * Searching your favorite songs
