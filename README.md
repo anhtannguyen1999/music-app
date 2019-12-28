@@ -2,8 +2,8 @@
 <p>University of Information Technology VNU-HCM</p>
 <p>Class: SE346.K11 - (Mobile Device Application Development)</p>
 <p>Lecturer: MR. Huỳnh Tuấn Anh</p>
-<p>APK File: </p>
-<p>Documentation:</p>
+<p>APK File: <a href="https://drive.google.com/file/d/1KukebzTT7ELvxTjG6Jr4mK7vdxsafIDh/view">Download</a></p>
+<p>Documentation: <a href="https://github.com/anhtannguyen1999/music-app/tree/master/BaoCao">Open here</a></p>
 
 # Introduction
 Music App is an mobile application for listening to millions of songs. This app also show you top trending of songs and playlists in VietNam.
