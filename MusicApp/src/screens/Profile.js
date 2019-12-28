@@ -62,11 +62,23 @@ class ProfileScreen extends React.Component {
     header: null,
   };
 
+  componentWillMount(){
+    console.log('abccc'+FirebaseApp.auth().photoURL);
+  console.log(FirebaseApp.auth().currentUser);
+  }
   componentDidMount() {
-
-    
-    this.setState({avatarSource:FirebaseApp.auth().currentUser.photoURL})
-    console.log( this._refeshPhone())
+try {
+  console.log(FirebaseApp.auth());
+  console.log(FirebaseApp.auth().currentUser);
+  this.setState({avatarSource:FirebaseApp.auth().currentUser.photoURL})
+  console.log( this._refeshPhone())
+  
+} catch (error) {
+  
+  
+}
+console.log('aaa')
+   
    
     // FirebaseApp.auth().currentUser.updateProfile({displayName:'Thang Music',photoURL:'http://prod-upp-image-read.ft.com/cb04f9ee-e8f0-11e9-aefb-a946d2463e4b'})
   }
@@ -397,13 +409,13 @@ _upImagetofirebase()
               <View style={styles.conItem}>
                 <Text> </Text>
                 <Icon name="envelope" size={20}></Icon>
-                <Text> E-mail: {FirebaseApp.auth().currentUser.email}</Text>
+                <Text> E-mail: { FirebaseApp.auth().currentUser==undefined? '':FirebaseApp.auth().currentUser.email}</Text>
               </View>
 
               <View style={styles.conItem}>
               <Text> </Text>
                 <Icon name="id-card" size={20}></Icon>
-                <Text> ID: {FirebaseApp.auth().currentUser.uid}</Text>
+                <Text> ID: {FirebaseApp.auth().currentUser==undefined? '': FirebaseApp.auth().currentUser.uid}</Text>
               </View>
 
               <View style={styles.conItem}>
@@ -412,7 +424,7 @@ _upImagetofirebase()
                 <Text> Tên: </Text>
                 <TextInput
                   style={{height: 40, width: '65%'}}
-                  value={ this.state.onEditName==false? FirebaseApp.auth().currentUser.displayName: this.state.tempName}
+                  value={ this.state.onEditName==false? (FirebaseApp.auth().currentUser==undefined? '':FirebaseApp.auth().currentUser.displayName): this.state.tempName}
                   placeholder={'Chưa có'}
                   editable={true}
                   onChangeText={(text)=>{ if(this.state.onEditName) this.setState({tempName:text})}}
@@ -443,7 +455,7 @@ _upImagetofirebase()
                 
               <Text> </Text>
                 <Icon name="sign-out-alt" size={20}></Icon>
-                <Text> Đăng xuất </Text> 
+            <Text> {FirebaseApp.auth().currentUser==undefined? 'Đăng nhập':'Đăng xuất'} </Text> 
               </View>
               </TouchableOpacity>
 
