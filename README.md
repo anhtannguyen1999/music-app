@@ -47,13 +47,13 @@ This project was coded by React native + Redux.
 With Music App, you can:
 * Login, SignIn, Forgot password
 <div style="display: inline;">
-<img src="https://i.imgur.com/ILJXqHN.png" width=300, height=540>
-<img src="https://i.imgur.com/SsUYxVz.png" width=300, height=540>
+<img src="https://i.imgur.com/IrqqUx6.png" width=300, height=540>
+<img src="https://i.imgur.com/qYyduD0.png" width=300, height=540>
 <img src="https://i.imgur.com/biSMQXL.png" width=300, height=540>
 </div>
 
 * Recent songs and Music charts
-<img src="https://i.imgur.com/XzqgrPW.png" width=300, height=540>
+<img src="https://i.imgur.com/mQsoSd6.png" width=300, height=540>
 
 * Suggested playlists and Playlist's songs
 <div style="display: inline;">
