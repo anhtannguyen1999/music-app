@@ -2,7 +2,7 @@
 <p>University of Information Technology VNU-HCM</p>
 <p>Class: SE346.K11 - (Mobile Device Application Development)</p>
 <p>Lecturer: MR. Huỳnh Tuấn Anh</p>
-<p>APK File: <a href="https://drive.google.com/file/d/1KukebzTT7ELvxTjG6Jr4mK7vdxsafIDh/view">Download</a></p>
+<p>APK File: <a href="https://drive.google.com/file/d/1cmKa-qsSjeSoj_hMQMHjruI4U_8fGfJs/view">Download</a></p>
 <p>Documentation: <a href="https://github.com/anhtannguyen1999/music-app/tree/master/BaoCao">Open here</a></p>
 
 # Introduction
@@ -47,18 +47,18 @@ This project was coded by React native + Redux.
 With Music App, you can:
 * Login, SignIn, Forgot password
 <div style="display: inline;">
-<img src="https://i.imgur.com/ILJXqHN.png" width=300, height=540>
-<img src="https://i.imgur.com/SsUYxVz.png" width=300, height=540>
+<img src="https://i.imgur.com/IrqqUx6.png" width=300, height=540>
+<img src="https://i.imgur.com/qYyduD0.png" width=300, height=540>
 <img src="https://i.imgur.com/biSMQXL.png" width=300, height=540>
 </div>
 
 * Recent songs and Music charts
-<img src="https://i.imgur.com/XzqgrPW.png" width=300, height=540>
+<img src="https://i.imgur.com/mQsoSd6.png" width=300, height=540>
 
 * Suggested playlists and Playlist's songs
 <div style="display: inline;">
 <img src="https://i.imgur.com/uyfVBMW.png" width=300, height=540>
-<img src="https://i.imgur.com/zHsMxWw.png.png" width=300, height=540>
+<img src="https://i.imgur.com/JjGHaFs.png" width=300, height=540>
 </div>
 
 * Searching your favorite songs
