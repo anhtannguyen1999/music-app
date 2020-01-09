@@ -1,23 +1,20 @@
 import TrackPlayer from 'react-native-track-player';
 import React, {Component} from 'react';
 import {
-  Text,
+
   View,
   StyleSheet,
   Dimensions,
-  FlatList,
-  TouchableOpacity,
+
 } from 'react-native';
-import Slider from 'react-native-slider';
-import RNFetchBlob from 'rn-fetch-blob';
+
 const screenWidth = Math.round(Dimensions.get('window').width);
-import Player, {MyLyric} from '../player/Player';
+import Player, {} from '../player/Player';
 
 import {connect} from 'react-redux';
 import {
   setPause,
   setPlay,
-  setDataDanhSachDangNghe,
   setIndexPlayingInList,
   setSongPlay,
 } from '../redux/action';
@@ -27,7 +24,8 @@ class ReLoadSong extends TrackPlayer.ProgressComponent {
     this.state = {
       value: 0,
       loading:false,
-      indexOf:0
+      indexOf:0,
+      kindOfMusic:'',
     };
   }
 
@@ -37,7 +35,7 @@ class ReLoadSong extends TrackPlayer.ProgressComponent {
 
    // console.log("index static: "+Player.getIndex())
     //console.log("index of: "+this.state.indexOf)
-    if(Player.getIndex()!=this.state.indexOf)
+    if(Player.getIndex()!=this.state.indexOf||Player.getKindMusic()!=this.state.kindOfMusic)
     {
       try {
         var obj = this.props.dataDanhSachDangNghe.dataSong[Player.getIndex()];
@@ -48,7 +46,7 @@ class ReLoadSong extends TrackPlayer.ProgressComponent {
         obj.lyric,
         obj.duration,
       );
-      this.setState({indexOf:Player.getIndex()})
+      this.setState({indexOf:Player.getIndex(),kindOfMusic:Player.getKindMusic()})
       console.log("reload: "+obj.title)
         
       } catch (error) {

@@ -1,23 +1,21 @@
 import React, {Component} from 'react';
 import {
   StyleSheet,
-  Button,
   View,
-  SafeAreaView,
   ImageBackground,
   Text,
   TouchableOpacity,
   TextInput,
-  CheckBox,
+
 } from 'react-native';
 //import firebaseApp from 'firebase'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import RNFetchBlob from 'rn-fetch-blob';
 import {Alert} from 'react-native';
 import {FirebaseApp} from '../components/FirebaseConfig.js';
-import firebase from 'firebase';
+
 //import {firebaseConfig} from "../components/FirebaseConfig"
-import { ScrollView } from 'react-native-gesture-handler';
+
 
 //import * as Google from 'expo-google-app-auth';
 

@@ -5,13 +5,8 @@ import {
   Text,
   View,
   TouchableOpacity,
-  Button,
   Animated,
-  TouchableHighlight,
-  Alert,
 } from 'react-native';
-
-import Icon from 'react-native-vector-icons/Entypo';
 
 export default class ItemComment extends Component {
   constructor(props) {

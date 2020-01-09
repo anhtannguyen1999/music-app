@@ -11,15 +11,13 @@ import {
   Alert,
 } from 'react-native';
 import { Dimensions } from 'react-native';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { setSongPlay, setDataAllPlayList, setDataMusicLocal, setDataBHVuaNghe, removeSongFromLocal,setPlayListOffline ,setPlay} from '../redux/action';
 import Icon from 'react-native-vector-icons/Entypo';
 import Modal from 'react-native-modal';
 import { FlatList } from 'react-native-gesture-handler';
 import RNFetchBlob from 'rn-fetch-blob';
-import Player from '../player/Player';
-import DanhSachBaiHat from "./DanhSachBaiHat"
+
 
 const screenWidth = Math.round(Dimensions.get('window').width);
 
@@ -49,23 +47,31 @@ class ItemInforBaiHat extends Component {
   {
   
      var idPlaylist=this.props.idPlaylist
-
+      var index=0;
    // var path = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/PlayList_Local/MusicLocalManager.js"
    var path = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/PlayList_Local/PlayListManager.js"
     RNFetchBlob.fs.readFile(path, 'utf8').then((data) => {
       temp = JSON.parse(data);
     }).then(()=>{
-      for(let i=0;i<temp.list[idPlaylist].song.items.length;i++)
+      for(let j =0;index<temp.total_list;j++)
       {
-          if(temp.list[idPlaylist].song.items[i].id==this.props.id)
+        if(temp.list[j].id==idPlaylist)
+        {
+          index=j;
+          break;
+        }
+      }
+      for(let i=0;i<temp.list[index].song.items.length;i++)
+      {
+          if(temp.list[index].song.items[i].id==this.props.id)
           { 
-                temp.list[idPlaylist].song.items.splice(i,1)         
-                temp.list[idPlaylist].total_song--;
+                temp.list[index].song.items.splice(i,1)         
+                temp.list[index].total_song--;
                break;
           }            
       }
       this.props.setDataAllPlayList(temp);
-      this.props.setPlayListOffline(idPlaylist,temp.list[idPlaylist].song.items)
+      this.props.setPlayListOffline(idPlaylist,temp.list[index].song.items)
       RNFetchBlob.fs.writeFile(path, JSON.stringify(temp), 'utf8').then(()=>{  
       })
     })
@@ -82,13 +88,24 @@ class ItemInforBaiHat extends Component {
     thumbnail_medium,
     lyric,
     duration,
+    linkMp3,
+    nenTang
   ) {
     var temp = {}
+    var index=0;
     var PATH = RNFetchBlob.fs.dirs.SDCardDir + '/DataLocal/PlayList_Local/PlayListManager.js';
     RNFetchBlob.fs.readFile(PATH).then((data)=>{temp=JSON.parse(data)
+      for(let j =0;index<temp.total_list;j++)
+        {
+          if(temp.list[j].id==idPlaylist)
+          {
+            index=j;
+            break;
+          }
+        }
     
-      for (let i = 0; i < temp.list[idPlaylist].song.items.length; i++) {
-        if (temp.list[idPlaylist].song.items[i].id == idSong) {
+      for (let i = 0; i < temp.list[index].song.items.length; i++) {
+        if (temp.list[index].song.items[i].id == idSong) {
           Alert.alert("Bài này đã thêm rồi!")
           return;
         }
@@ -101,9 +118,11 @@ class ItemInforBaiHat extends Component {
         thumbnail_medium: thumbnail_medium,
         lyric: lyric,
         duration: duration,
+        linkMp3: linkMp3,
+        nenTang:nenTang
       };
-      temp.list[idPlaylist].song.items.push(obj);
-      temp.list[idPlaylist].total_song++;
+      temp.list[index].song.items.push(obj);
+      temp.list[index].total_song++;
       //var PATH = RNFetchBlob.fs.dirs.SDCardDir + '/DataLocal/PlayList_Local/PlayListManager.js';
       RNFetchBlob.fs.writeFile(PATH, JSON.stringify(temp));
       this.props.setDataAllPlayList(temp);
@@ -125,6 +144,7 @@ class ItemInforBaiHat extends Component {
   _renderUpPoupAdd() { }
 
   _downloadMusic(id) {
+    
     var path = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/Music_Local/DataMusicLocal/" + id;
     var pathLyric = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/Music_Local/DataMusicLocal/" + id + "/lyric.js"
     var pathImage = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/Music_Local/DataMusicLocal/" + id + "/thumbnail_medium.jpg"
@@ -135,52 +155,101 @@ class ItemInforBaiHat extends Component {
           return;
         }
         else {
-          RNFetchBlob.fs.mkdir(path).then(() => {
-            //Down mp3
-            let options0 = {
-              fileCache: true,
-              addAndroidDownloads: {
-                useDownloadManager: true,
-                notification: true,
-                title: this.props.title,
-                path: path + '/' + id + '.mp3',
-                description: 'Downloading music.'
+          if (this.props.nenTang == 'NCT'){
+            //Alert.alert("Hiện chưa hỗ trợ download trên nền tảng NCT")
+            //return;
+            RNFetchBlob.fs.mkdir(path).then(() => {
+              //Down mp3
+              let options0 = {
+                fileCache: true,
+                addAndroidDownloads: {
+                  useDownloadManager: true,
+                  notification: true,
+                  title: this.props.title,
+                  path: path + '/' + id + '.mp3',
+                  description: 'Downloading music.'
+                }
               }
-            }
-            RNFetchBlob.config(options0).fetch('GET', 'http://api.mp3.zing.vn/api/streaming/audio/' + this.props.id + '/128').then(() => {
-              this._addSongtoMusicLocal();
-            })
+              RNFetchBlob.config(options0).fetch('GET', this.props.linkMp3).then(() => {
+                this._addSongtoMusicLocal();
+              })
 
-            //Down lyric
-            let options1 = {
-              fileCache: true,
-              addAndroidDownloads: {
-                useDownloadManager: true,
-                notification: true,
-                title: 'download',
-                path: pathLyric,
-                description: 'Downloading lyric.'
+              //Down lyric
+              let options1 = {
+                fileCache: true,
+                addAndroidDownloads: {
+                  useDownloadManager: true,
+                  notification: true,
+                  title: 'download',
+                  path: pathLyric,
+                  description: 'Downloading lyric.'
+                }
               }
-            }
-            RNFetchBlob.config(options1).fetch('GET', this.props.lyric.toString())
+              RNFetchBlob.config(options1).fetch('GET', 'https://4cdcd1fe-a-62cb3a1a-s-sites.googlegroups.com/site/aedemopy/home/NoLyric.lrc')
 
-            //Down thumbnail
-            let options2 = {
-              fileCache: true,
-              addAndroidDownloads: {
-                useDownloadManager: true,
-                notification: true,
-                title: 'download',
-                path: pathImage,
-                description: 'Downloading thumbnail_medium'
+              //Down thumbnail
+              let options2 = {
+                fileCache: true,
+                addAndroidDownloads: {
+                  useDownloadManager: true,
+                  notification: true,
+                  title: 'download',
+                  path: pathImage,
+                  description: 'Downloading thumbnail_medium'
+                }
               }
-            }
-            RNFetchBlob.config(options2).fetch('GET', this.props.image)
+              RNFetchBlob.config(options2).fetch('GET', this.props.image)
 
+            });
 
+          }
+          else{
+            RNFetchBlob.fs.mkdir(path).then(() => {
+              //Down mp3
+              let options0 = {
+                fileCache: true,
+                addAndroidDownloads: {
+                  useDownloadManager: true,
+                  notification: true,
+                  title: this.props.title,
+                  path: path + '/' + id + '.mp3',
+                  description: 'Downloading music.'
+                }
+              }
+              RNFetchBlob.config(options0).fetch('GET', 'http://api.mp3.zing.vn/api/streaming/audio/' + this.props.id + '/128').then(() => {
+                this._addSongtoMusicLocal();
+              })
 
-          });
+              //Down lyric
+              let options1 = {
+                fileCache: true,
+                addAndroidDownloads: {
+                  useDownloadManager: true,
+                  notification: true,
+                  title: 'download',
+                  path: pathLyric,
+                  description: 'Downloading lyric.'
+                }
+              }
+              RNFetchBlob.config(options1).fetch('GET', this.props.lyric.toString())
 
+              //Down thumbnail
+              let options2 = {
+                fileCache: true,
+                addAndroidDownloads: {
+                  useDownloadManager: true,
+                  notification: true,
+                  title: 'download',
+                  path: pathImage,
+                  description: 'Downloading thumbnail_medium'
+                }
+              }
+              RNFetchBlob.config(options2).fetch('GET', this.props.image)
+
+            });
+
+          }
+          
         }
       });
   }
@@ -202,13 +271,23 @@ class ItemInforBaiHat extends Component {
   }
 
   _addSongtoBHVuaNghe() {
+    console.log('THEM DS ');
     var RemoveId = false;
     var temp = [];
     var path = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/BaiHatVuaNghe/BaiHatVuaNghe.js";
     
     RNFetchBlob.fs.readFile(path).then((data)=>{
       temp=JSON.parse(data)
-      let obj = { "id": this.props.id, "title": this.props.title, "artists_names": this.props.artists_names, "thumbnail_medium": this.props.image, "lyric": this.props.lyric, "duration": this.props.duration, "linkMp3": this.props.linkMp3 }
+      let obj = { 
+        "id": this.props.id, 
+        "title": this.props.title, 
+        "artists_names": this.props.artists_names, 
+        "thumbnail_medium": this.props.image, 
+        "lyric": this.props.lyric, 
+        "duration": this.props.duration, 
+        "linkMp3": this.props.linkMp3,
+        "nenTang":this.props.nenTang+'', }
+        
       for (let i = 0; i < temp.items.length; i++) {
         if (temp.items[i].id == this.props.id) {
           temp.items.splice(i, 1);
@@ -227,7 +306,7 @@ class ItemInforBaiHat extends Component {
       RNFetchBlob.fs.writeFile(path, JSON.stringify(temp), 'utf8').then(() => { }
       )
       this.props.setDataBHVuaNghe(temp)
-
+      
 
     })
     //temp = this.props.dataBHVuaNghe;
@@ -300,8 +379,6 @@ class ItemInforBaiHat extends Component {
             borderRadius:8,
           }, this.props.isTrongSuot == 'true' ? { backgroundColor: '#c8d6e570' } : { backgroundColor: '#c8d6e570',}]}>
 
-
-
           <View>
             <Text
               style={this.props.Stt < 10 ? styles.styleStt0 : styles.styleStt1}>
@@ -314,10 +391,16 @@ class ItemInforBaiHat extends Component {
               loadingIndicatorSource={require('../../res/m_musicicon.png')}
               style={styles.imageStyle}
               source={
-
-                this.props.image === 'url' || this.state.isError
-                  ? require('../../res/m_musicicon.png')
-                  : (this.props.linkMp3 == null ? { uri: this.props.image } : require('../../res/m_musicicon.png'))
+                this.props.nenTang!='NCT'?(
+                  this.props.image === 'url' || this.state.isError
+                    ? require('../../res/m_musicicon.png')
+                    : (this.props.linkMp3 == null ? { uri: this.props.image } : require('../../res/m_musicicon.png'))
+                ) : (
+                    this.props.image === 'url' || this.state.isError
+                      ? require('../../res/m_musicicon.png')
+                      : { uri: this.props.image }
+                )
+                
               }
               onError={e => this.setState({ isError: true })}></Image>
             {/* <Image style={styles.imageStyle} source={{ uri: 'http://avatar.nct.nixcdn.com/song/2019/10/02/3/1/4/d/1570008789331.jpg' }}></Image> */}
@@ -338,17 +421,30 @@ class ItemInforBaiHat extends Component {
               style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: 13 }}>
               {this.props.artists_names + ''}
             </Text>
-            <Text
-              style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: 10 }}>
-              {parseInt(this.props.duration % 60) < 10
-                ? parseInt(this.props.duration / 60) +
-                ':' +
-                '0' +
-                parseInt(this.props.duration % 60, 10)
-                : parseInt(this.props.duration / 60) +
-                ':' +
-                parseInt(this.props.duration % 60, 10)}
-            </Text>
+
+            <View style={{flexDirection:'row'}}>
+              <Image
+                style={{
+                  width: 15,
+                  height: 15,
+                  marginRight: 5,
+                }}
+                source={this.props.nenTang == 'NCT' ? require('../../res/logoNCT30.png'):require('../../res/logoZing30.png')}></Image>
+              <Text
+                style={{ fontStyle: 'italic', fontWeight: 'normal', fontSize: 10 }}>
+                {this.props.duration != undefined ?
+                  (parseInt(this.props.duration % 60) < 10
+                    ? parseInt(this.props.duration / 60) +
+                    ':' +
+                    '0' +
+                    parseInt(this.props.duration % 60, 10)
+                    : parseInt(this.props.duration / 60) +
+                    ':' +
+                    parseInt(this.props.duration % 60, 10)) : ''
+                }
+              </Text>
+            </View>
+            
 
           </View>
 
@@ -398,7 +494,7 @@ class ItemInforBaiHat extends Component {
                   </View>
                 </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => { this._downloadMusic(this.props.id) }}>
+                <TouchableOpacity onPress={() => {this._downloadMusic(this.props.id) }}>
                   <View
                     style={{
                       alignItems: 'center',
@@ -459,6 +555,8 @@ class ItemInforBaiHat extends Component {
                               this.props.image,
                               this.props.lyric,
                               this.props.duration,
+                              this.props.linkMp3,
+                              this.props.nenTang
                             );
 
                           }}

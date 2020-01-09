@@ -2,19 +2,12 @@ import React, {Component} from 'react';
 import {
   StyleSheet,
   View,
-  FlatList,
   Text,
-  TouchableOpacity,
   Image,
-  Button,
   ImageBackground
 } from 'react-native';
-import {SearchBar} from 'react-native-elements';
 import {Dimensions} from 'react-native';
-import ItemInforBaiHat from '../components/ItemInforBaiHat';
 const screenWidth = Math.round(Dimensions.get('window').width);
-import Player, {MyPlayerBar} from '../player/Player';
-import PlayList from '../components/PlayList';
 import DanhSachBaiHat from '../components/DanhSachBaiHat'
 
 import {connect} from 'react-redux';

@@ -2,25 +2,23 @@ import React, {Component} from 'react';
 
 import {
   StyleSheet,
-  Button,
   View,
-  SafeAreaView,
   ImageBackground,
   Text,
   TouchableOpacity,
   TextInput,
-  CheckBox,
-  PermissionsAndroid
+  PermissionsAndroid,
+  BackHandler,
+
 } from 'react-native';
 //import firebaseApp from 'firebase'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import RNFetchBlob from 'rn-fetch-blob';
 import {Alert} from 'react-native';
 import {FirebaseApp} from '../components/FirebaseConfig.js';
-import firebase from 'firebase';
 import Spinner from 'react-native-loading-spinner-overlay';
 //import {firebaseConfig} from "../components/FirebaseConfig"
-import { ScrollView } from 'react-native-gesture-handler';
+
 
 //import * as Google from 'expo-google-app-auth';
 
@@ -38,14 +36,24 @@ export default class LoginScreen extends Component {
   componentDidMount(
     
   ) {
-    this.requestCameraPermission();
-    this.requestReadFilePermission();
-    this.requestWriteFilePermission()
+    var fs = RNFetchBlob.fs;
+    var path = RNFetchBlob.fs.dirs.SDCardDir + '/DataLocal/p.txt';
+    this.requestCameraPermission().then(()=>{
+      this.requestReadFilePermission().then(()=>{
+        this.requestWriteFilePermission();
+      })
+    })
+  
+
     this._checkFileLocal();
     //this._checkLoginnedIn();
+   // this.setState({spinner:true})
     FirebaseApp.auth().onAuthStateChanged(user => {
       if (user) {
         this.setState({user:FirebaseApp.auth().currentUser.email})
+        fs.readFile(path,"utf8").then(data=>{this.setState({pass:data}),console.log(data)})
+       // this.setState({spinner:false})
+       // this.props.navigation.navigate('Home');
 
       /*  Alert.alert(
           'Chào mừng ' + (FirebaseApp.auth().currentUser.displayName==null?"":FirebaseApp.auth().currentUser.displayName ) + ' trở lại',
@@ -58,10 +66,24 @@ export default class LoginScreen extends Component {
   _checkFileLocal() {
     var fs = RNFetchBlob.fs;
     var path = RNFetchBlob.fs.dirs.SDCardDir + '/DataLocal';
+    //fs.createFile(path+'/p.txt','',"utf8")
+    // let objPlayList_Local = {total_list: 0, list: []};
+    // fs.createFile(
+    //   path + '/PlayList_Local/PlayListManager.js',
+    //   JSON.stringify(objPlayList_Local),
+    //   'utf8',
+    // );
     RNFetchBlob.fs.exists(path).then(value => {
       if (!value) {
         fs.mkdir(path)
           .then(() => {
+            fs.createFile(path+'/p.txt','',"utf8")
+            let objTheme = { currentTheme: 1};
+            fs.createFile(
+              path + '/theme.txt',
+              JSON.stringify(objTheme),
+              'utf8',
+            );
             fs.mkdir(path + '/PlayList_Local');
             fs.mkdir(path + '/BaiHatVuaNghe');
             fs.mkdir(path + '/Music_Local').then(() => {
@@ -96,27 +118,26 @@ export default class LoginScreen extends Component {
   _clearAll() {
     this.setState({user: '', pass: '', rePass: ''});
   }
-  _checkPermissionsAndroid()
-  {
 
-  }
 
-  async  requestCameraPermission() {
+   async requestCameraPermission() {
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.CAMERA,
         {
-          title: 'Cấp quyền máy ảnh',
-          message:
-            ' ',
-          buttonNeutral: 'Hỏi lại sau',
-          buttonNegative: 'Hủy',
-          buttonPositive: 'OK',
+          // title: 'Cấp quyền máy ảnh',
+          // message:
+          //   ' ',
+          // buttonNeutral: 'Hỏi lại sau',
+          // buttonNegative: 'Hủy',
+          // buttonPositive: 'OK',
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
        
       } else {
+        //Alert.alert("Không cấp quyền máy ảnh ")
+        BackHandler.exitApp();
 
       }
     } catch (err) {
@@ -124,22 +145,23 @@ export default class LoginScreen extends Component {
     }
   }
 
-  async  requestReadFilePermission() {
+  async requestReadFilePermission() {
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
         {
-          title: 'Cấp quyền đọc file',
-          message:
-            ' ',
-          buttonNeutral: 'Hỏi lại sau',
-          buttonNegative: 'Hủy',
-          buttonPositive: 'OK',
+          // title: 'Cấp quyền đọc file',
+          // message:
+          //   ' ',
+          // buttonNeutral: 'Hỏi lại sau',
+          // buttonNegative: 'Hủy',
+          // buttonPositive: 'OK',
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
 
       } else {
+        BackHandler.exitApp();
 
       }
     } catch (err) {
@@ -147,22 +169,23 @@ export default class LoginScreen extends Component {
     }
   }
 
-  async  requestWriteFilePermission() {
+  async requestWriteFilePermission() {
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
         {
-          title: 'Cấp quyền ghi file',
-          message:
-            ' ',
-          buttonNeutral: 'Hỏi lại sau',
-          buttonNegative: 'Hủy',
-          buttonPositive: 'OK',
+          // title: 'Cấp quyền ghi file',
+          // message:
+          //   ' ',
+          // buttonNeutral: 'Hỏi lại sau',
+          // buttonNegative: 'Hủy',
+          // buttonPositive: 'OK',
         },
       );
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
 
       } else {
+        BackHandler.exitApp();
 
       }
     } catch (err) {
@@ -261,11 +284,14 @@ export default class LoginScreen extends Component {
     //   Alert.alert('Pass must >6');
     //   return;
     // }
+    var fs = RNFetchBlob.fs;
+    var path = RNFetchBlob.fs.dirs.SDCardDir + '/DataLocal/p.txt';
     this.setState({spinner:true})
     FirebaseApp.auth()
       .signInWithEmailAndPassword(this.state.user, this.state.pass)
       .then(() => {
         this.setState({spinner:false})
+        fs.writeFile(path,this.state.pass,"utf8")
         this.props.navigation.navigate('Home');
       })
       .catch(function(error) {
@@ -280,6 +306,7 @@ export default class LoginScreen extends Component {
           return;
         }
         if (errorCode == 'auth/wrong-password') {
+          fs.writeFile(path,'',"utf8")
           Alert.alert('Sai mật khẩu!');
           return;
         }
@@ -287,15 +314,6 @@ export default class LoginScreen extends Component {
       }).finally(()=>{this.setState({spinner:false})})
   }
 
-  _LoginWithGoogle() {
-    var provider = new firebase.auth.GoogleAuthProvider();
-    provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-    FirebaseApp.auth().languageCode = 'pt';
-    provider.setCustomParameters({
-      login_hint: 'user@example.com',
-    });
-    FirebaseApp.auth().signInWithPopup(provider);
-  }
 
   _renderRepass() {
     return (
@@ -324,6 +342,7 @@ export default class LoginScreen extends Component {
       <ImageBackground source={require('../../res/BGStream1.jpg')}
       style={styles.container}>
         <Spinner
+          
           visible={this.state.spinner}
           textContent={'Loading...'}
           textStyle={{}}
@@ -381,7 +400,6 @@ export default class LoginScreen extends Component {
               <Text> Google</Text>
             </View>
           </TouchableOpacity>
-
           <TouchableOpacity>
             <View style={styles.conLogin}>
               <Icon name="facebook-box" size={40}></Icon>

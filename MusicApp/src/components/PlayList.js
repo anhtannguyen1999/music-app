@@ -1,10 +1,18 @@
 import React, {Component} from 'react';
-import {StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
+import {StyleSheet, Text, View, Image,} from 'react-native';
 export default class PlayList extends Component {
   render() {
     return (
       <View style={styles.container}>
-       
+       {/* {this.props.canRemove==true?
+       <View style={{alignItems:'flex-end',flex:1,width:'100%'}}>
+         <TouchableOpacity onPress={()=>{}}>
+         <Icon name='minus-square' size={20}></Icon>
+         </TouchableOpacity>
+        
+       </View>
+
+        :null} */}
           <Image
             loadingIndicatorSource={require('../../res/m_musicicon.png')}
             style={styles.imageStyle}
@@ -30,6 +38,7 @@ const styles = StyleSheet.create({
     borderWidth:2,
     borderRadius:5,
     width:186,
+    height:190,
     
   },
   containerButton: {

@@ -1,32 +1,22 @@
-import React, {Component, cloneElement} from 'react';
+import React, { } from 'react';
 import {
   StyleSheet,
   View,
-  FlatList,
   Text,
   Button,
   TouchableOpacity,
-  SafeAreaView,
-  AsyncStorage,
   Image,
   TextInput,
 } from 'react-native';
 
-import TrackPlayer from 'react-native-track-player';
-import {
-  Autocomplete,
-  withKeyboardAwareScrollView,
-} from 'react-native-dropdown-autocomplete';
+
 
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import RNFetchBlob from 'rn-fetch-blob';
-import Modal from 'react-native-modal';
 import {connect} from 'react-redux';
 import {setSongPlay} from '../redux/action';
-import Player from '../player/Player';
 import {FirebaseApp} from '../components/FirebaseConfig.js';
 import firebase from 'firebase'
-import ItemComment from '../components/ItemComment';
 import { Alert, ImageBackground } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import ImagePicker from 'react-native-image-picker';
@@ -303,7 +293,10 @@ reauthenticate = (currentPassword) => {
 
 _sign_out()
 {
+  var fs = RNFetchBlob.fs;
+  var path = RNFetchBlob.fs.dirs.SDCardDir + '/DataLocal/p.txt';
   FirebaseApp.auth().signOut().then(function() {
+    fs.writeFile(path,'',"utf8")
     // Sign-out successful.
    // this._gotoLogin();
    

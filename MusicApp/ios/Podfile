@@ -36,7 +36,6 @@ target 'MusicApp' do
 
 
 
-  pod 'RNGoogleSignin', :path => '../node_modules/react-native-google-signin'
 
   target 'MusicAppTests' do
     inherit! :search_paths

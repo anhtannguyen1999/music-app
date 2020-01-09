@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {
   StyleSheet,
-  Button,
   View,
   ScrollView,
   Text,
@@ -9,17 +8,16 @@ import {
   TouchableOpacity,
   Image,
   ImageBackground,
+  BackHandler,
+
 } from 'react-native';
 import {Dimensions} from 'react-native';
-import {SearchBar} from 'react-native-elements';
 import ItemInforBaiHat from '../components/ItemInforBaiHat';
 import DanhSachBaiHat from '../components/DanhSachBaiHat';
 import PlayList from '../components/PlayList';
-import Player, {MyPlayerBar} from '../player/Player';
+import Player, {} from '../player/Player';
 const screenWidth = Math.round(Dimensions.get('window').width);
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import Icon_ from 'react-native-vector-icons/FontAwesome5Pro';
-import StreamScreen from '../screens/Stream';
 import RNFetchBlob from 'rn-fetch-blob';
 
 import {connect} from 'react-redux';
@@ -122,10 +120,15 @@ class HomeScreen extends Component {
     this._loadDataPlayListGoiY();
     this._loadDataSongInPlayListGoiY('');
     this._loadLocalAllPlayList();
-    this._loadDataBHVuaNghe()
+    this._loadDataBHVuaNghe();
+    BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
 
     //this.setState({dataTop100:this.state.dataTop100nhacTre})
     //console.log((this.state.dataTop100.length)))
+  }
+  handleBackButton()
+  {
+    BackHandler.exitApp();
   }
 
   _loadDataTop100_nhacTre() {
@@ -278,10 +281,10 @@ _loadDataBHVuaNghe()
     var temp=[],
     temp=JSON.parse(data)
     this.props.setDataBHVuaNghe(temp)
+    
   })
 }
   render() {
-
     return (
       <ImageBackground
         source={require('../../res/BG2.jpg')} style={{ flex: 1, backgroundColor:'#48dbfb'}}>
@@ -332,6 +335,7 @@ _loadDataBHVuaNghe()
                 }*/
               }}>
               <DanhSachBaiHat
+                kind='VuaNghe'
                 dataDanhSachBaiHat={this.props.dataBHVuaNghe.items}></DanhSachBaiHat>
             </View>
           </View>
@@ -476,11 +480,24 @@ _loadDataBHVuaNghe()
 
               <View
                 style={styles.containerBHTop}
-                style={styles.containerBHTop}
+               // style={styles.containerBHTop}
+               
+              //  onTouchStart={() => {
+              //   this.setState({enableScrollViewScroll: false});
+              // }}
+
+              // onTouchEndCapture={() => {
+              //   this.setState({enableScrollViewScroll: true});
+              // }}
+
+
                 onMoveShouldSetResponderCapture={() => {
                   this.setState({enableScrollViewScroll: false});
-                }}>
+                }}
+                >
+                  
                 <DanhSachBaiHat
+                  kind={this.state.loaiNhacTop100}
                   dataDanhSachBaiHat={this.state.dataTop100}></DanhSachBaiHat>
               </View>
               {/*button next page*/}

@@ -3,7 +3,6 @@ import {
   StyleSheet,
   View,
   FlatList,
-  Text,
   TouchableOpacity,
 } from 'react-native';
 import {Dimensions} from 'react-native';
@@ -38,7 +37,7 @@ class DanhSachBaiHat extends Component {
    // console.log(this.props.dataDanhSachDangNghe.dataSong)
     
   }
-  play(id,title,artists_names,lyric,duration,image,linkMp3)
+  play(id, title, artists_names, lyric, duration, image, linkMp3, nenTang)
   {
     
     // if (this.props.kind !='PlayingList'){
@@ -76,19 +75,28 @@ class DanhSachBaiHat extends Component {
         duration,
       )
     };
-    this._addSongtoBHVuaNghe(id,title,artists_names,lyric,duration,image,linkMp3);
+    this._addSongtoBHVuaNghe(id,title,artists_names,lyric,duration,image,linkMp3,nenTang);
    // DanhSachBaiHat.setMusicPlaying();
 
   }
 
-  _addSongtoBHVuaNghe(id,title,artists_names,lyric,duration,image,linkMp3) {
+  _addSongtoBHVuaNghe(id, title, artists_names, lyric, duration, image, linkMp3, nenTang) {
     var RemoveId = false;
     var temp = [];
     var path = RNFetchBlob.fs.dirs.SDCardDir + "/DataLocal/BaiHatVuaNghe/BaiHatVuaNghe.js";
     
     RNFetchBlob.fs.readFile(path).then((data)=>{
       temp=JSON.parse(data)
-      let obj = { "id": id, "title": title, "artists_names": artists_names, "thumbnail_medium": image, "lyric": lyric, "duration": duration, "linkMp3": linkMp3 }
+      let obj = { 
+        "id": id, 
+        "title": title, 
+        "artists_names": artists_names, 
+        "thumbnail_medium": image, 
+        "lyric": lyric, 
+        "duration": duration, 
+        "linkMp3": linkMp3,
+        "nenTang":nenTang,
+      }
       for (let i = 0; i < temp.items.length; i++) {
         if (temp.items[i].id == id) {
           temp.items.splice(i, 1);
@@ -122,6 +130,7 @@ _addDataBHDN()
   {
     this.props.setDataDanhSachDangNghe(this.props.kind,this.props.dataDanhSachBaiHat)
     Player.playingList=this.props.dataDanhSachBaiHat;
+    Player.kindOfMusicPlaying=this.props.kind;
   }
 
   
@@ -129,7 +138,7 @@ _addDataBHDN()
 
 
   render() {
-    
+    //console.log(this.props.dataDanhSachBaiHat)
     const screenWidth = Math.round(Dimensions.get('window').width);
     return (
       <View style={styles.container}>
@@ -139,44 +148,79 @@ _addDataBHDN()
 
           <View style={styles.danhsach}>
             <FlatList
+              
               data={this.props.dataDanhSachBaiHat}
               extraData={this.props.dataDanhSachBaiHat}
               initialNumToRender={5}
               maxToRenderPerBatch={6}
               windowSize={6}
               
-              renderItem={({item, index}) => (
-                <TouchableOpacity style={{width:'100%',flex:1}} onPress={()=>{
-                  this.play(item.id,item.title,item.artists_names,item.lyric,item.duration,item.thumbnail_medium,item.linkMp3),
-                  this._addDataBHDN()
-                  this.props.setIndexPlayingInList(index)
-                  Player.playingIndexList=index
-                  
-                  
-
-                }}>
-                             
-                <ItemInforBaiHat
-                kind={this.props.kind}
-                canRemove={this.props.canRemove}
-                stt={index+1}
-                id={item.id}
-                title={item.title}
-                artists_names={this.props.kind == 'PlayingList' ? item.artist:item.artists_names}
-                image={this.props.kind == 'PlayingList' ? item.artwork :item.thumbnail_medium}
-                lyric={item.lyric}
-                duration={this.props.kind == 'PlayingList' ? item.total_time :item.duration}
-                colorItem={1}
-                linkMp3={item.linkMp3}
-                isTrongSuot={this.props.isTrongSuot}
-              />
-              </TouchableOpacity>
-                  
-                 
-             
-              )}
+              renderItem={({item, index}) =>{
+                if (item.id=='')
+                return;
+                else
+                return (
+                  <TouchableOpacity style={{ width: '100%', flex: 1 }} onPress={() => {
+                    console.log(item);
+                    this.play(item.id, item.title, item.artists_names, item.lyric, item.duration, item.thumbnail_medium, item.linkMp3, item.nenTang),
+                      this._addDataBHDN()
+                    this.props.setIndexPlayingInList(index)
+                    Player.playingIndexList = index
+                  }}>
+                    <ItemInforBaiHat
+                      kind={this.props.kind}
+                      canRemove={this.props.canRemove}
+                      stt={index + 1}
+                      id={item.id}
+                      title={item.title}
+                      artists_names={this.props.nenTang == 'NCT' ? item.artists_names : (this.props.kind == 'PlayingList' ? item.artist : item.artists_names)}
+                      image={this.props.nenTang == 'NCT' ? item.thumbnail_medium : (this.props.kind == 'PlayingList' ? item.artwork : item.thumbnail_medium)}
+                      lyric={item.lyric}
+                      duration={this.props.kind == 'PlayingList' ? item.total_time : item.duration}
+                      colorItem={1}
+                      linkMp3={item.linkMp3}
+                      isTrongSuot={this.props.isTrongSuot}
+                      nenTang={item.nenTang}
+                    />
+                  </TouchableOpacity>
+                )
+              }}
               keyExtractor={item => item.id}
             />
+
+          {/* <FlatList
+
+            data={this.props.dataDanhSachBaiHatNCT}
+            extraData={this.props.dataDanhSachBaiHatNCT}
+            initialNumToRender={5}
+            maxToRenderPerBatch={6}
+            windowSize={6}
+            renderItem={({ item, index }) => (
+              <TouchableOpacity style={{ width: '100%', flex: 1 }} onPress={() => {
+                this.play(item.id, item.title, item.artists_names, item.lyric, item.duration, item.thumbnail_medium, item.linkMp3),
+                  this._addDataBHDN()
+                this.props.setIndexPlayingInList(index)
+                Player.playingIndexList = index
+              }}>
+                <ItemInforBaiHat
+                  kind={this.props.kind}
+                  canRemove={this.props.canRemove}
+                  stt={index + 1}
+                  id={item.id}
+                  title={item.title}
+                  artists_names={item.artists_names}
+                  image={item.image}
+                  lyric={item.lyric}
+                  duration={item.duration}
+                  colorItem={1}
+                  linkMp3={item.linkMp3}
+                  isTrongSuot={this.props.isTrongSuot}
+                  nenTang={this.props.nenTang}
+                />
+              </TouchableOpacity>
+            )}
+            keyExtractor={item => item.id}
+          /> */}
           </View>
       </View>
     );

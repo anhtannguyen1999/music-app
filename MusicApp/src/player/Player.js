@@ -10,7 +10,9 @@ import {
   TouchableOpacity
 } from 'react-native';
 import Slider from 'react-native-slider';
-import RNFetchBlob from 'rn-fetch-blob'
+import RNFetchBlob from 'rn-fetch-blob';
+import Icon from 'react-native-vector-icons/FontAwesome5';
+
 const screenWidth = Math.round(Dimensions.get('window').width);
 export default class Player {
   
@@ -50,7 +52,7 @@ export default class Player {
       capabilities: [
         TrackPlayer.CAPABILITY_PLAY,
         TrackPlayer.CAPABILITY_PAUSE,
-        TrackPlayer.CAPABILITY_STOP,
+        //TrackPlayer.CAPABILITY_STOP,
 
         TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
         TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
@@ -61,18 +63,19 @@ export default class Player {
         TrackPlayer.CAPABILITY_PLAY,
         TrackPlayer.CAPABILITY_PAUSE,
 
-        TrackPlayer.CAPABILITY_STOP,
+        //TrackPlayer.CAPABILITY_STOP,
         TrackPlayer.CAPABILITY_SKIP_TO_NEXT,
         TrackPlayer.CAPABILITY_SKIP_TO_PREVIOUS,
+        
       ],
 
       // Icons for the notification on Android (if you don't like the default ones)
-      playIcon: require('../../res/ic_play.png'),
-      pauseIcon: require('../../res/ic_pause.png'),
-      stopIcon: require('../../res/ic_stop_tmp.png'),
-      previousIcon: require('../../res/ic_pre.png'),
-      nextIcon: require('../../res/ic_next.png'),
-      icon: require('../../res/ic_notifi.png'), // The notification icon
+      // playIcon: require('../../res/ic_play.png'),
+      // pauseIcon: require('../../res/ic_pause.png'),
+      // stopIcon: require('../../res/ic_stop_tmp.png'),
+      // previousIcon: require('../../res/ic_pre.png'),
+      // nextIcon: require('../../res/ic_next.png'),
+      // icon: require('../../res/ic_notifi.png'), // The notification icon
     });
   }
 
@@ -129,6 +132,10 @@ export default class Player {
   static getIndex()
   {
     return Player.playingIndexList;
+  }
+  static getKindMusic()
+  {
+    return Player.kindOfMusicPlaying;
   }
 
   static _setPause() {
@@ -205,6 +212,7 @@ export default class Player {
 
   static playingList = [];
   static playingIndexList=0;
+  static kindOfMusicPlaying='';
   static PlayMusicAtIndex(index){
     let i=-1;
     this.playingList.forEach(element => {
@@ -430,7 +438,7 @@ export class MyLyric extends TrackPlayer.ProgressComponent {
       }
      // console.log(data);
       this.setState({data_temp:data})
-      console.log("LOAD data lyric OK!")
+      //console.log("LOAD data lyric OK!")
   }
 
   _stringToTime(value1)
@@ -448,32 +456,43 @@ export class MyLyric extends TrackPlayer.ProgressComponent {
     if(this.props.linkLyric!=this.state.link)
     {
       this.setState({link:this.props.linkLyric})
-      this.setState
-    console.log("set linK liric "+this.props.linkLyric.substring(0,4))
-    if(this.props.linkLyric.substring(0,4)=='http')
-    {
-      fetch(this.props.linkLyric)
-      .then(response => {
-        return response.text();
-      })
-      .then(res => {
-  
-       this.setState({stringLyric: res});
-       this.xuLiLyric(this.state.stringLyric)
-  
-      }); 
-    }
-    else
-    {
-      RNFetchBlob.fs.readFile(this.props.linkLyric,'utf8').then((data)=>{
-        this.setState({stringLyric: data});
+      
+      console.log('LYRC: ='+this.props.linkLyric+'=');
+      if (this.props.linkLyric == '' || (this.props.linkLyric + '').includes('lrc-nct')){
+        console.log("lyrc k co nha! ..............");
+        this.setState({ stringLyric: '' });
+        this.xuLiLyric(this.state.stringLyric);
+      }
+        
+      else if(this.props.linkLyric.substring(0,4)=='http')
+      {
+        fetch(this.props.linkLyric)
+        .then(response => {
+          return response.text();
+        })
+        .then(res => {
+    
+        this.setState({stringLyric: res});
         this.xuLiLyric(this.state.stringLyric)
-      })
-    }
+    
+        }); 
+      }
+      else
+      {
+        RNFetchBlob.fs.readFile(this.props.linkLyric,'utf8').then((data)=>{
+          this.setState({stringLyric: data});
+          this.xuLiLyric(this.state.stringLyric)
+        })
+      }
     }
 
     //console.log(this.state.curentTime);
     let i=0;
+    if (this.props.linkLyric == '' || (this.props.linkLyric + '').includes('lrc-nct')) {
+      return(
+        <View></View>
+      );
+    }else
     return (
       <View style={styles.container}>
         {/*<TouchableOpacity  onPress={()=>{this._showLyric(),this._renderText('hahaah')}}> 
@@ -482,7 +501,7 @@ export class MyLyric extends TrackPlayer.ProgressComponent {
         <FlatList
         scrollEnabled={true}
         data={this.state.data_temp}
-        extraData={this.state.data_temp}
+        extraData={this.state.link}
         ref={(ref) => { this.flatListRef = ref; }}
         getItemLayout={(data, index) => (
           { length: 40, offset:24 * index, index }

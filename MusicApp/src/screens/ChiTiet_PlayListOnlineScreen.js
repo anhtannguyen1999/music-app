@@ -84,7 +84,10 @@ class ChiTiet_PlayListOnlineScreen extends Component {
             }}></Button>
            */}
           </View>
-            <DanhSachBaiHat dataDanhSachBaiHat={this.props.myPlayListOnline.dataSong.song.items}></DanhSachBaiHat>
+
+            <DanhSachBaiHat 
+            kind={this.props.myPlayListOnline.id}
+            dataDanhSachBaiHat={this.props.myPlayListOnline.dataSong.song.items}></DanhSachBaiHat>
         </View>
       </View>
     );

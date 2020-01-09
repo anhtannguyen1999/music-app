@@ -2,15 +2,10 @@ import React, {Component} from 'react';
 import {StyleSheet, View, FlatList, Text, TouchableOpacity, ImageBackground} from 'react-native';
 import {SearchBar} from 'react-native-elements';
 import {Dimensions} from 'react-native';
-import ItemInforBaiHat from '../components/ItemInforBaiHat';
 import DanhSachBaiHat from '../components/DanhSachBaiHat'
 const screenWidth = Math.round(Dimensions.get('window').width);
-import Player, {MyPlayerBar} from '../player/Player';
-import StreamScreen from '../screens/Stream';
-
 import {connect} from 'react-redux';
 import {setSongPlay} from '../redux/action';
-//var DomParser = require('react-native-html-parser').DOMParser;
 class SearchScreen extends Component {
   constructor(props) {
     super(props);
@@ -18,12 +13,11 @@ class SearchScreen extends Component {
     this.state = {
       loading: false,
       data: [],
-      page: 1,
-      seed: 1,
       error: null,
       refreshing: false,
       dataGoiY: [],
       dataSearch: [],
+      dataSearchNCT: [],
       hienThiGoiY: true,
       searchValue: '',
     };
@@ -67,10 +61,66 @@ class SearchScreen extends Component {
           //console.log(response.data);
 
           this.setState({dataSearch: response.data.items});
+          //console.log(this.state.dataSearch);
         });
+      this._loadDataSearchNCT(value);
+      
     }
   }
-
+  _loadDataSearchNCT(value){
+    //this.setState({ dataSearchNCT: []});
+    fetch(
+      'http://m.nhaccuatui.com/ajax/search?q=' +
+      value,
+    )
+      .then(response => response.json())
+      .then(response => {
+        //console.log(response.data);
+        response.data.song.forEach(element => {
+          this._LayKeyEncrypt(element.url);
+        });
+      });
+  }
+  _LayKeyEncrypt(url) {
+    console.log(url);
+    fetch(url, {
+      method: 'GET',
+    }
+    ).then((response) => response.text())
+      .then((responseHtml) => {
+        //Lay key encrypt
+        var regex = RegExp('keyEncrypt="................................"');
+        var keyEncrypt = regex.exec(responseHtml)[0].split('"')[1];
+        this._LayThongTinTuKeyEncrypt(keyEncrypt);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
+  _LayThongTinTuKeyEncrypt(keyEncrypt) {
+    let url = 'http://m.nhaccuatui.com/ajax/get-media-info?key1=' + keyEncrypt;
+    fetch(url, {
+      method: 'GET',
+    }
+    ).then((response) => response.json())
+      .then((responseJson) => {
+        //this.setState({ ketQuaTimKiem: responseJson.data.song });
+        //console.log(responseJson.data);
+        var aSong=[{
+          nenTang:'NCT',
+          id: responseJson.data.encryptKey,
+          title:responseJson.data.title,
+          artists_names: responseJson.data.singerTitle,
+          linkMp3: responseJson.data.location,
+          thumbnail_medium: responseJson.data.thumb,
+          lyric: responseJson.data.lyric,
+        }];
+        this.setState({ dataSearch: this.state.dataSearch.concat(aSong)});
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }
   SearchFilterFunction(text) {
     //passing the inserted text in textinput
     // const newData = this.arrayholder.filter(function (item) {
@@ -109,6 +159,7 @@ class SearchScreen extends Component {
         .then(res => {
           this.setState({dataGoiY: res.data});
         });
+
     }
   }
 
@@ -193,7 +244,7 @@ class SearchScreen extends Component {
 
         <View style={styles.container1}>
           {/*<Text style={styles.tieuDe}> Kết quả tìm kiếm:</Text>*/}
-            <DanhSachBaiHat dataDanhSachBaiHat={this.state.dataSearch}></DanhSachBaiHat>
+          <DanhSachBaiHat kind="download" dataDanhSachBaiHat={this.state.dataSearch}></DanhSachBaiHat>
          
         </View>
       </ImageBackground>

@@ -1,4 +1,4 @@
-import React, { Component, cloneElement } from 'react';
+import React, {Component} from 'react';
 import {
   StyleSheet,
   View,
@@ -7,27 +7,24 @@ import {
   TouchableOpacity,
   TextInput,
   Button,
-  ImageBackground
+  ImageBackground,
+  Image,
+  Alert
 } from 'react-native';
-import { test } from './test';
-
-import TrackPlayer from 'react-native-track-player';
-import Icon from 'react-native-vector-icons/Entypo';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import PlayList from '../components/PlayList';
-import ItemInforBaiHat from '../components/ItemInforBaiHat';
 import RNFetchBlob from 'rn-fetch-blob';
 
-
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import {
   setSongPlay,
   setPlayListOnline,
   setPlayListOffline,
   setDataAllPlayList,
-  setDataMusicLocal
+  setDataMusicLocal,
 } from '../redux/action';
 import DanhSachBaiHat from '../components/DanhSachBaiHat';
-import { ScrollView } from 'react-native-gesture-handler';
+import {ScrollView} from 'react-native-gesture-handler';
 class LibraryScreen extends Component {
   constructor(props) {
     super(props);
@@ -36,7 +33,7 @@ class LibraryScreen extends Component {
       dataPlayList: [],
       isRenderAdd: false,
       namePlayListAdd: '',
-      rerender: 0
+      rerender: 0,
     };
   }
   static navigationOptions = {
@@ -48,27 +45,86 @@ class LibraryScreen extends Component {
       <TouchableOpacity
         onPress={() => {
           this._loadDataSongInPlayListOffline(id),
-
             this.props.navigation.navigate('ChiTiet_PlayListOffline', {
               id: id,
               thumbnail_medium: thumbnail_medium,
               title: title,
               numberSong: total_song,
             });
-            //this._loadDataSongInPlayListOffline(id)
+          //this._loadDataSongInPlayListOffline(id)
         }}>
-        <PlayList
+        {/* <PlayList
+          canRemove={true}
           linkImagePlayList={thumbnail_medium}
           title={title}
           numberSong={total_song}>
           {' '}
-        </PlayList>
+        </PlayList> */}
+
+        <View style={styles.containerAvt}>
+          
+            <View style={{alignItems: 'flex-end', flex: 1, width: '100%'}}>
+              <TouchableOpacity onPress={() => {this._showAlertRemovePlaylist(id,title)}}>
+                <Icon name="minus-square" size={22}></Icon>
+              </TouchableOpacity>
+            </View>
+          
+          <Image
+            loadingIndicatorSource={require('../../res/m_musicicon.png')}
+            style={styles.imageStyle}
+            source={{uri: thumbnail_medium}}
+            onError={e => {}}></Image>
+
+          <Text style={{fontSize: 8}}> {title}</Text>
+          <Text style={{fontSize: 8}}> {total_song} bài</Text>
+        </View>
       </TouchableOpacity>
     );
   }
+  _showAlertRemovePlaylist(id,title)
+  {
+    Alert.alert(
+      '',
+      'Bạn có chắc xóa Playlist: '+title+"?",
+      [
+        {text: '', onPress: () => console.log('Ask me later pressed')},
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {text: 'OK', onPress: () => this._removePlaylist(id)},
+      ],
+      {cancelable: false},
+    );
+
+  }
+  _removePlaylist(id)
+  {
+    var PATH =
+      RNFetchBlob.fs.dirs.SDCardDir +
+      '/DataLocal/PlayList_Local/PlayListManager.js';
+  
+    var temp = this.props.dataAllPlaylist;
+    for(let i=0;i<temp.list.length;i++)
+    {
+      if(temp.list[i].id==id)
+      {
+        temp.total_list--;
+        temp.list.splice(i,1);
+        
+        RNFetchBlob.fs.writeFile(PATH, JSON.stringify(temp)).then(()=>{
+          this._loadLocalPlayList();
+        })
+        return;
+      }
+    }
+    console.log(temp)
+
+  }
   componentDidMount() {
     this._loadLocalPlayList();
-    this._loadDataMusicLocal()
+    this._loadDataMusicLocal();
     //this._addPlayList();
     //this._loadDataSongInPlayListOffline(0);
   }
@@ -82,7 +138,7 @@ class LibraryScreen extends Component {
           borderWidth: 2,
           borderColor: '#000',
         }}>
-        <View style={{ padding: 20 }}>
+        <View style={{padding: 20}}>
           <Text> Tên Playlist bạn muốn tạo:</Text>
           <TextInput
             style={{
@@ -90,7 +146,10 @@ class LibraryScreen extends Component {
               margin: 10,
               width: '90%',
               borderRadius: 10,
-            }} onChangeText={(text) => this.setState({ namePlayListAdd: text })}></TextInput>
+            }}
+            onChangeText={text =>
+              this.setState({namePlayListAdd: text})
+            }></TextInput>
           <View
             style={{
               flexDirection: 'row',
@@ -98,12 +157,16 @@ class LibraryScreen extends Component {
               justifyContent: 'flex-end',
               marginRight: 25,
             }}>
-            <Button title={'Tạo'} onPress={() => { this._addPlayList(), this.setState({ isRenderAdd: false }) }}></Button>
+            <Button
+              title={'Tạo'}
+              onPress={() => {
+                this._addPlayList(), this.setState({isRenderAdd: false});
+              }}></Button>
             <Text> </Text>
             <Button
               title={'Hủy'}
               onPress={() => {
-                this.setState({ isRenderAdd: false });
+                this.setState({isRenderAdd: false});
               }}></Button>
           </View>
         </View>
@@ -128,222 +191,199 @@ class LibraryScreen extends Component {
   }
 
   _loadDataSongInPlayListOffline(id) {
+    var index=0;
+    for(let i=0;i<this.props.dataAllPlaylist.total_list;i++)
+    {
+      if(this.props.dataAllPlaylist.list[i].id==id)
+        {
+          index=i;
+          break;
+        }
+    }
     this.props.setPlayListOffline(
       id,
-      this.props.dataAllPlaylist.list[parseInt(id)].song.items,
+      this.props.dataAllPlaylist.list[index].song.items,
     );
     //console.log(LibraryScreen.dataTest[0].song.items)
     //console.log(this.props.myPlayList.dataSong)
   }
 
   _addPlayList() {
-    if (this.state.namePlayListAdd == '')
-      return;
-    var PATH = RNFetchBlob.fs.dirs.SDCardDir + '/DataLocal/PlayList_Local/PlayListManager.js';
+    if (this.state.namePlayListAdd == '') return;
+    var PATH =
+      RNFetchBlob.fs.dirs.SDCardDir +
+      '/DataLocal/PlayList_Local/PlayListManager.js';
     var temp = this.props.dataAllPlaylist;
-    var lastIndex = temp.total_list;
-    var obj = { "id": lastIndex.toString(), "title": this.state.namePlayListAdd, "thumbnail_medium": "http://icons.iconarchive.com/icons/elegantthemes/beautiful-flat-one-color/128/music-icon.png", "total_song": 0, "song": { "items": [] } }
+    if(temp.total_list>0)
+    {
+      var lastIndex = temp.list[temp.total_list-1].id+1;
+    }
+
+    else
+    {
+      var lastIndex =0;
+    }
+    var obj = {
+      id: lastIndex.toString(),
+      title: this.state.namePlayListAdd,
+      thumbnail_medium:
+        'http://icons.iconarchive.com/icons/elegantthemes/beautiful-flat-one-color/128/music-icon.png',
+      total_song: 0,
+      song: {items: []},
+    };
     temp.list.push(obj);
     temp.total_list++;
     this.props.setDataAllPlayList(temp);
-    RNFetchBlob.fs.writeFile(PATH, JSON.stringify(temp))
+    RNFetchBlob.fs.writeFile(PATH, JSON.stringify(temp));
 
     //console.log(temp)
 
     // this.setState({dataPlayList:temp})
   }
-  _loadDataMusicLocal()
-  {
-    var path=RNFetchBlob.fs.dirs.SDCardDir+ "/DataLocal/Music_Local/MusicLocalManager.js"
-    var temp=[];
-    RNFetchBlob.fs.readFile(path,'utf8').then((data)=>{
-      temp=JSON.parse(data)
+  _loadDataMusicLocal() {
+    var path =
+      RNFetchBlob.fs.dirs.SDCardDir +
+      '/DataLocal/Music_Local/MusicLocalManager.js';
+    var temp = [];
+    RNFetchBlob.fs.readFile(path, 'utf8').then(data => {
+      temp = JSON.parse(data);
       this.props.setDataMusicLocal(temp);
-    })
+    });
   }
-  static dataTest = {
-    total_list: 2,
-    list: [
-      {
-        id: '0',
-        title: 'PlayList Test 0',
-        thumbnail_medium:
-          'http://icons.iconarchive.com/icons/elegantthemes/beautiful-flat-one-color/128/music-icon.png',
-        total_song: 2,
-        song: {
-          items: [
-            {
-              id: 'ZWAFE897',
-              title: 'Bánh Mì Không',
-              artists_names: 'Đạt G, DuUyen',
-              thumbnail_medium:
-                'https://photo-resize-zmp3.zadn.vn/w240_r1x1_jpeg/cover/2/9/0/6/2906681d4b764cd4677342b66813f25d.jpg',
-              lyric:
-                'https://static-zmp3.zadn.vn/lyrics/6/f/9/7/6f97fc3d7c394df24915e878b913d7bb.lrc',
-              duration: 245,
-            },
-            {
-              id: 'ZWAFE89B',
-              title: 'Em Một Mình Quen Rồi',
-              artists_names: 'Dương Hoàng Yến',
-              thumbnail_medium:
-                'https://photo-resize-zmp3.zadn.vn/w240_r1x1_jpeg/cover/7/b/e/9/7be9788129f81d9c3d685969db8ab70a.jpg',
-              lyric:
-                'https://static-zmp3.zadn.vn/lyrics/1/d/9/5/1d959ad872a0842198836792214b3bd5.lrc',
-              duration: 358,
-            },
-          ],
-        },
-      },
-
-      {
-        id: '1',
-        title: 'PlayList Test 1',
-        thumbnail_medium:
-          'http://icons.iconarchive.com/icons/elegantthemes/beautiful-flat-one-color/128/music-icon.png',
-        total_song: 2,
-        song: {
-          items: [
-            {
-              id: 'ZWAFEWOU',
-              title: 'Sao Chẳng Phải Là Anh',
-              artists_names: 'Chi Dân',
-              thumbnail_medium:
-                'https://photo-resize-zmp3.zadn.vn/w240_r1x1_jpeg/cover/9/9/9/e/999e7aa9d6d42e60d3b2f28072a0c968.jpg',
-              lyric:
-                'https://static-zmp3.zadn.vn/lyrics/6/f/9/7/6f97fc3d7c394df24915e878b913d7bb.lrc',
-              duration: 245,
-            },
-            {
-              id: 'ZWAFE89B',
-              title: 'Em Một Mình Quen Rồi',
-              artists_names: 'Dương Hoàng Yến',
-              thumbnail_medium:
-                'https://photo-resize-zmp3.zadn.vn/w240_r1x1_jpeg/cover/7/b/e/9/7be9788129f81d9c3d685969db8ab70a.jpg',
-              lyric:
-                'https://static-zmp3.zadn.vn/lyrics/d/5/0/1/d50129746dcdf86ef326a7070cbd55b8.lrc',
-              duration: 310,
-            },
-          ],
-        },
-      },
-    ],
-  };
 
   render() {
-
     return (
-      <ImageBackground style={{ flex: 1 }} source={require('../../res/BG2.jpg')}>
-      <ScrollView style={{flex:1,backgroundColor:'#ffffffaa', margin:5, paddingLeft:2, paddingTop:10, borderRadius:8}}>
-        <View style={styles.container}>
-          <View style={styles.containerTieuDe}>
-          <View style={styles.containerTieuDe,{flexDirection:'row'}}>
-          <Icon name='music' color={'#341f97'} size={30}></Icon>
-            <Text style={styles.tieuDe}> Playlist của bạn </Text>
-             
-          </View>
-            <TouchableOpacity
-              onPress={() => {
-                this.setState({ isRenderAdd: !this.state.isRenderAdd });
-              }}>
-              <View style={this.state.isRenderAdd ? styles.con1 : styles.con2}>
-                <Text style={{ fontSize: 18 }}> Thêm Playlist</Text>
+      <ImageBackground style={{flex: 1}} source={require('../../res/BG2.jpg')}>
+        <ScrollView
+          style={{
+            flex: 1,
+            backgroundColor: '#ffffffaa',
+            margin: 5,
+            paddingLeft: 2,
+            paddingTop: 10,
+            borderRadius: 8,
+          }}>
+          <View style={styles.container}>
+            <View style={styles.containerTieuDe}>
+              <View style={[styles.containerTieuDe, {flexDirection: 'row'}]}>
+                <Icon name="music" color={'#341f97'} size={30}></Icon>
+                <Text style={styles.tieuDe}> Playlist của bạn </Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    this.setState({isRenderAdd: !this.state.isRenderAdd});
+                  }}>
+                  <View
+                    style={this.state.isRenderAdd ? styles.con1 : styles.con2}>
+                    <Icon
+                      name="plus-square"
+                      color={
+                        this.state.isRenderAdd == true ? '#0abde3cc' : '#341f97'
+                      }
+                      size={25}></Icon>
+                    {/* <Text style={{ fontSize: 18 }}> Thêm Playlist</Text> */}
+                  </View>
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
-          </View>
-          {this.state.isRenderAdd ? this._renderAddPlayList() : null}
-          <View style={(styles.container, { flexDirection: 'row' })}>
-            <FlatList
-              data={this.props.dataAllPlaylist.list}
-              extraData={this.props.dataAllPlaylist.list}
-              renderItem={({ item, index }) =>
-                index % 2 == 0
-                  ? this._renderAvatarPlayList(
-                    item.id,
-                    item.thumbnail_medium,
-                    item.title,
-                    item.total_song,
-                  )
-                  : null
-              }
-            //keyExtractor={item => item.ten}
-            />
-            <FlatList
-              data={this.props.dataAllPlaylist.list}
-              extraData={this.props.dataAllPlaylist.list}
-              renderItem={({ item, index }) =>
-                index % 2 == 1
-                  ? this._renderAvatarPlayList(
-                    item.id,
-                    item.thumbnail_medium,
-                    item.title,
-                    item.total_song,
-                  )
-                  : null
-              }
-            //keyExtractor={item => item.ten}
-            />
-          </View>
+            </View>
+            {this.state.isRenderAdd ? this._renderAddPlayList() : null}
+            <View style={(styles.container, {flexDirection: 'row'})}>
+              <FlatList
+                data={this.props.dataAllPlaylist.list}
+                extraData={this.props.dataAllPlaylist.list}
+                renderItem={({item, index}) =>
+                  index % 2 == 0
+                    ? this._renderAvatarPlayList(
+                        item.id,
+                        item.thumbnail_medium,
+                        item.title,
+                        item.total_song,
+                      )
+                    : null
+                }
+                //keyExtractor={item => item.ten}
+              />
+              <FlatList
+                data={this.props.dataAllPlaylist.list}
+                extraData={this.props.dataAllPlaylist.list}
+                renderItem={({item, index}) =>
+                  index % 2 == 1
+                    ? this._renderAvatarPlayList(
+                        item.id,
+                        item.thumbnail_medium,
+                        item.title,
+                        item.total_song,
+                      )
+                    : null
+                }
+                //keyExtractor={item => item.ten}
+              />
+            </View>
 
-          <View style={{width:'100%',marginTop:10}}>
-
-          <View style={styles.containerTieuDe,{flexDirection:'row'}}>
-          <Icon name='download' color={'#341f97'} size={30}></Icon>
-            <Text style={styles.tieuDe}> Bài hát đã tải </Text>   
-          </View>
-              <View style={{alignItems:'center'}}>
-              <DanhSachBaiHat kind="downLoad" canRemove={true} dataDanhSachBaiHat={this.props.dataMusicLocal.items}></DanhSachBaiHat>
+            <View style={{width: '100%', marginTop: 10}}>
+              <View style={(styles.containerTieuDe, {flexDirection: 'row'})}>
+                <Icon name="download" color={'#341f97'} size={30}></Icon>
+                <Text style={styles.tieuDe}> Bài hát đã tải </Text>
               </View>
-        
+              <View style={{alignItems: 'center'}}>
+                <DanhSachBaiHat
+                  kind="downLoad"
+                  canRemove={true}
+                  dataDanhSachBaiHat={
+                    this.props.dataMusicLocal.items
+                  }></DanhSachBaiHat>
+              </View>
+            </View>
           </View>
-        </View>
-        </ScrollView>     
+        </ScrollView>
       </ImageBackground>
-
     );
   }
 }
 
-const mapStateToProps=state=>( {
-    myPlayList: state.currentPlayListOffline, dataAllPlaylist: state.dataAllPlaylist ,dataMusicLocal:state.dataMusicLocal,
-})
+const mapStateToProps = state => ({
+  myPlayList: state.currentPlayListOffline,
+  dataAllPlaylist: state.dataAllPlaylist,
+  dataMusicLocal: state.dataMusicLocal,
+});
 export default connect(mapStateToProps, {
   setSongPlay,
   setPlayListOnline,
   setPlayListOffline,
   setDataAllPlayList,
-  setDataMusicLocal
+  setDataMusicLocal,
 })(LibraryScreen);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-   // width: '100%',
+    // width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     //backgroundColor: '#fff',
     flexDirection: 'column',
-   // padding: 10,
+    // padding: 10,
   },
-  input: { maxHeight: 40 },
+  input: {maxHeight: 40},
   con2: {
+    justifyContent: 'flex-end',
     fontSize: 20,
-    backgroundColor: '#0abde3cc',
+    backgroundColor: '#fff',
     marginLeft: 2,
     borderRadius: 5,
     margin: 5,
   },
   con1: {
+    justifyContent: 'flex-end',
     fontSize: 20,
-    backgroundColor: '#2e86decc',
+    backgroundColor: '#fff',
     marginLeft: 2,
     borderRadius: 5,
-    borderWidth: 1,
-    borderColor: '#0abde3cc',
+    borderWidth: 0,
+    // borderColor: '#0abde3cc',
     margin: 5,
   },
 
-  input: { maxHeight: 40 },
+  input: {maxHeight: 40},
   inputContainer: {
     display: 'flex',
     flexShrink: 0,
@@ -365,6 +405,7 @@ const styles = StyleSheet.create({
     top: 10,
   },
   tieuDe: {
+    width: '83%',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
     fontSize: 20,
@@ -375,6 +416,25 @@ const styles = StyleSheet.create({
     marginBottom: 3,
     borderStartWidth: 2,
     borderRightColor: 'red',
-    color:'#341f97',
+    color: '#341f97',
+  },
+  containerAvt: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
+    padding: 5,
+    borderColor: '#000',
+    borderWidth: 2,
+    borderRadius: 5,
+    width: 186,
+    height: 190,
+  },
+  imageStyle: {
+    width: 135,
+    height: 135,
+    margin: 3,
+    resizeMode: 'center',
+    borderRadius: 3,
   },
 });
